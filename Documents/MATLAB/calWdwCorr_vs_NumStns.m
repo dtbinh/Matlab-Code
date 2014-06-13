@@ -400,6 +400,18 @@ end
 if strcmp(method,'all')
 %     close
     suptitle([strrep(DIR_NAME(15:end),'_','\_'),' - Ranges of Correlation percentiles'])
-    legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
+    legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast');
+    set(gcf, 'PaperPosition', [0 0 28 19]);
+    for i=1:3
+%         subplot(1,3,i)
+        set(gca, 'FontSize',14, ...
+            'LineWidth', 1.0, ...
+            'Box', 'on', ...
+            'YTick', [0:0.1:1]); 
+    end
+        
+        
+        
+    set(legendH, 'FontSize',10);
     saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'.jpg'])
 end
