@@ -242,6 +242,6 @@ scatter(corr_pr_3d(sig_stns),pr_runcorr(sig_stns),1,squeeze(nonstat_prmaprecord(
 ylabel('Running Correlations (using 30 yr windows)'); xlabel('Correlations over 499 yr period');
 title('Correlation percentiles for modeled precipitation')
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
-set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
 saveas(gcf,'Plots/scatter(corr_pr,pr_runcorr,nstat_map).jpg')
