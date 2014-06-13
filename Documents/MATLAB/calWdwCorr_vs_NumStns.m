@@ -270,7 +270,7 @@ method = 'all';
 % Plotting EPC
 
 if strcmp(method,'EPC') | strcmp(method,'all')
-
+subplot(1,3,1)
     corr_RV_qn = quantile(temp_corr_EPC_RV,[.05 .5 .95], 3);
 %     clf; axes; hold on; rgbmap = jet(size(CAL_WDW,1)); rgbmap(2:3,:) = rgbmap(1:2,:); rgbmap(1,:) = [0 0 0];
 %     HA = nan(size(CAL_WDW,1),3);
@@ -301,19 +301,17 @@ if strcmp(method,'EPC') | strcmp(method,'all')
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
-    legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
+%     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
     xlim([0,70]); ylim([0,1]); grid on
-    xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
-    title([strrep(DIR_NAME(15:end),'_','\_'), ' - Ranges of Correlation percentiles of EPC\_RV for calibration windows'])
+    ylabel('Correlation')
+    title(['EPC\_RV'])
     
-    set(gcf, 'PaperUnits', 'centimeters');
-    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-    saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_epc.jpg'])
+%     saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_epc.jpg'])
 end
 
 if strcmp(method,'CPS') | strcmp(method,'all') 
 % Plotting CPS
-    
+subplot(1,3,2)
     corr_RV_qn = quantile(temp_corr_CPS_RV,[.05 .5 .95], 3);
 %     clf; axes; hold on; rgbmap = jet(size(CAL_WDW,1)); rgbmap(2:3,:) = rgbmap(1:2,:); rgbmap(1,:) = [0 0 0];
 %     HA = nan(size(CAL_WDW,1),3);
@@ -341,19 +339,17 @@ if strcmp(method,'CPS') | strcmp(method,'all')
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
-    legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
+%     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
     xlim([0,70]); ylim([0,1]); grid on
-    xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
+    xlabel('Number of Stations included in reconstruction');
     
-    title([strrep(DIR_NAME(15:end),'_','\_'), ' - Correlation percentiles of CPS\_RV for each calibration window proxy group'])
-    set(gcf, 'PaperUnits', 'centimeters');
-    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-    saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_cps.jpg'])
+    title(['CPS\_RV'])
+%     saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_cps.jpg'])
 end
     
 if strcmp(method,'MRV') | strcmp(method,'all')
 % Plotting MRV
-
+subplot(1,3,3)
     corr_RV_qn = quantile(temp_corr_MRV,[.05 .5 .95], 3);
 %     clf; axes; hold on; rgbmap = jet(size(CAL_WDW,1)); rgbmap(2:3,:) = rgbmap(1:2,:); rgbmap(1,:) = [0 0 0];
 %     HA = nan(size(CAL_WDW,1),3);
@@ -396,14 +392,14 @@ if strcmp(method,'MRV') | strcmp(method,'all')
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
     xlim([0,70]); ylim([0,1]); grid on
-    xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
+%     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
         
-    title([strrep(DIR_NAME(15:end),'_','\_'), ' - Correlation percentiles of MRV'])
-    set(gcf, 'PaperUnits', 'centimeters');
-    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-    saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_mrv.jpg'])
+    title(['MRV'])
 end
 
 if strcmp(method,'all')
-    close
+%     close
+    suptitle([strrep(DIR_NAME(15:end),'_','\_'),' - Ranges of Correlation percentiles'])
+    legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
+    saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'.jpg'])
 end
