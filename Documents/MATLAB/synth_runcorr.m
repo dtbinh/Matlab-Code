@@ -56,13 +56,10 @@ clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file
 
 window = 31; % The running window in years
 
-% % Loading 
-load('DataFiles/runcorr.mat');
-
 %% Calculating running correlations from SYNTHETIC data
 tic;
 % Limits of box to calculate corr coefs
-S_lat = -60; N_lat = -20; W_lon = 160; E_lon = 280;
+S_lat = -90; N_lat = 90; W_lon = 0; E_lon = 360;
 [~,S_bound]= min(abs(lat-S_lat));
 [~,N_bound]= min(abs(lat-N_lat));
 [~,W_bound]= min(abs(lon-W_lon));
@@ -73,11 +70,11 @@ for n=1:1000
 load(['Synth_Data/run',num2str(n),'syn.mat'])
 
 % USE IF OLD FILES EXIST ALREADY
-if  ~exist(['Synth_runcorr/run',num2str(n),'syncorr.mat'],'file')
-    ts_synruncorr=NaN(size(nu_ts));
-    pr_synruncorr=NaN(size(nu_pr));
+if  ~exist(['Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'file')
+    ts_synruncorr=NaN(size(nu_ts),'single');
+    pr_synruncorr=NaN(size(nu_pr),'single');
 else
-    load(['Synth_runcorr/run',num2str(n),'syncorr.mat'])
+    load(['Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'])
 end
 
 % Running Correlation of Temperature
@@ -95,7 +92,7 @@ for i=S_bound:N_bound
     end
 end
 
-save(['Synth_runcorr/run',num2str(n),'syncorr.mat'],'ts_synruncorr','pr_synruncorr');
+save(['Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','pr_synruncorr','window');
 toc;
 end
 

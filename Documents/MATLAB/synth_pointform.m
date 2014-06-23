@@ -68,7 +68,7 @@ ts_runcorrz = 0.5*log( (1+ts_runcorrz)./(1-ts_runcorrz) );
 %% Changing data organisation to spatial-point form
 tic;
 % Limits of box
-S_lat = -60; N_lat = 60; W_lon = 250; E_lon = 270;
+S_lat = -90; N_lat = 90; W_lon = 0; E_lon = 360;
 [~,S_bound]= min(abs(lat-S_lat));
 [~,N_bound]= min(abs(lat-N_lat));
 [~,W_bound]= min(abs(lon-W_lon));
