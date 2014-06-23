@@ -138,18 +138,18 @@ title('Num of nonstationary stations for temp')
 
 %% Adding Difference in Percentiles Overlay
 
-subplot(2,1,1)
-hold on;
-% [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(pr_pc(1,:,:,:)-pr_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
-[c,h]=contour(lon,lat,squeeze(abs(mean(pr_pc(1,33:end,:,:)-pr_pc(2,33:end,:,:),2))),[0.1:0.2:0.7],'b');
-clabel(c,h,'Color','b')
-hold off;
-subplot(2,1,2)
-hold on
-% [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(ts_pc(1,:,:,:)-ts_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
-[c,h]=contour(lon,lat,squeeze(abs(mean(ts_pc(1,33:end,:,:)-ts_pc(2,33:end,:,:),2))),[0.1:0.2:0.7],'b');
-clabel(c,h,'Color','b')
-hold off;
+% subplot(2,1,1)
+% hold on;
+% % [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(pr_pc(1,:,:,:)-pr_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
+% [c,h]=contour(lon,lat,squeeze(abs(mean(pr_pc(1,33:end,:,:)-pr_pc(2,33:end,:,:),2))),[0.1:0.2:0.7],'b');
+% clabel(c,h,'Color','b')
+% hold off;
+% subplot(2,1,2)
+% hold on
+% % [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(ts_pc(1,:,:,:)-ts_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
+% [c,h]=contour(lon,lat,squeeze(abs(mean(ts_pc(1,33:end,:,:)-ts_pc(2,33:end,:,:),2))),[0.1:0.2:0.7],'b');
+% clabel(c,h,'Color','b')
+% hold off;
 % % %% Removing insignificant teleconnections for Temperature
 % % 
 % % sig_chang         e=ones(size(ts_pc,3),size(ts_pc,4));
@@ -205,3 +205,45 @@ hold off;
 %     M(i)=getframe(gcf);
 % end
 % movie2avi(M,'Plots/nonstat_ts.avi','FPS',8)
+
+%% Plotting Different groups of nonstationarities
+
+load DataFiles/nonstat_map.mat
+load DataFiles/runcorr.mat
+
+corr_pr = zeros(size(apr,2),size(apr,3));
+for i=1:size(apr,2)
+    for j=1:size(apr,3)
+        corr_pr(i,j) = corr(n34_ind,apr(:,i,j));
+    end
+end
+
+corr_ts = zeros(size(ats,2),size(ats,3));
+for i=1:size(ats,2)
+    for j=1:size(ats,3)
+        corr_ts(i,j) = corr(n34_ind,ats(:,i,j));
+    end
+end
+clear i j
+
+run_corr_low = zeros(size(corr_ts));
+mean_corr_low = zeros(size(corr_ts));
+for i=1:size(apr,2)
+    for j=1:size(apr,3)
+        if (~isempty(find(abs(ts_runcorr(:,i,j)) < 0.3)) & ...
+                                 nonstat_tsmap(i,j) > 50 & ...
+                                 abs(corr_ts(i,j)) > 0.3       )
+            run_corr_low(i,j) = 1;
+        elseif (~isempty(find(abs(ts_runcorr(:,i,j)) > 0.3)) & ...
+                                 nonstat_tsmap(i,j) > 50 & ...
+                                 abs(corr_ts(i,j)) < 0.3       )
+             mean_corr_low(i,j) = 1;
+        end
+    end
+end
+
+[is js] = ind2sub(size(corr_ts),find(run_corr_low));
+[is2 js2] = ind2sub(size(corr_ts),find(mean_corr_low));
+plotworld; hold on; run_hnd=scatter(lon(js), lat(is),'r.'); mean_hnd=scatter(lon(js2),lat(is2),'b.');
+xlim([0,360]); ylim([-90,90]); hold off;
+legend([run_hnd, mean_hnd],'abs(runcorr) > 0.3','corr\_ts > 0.3')
