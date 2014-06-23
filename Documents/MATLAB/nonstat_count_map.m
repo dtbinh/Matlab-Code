@@ -70,7 +70,7 @@ nonstat_prmaprecord=zeros(length(n34_ind),length(lat),length(lon));
 pr_pc = nan(2,length(n34_ind),length(lat),length(lon));
 ts_pc = nan(2,length(n34_ind),length(lat),length(lon));
 run_wdw = 30; % Years
-load('DataFiles/runcorr.mat');
+load('DataFiles/runcorr',num2str(window),'yr.mat');
 runcorr_wdw = 31; % Running correlation window in the runcorr.mat file
 
 % Limits of box
