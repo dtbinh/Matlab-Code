@@ -70,9 +70,8 @@ ats_anmn=squeeze(ats_anmn);
 apr_anmn=squeeze(apr_anmn);
 n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
 
-clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
+clear trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
-window = 61; % The running window in years
 %% Regressions, Correlations, Autocorrelations and Standard Deviations
 reg_ats = zeros(size(ats,2),size(ats,3));
 for i=1:size(ats,2)
@@ -133,7 +132,7 @@ for i=1:size(ats,2)
 end
 
 %% Calculating the Synthetic Series
-mkdir(['SynthData/',num2str(window),'yrWindow'])
+mkdir('Synth_Data')
 for n=1:1000
     tic;
     eta_nu = randn(length(n34_ind),1);
@@ -148,7 +147,7 @@ for n=1:1000
         end
     end
 
-    nu_pr=zeros(length(n34_ind),size(apr,2),size(apr,3));
+    nu_pr=zeros(length(n34_ind),size(apr,2),size(apr,3),'single');
     nu_pr(1,:,:)=NaN;
 
     for i=1:size(apr,2)
@@ -159,7 +158,7 @@ for n=1:1000
         end
     end
 
-   save(['Synth_Data/',num2str(window),'yrWindow/run',num2str(n),'syn.mat'],'nu_ts','nu_pr','eta_nu','window')
+   save(['Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','nu_pr','eta_nu','window')
    toc;
 end
 
