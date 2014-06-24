@@ -158,7 +158,7 @@ for n=1:1000
         end
     end
 
-   save(['Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','nu_pr','eta_nu','window')
+   save(['Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','nu_pr','eta_nu')
    toc;
 end
 

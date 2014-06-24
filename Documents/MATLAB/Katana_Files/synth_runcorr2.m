@@ -62,8 +62,8 @@ tic;
 S_lat = -90; N_lat = 90; 
 [~,S_bound]= min(abs(lat-S_lat));
 [~,N_bound]= min(abs(lat-N_lat));
-[~,W_bound]= min(abs(lon-W_lon));
-[~,E_bound]= min(abs(lon-E_lon));
+% [~,W_bound]= min(abs(lon-W_lon));
+% [~,E_bound]= min(abs(lon-E_lon));
 
 for n=1:1000
 

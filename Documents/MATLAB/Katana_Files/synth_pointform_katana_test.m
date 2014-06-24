@@ -81,9 +81,9 @@ for i=W_bound:E_bound
     for j=S_bound:N_bound
         spot_ts = ts_series(:,:,j,i);
         spot_pr = pr_series(:,:,j,i);
-    %    save(['Synth_runcorr/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
-    %        'spot_ts','spot_pr','window');
-        
+        save(['Synth_runcorr/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
+            'spot_ts','spot_pr','window');
+            toc;
     end
 end
 
