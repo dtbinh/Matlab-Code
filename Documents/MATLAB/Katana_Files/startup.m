@@ -1,7 +1,7 @@
-addpath (['/srv/scratch/z3372730/Matlab_Startup/mexcdf/mexnc']);
-addpath (['/srv/scratch/z3372730/Matlab_Startup/mexcdf/snctools'])
+addpath (['Matlab_Startup/mexcdf/mexnc']);
+addpath (['Matlab_Startup/mexcdf/snctools'])
 ;
-addpath (['/srv/scratch/z3372730/Matlab_Startup'])
+addpath (['Matlab_Startup'])
 ;
-addpath (['/srv/scratch/z3372730/Matlab_Startup/pcatool'])
+addpath (['Matlab_Startup/pcatool'])
 ;

@@ -64,10 +64,10 @@ S_lat = -90; N_lat = 90;
 [~,N_bound]= min(abs(lat-N_lat));
 % [~,W_bound]= min(abs(lon-W_lon));
 % [~,E_bound]= min(abs(lon-E_lon));
+mkdir(['Synth_runcorr/',num2str(window),'yrWindow/']
+for n=beginning:1000
 
-for n=1:1000
-
-load(['Synth_Data/run',num2str(n),'syn.mat'])
+load(['/srv/scratch/z3372730/Synth_Data/run',num2str(n),'syn.mat'])
 
 % USE IF OLD FILES EXIST ALREADY
 if  ~exist(['Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'file')
@@ -93,6 +93,7 @@ for i=S_bound:N_bound
 end
 
 save(['Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','pr_synruncorr','window');
+	
 toc;
 end
 

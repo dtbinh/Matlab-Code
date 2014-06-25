@@ -65,9 +65,9 @@ S_lat = -90; N_lat = 90;
 % [~,W_bound]= min(abs(lon-W_lon));
 % [~,E_bound]= min(abs(lon-E_lon));
 
-for n=1:1000
+for n=beginning:1000
 
-load(['Synth_Data/run',num2str(n),'syn.mat'])
+load(['/srv/scratch/z3372730/Synth_Data/run',num2str(n),'syn.mat'])
 
 % USE IF OLD FILES EXIST ALREADY
 if  ~exist(['Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'file')
