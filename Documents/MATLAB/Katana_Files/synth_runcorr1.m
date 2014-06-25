@@ -64,8 +64,8 @@ S_lat = -90; N_lat = 90;
 [~,N_bound]= min(abs(lat-N_lat));
 % [~,W_bound]= min(abs(lon-W_lon));
 % [~,E_bound]= min(abs(lon-E_lon));
-mkdir(['Synth_runcorr/',num2str(window),'yrWindow/']
-for n=beginning:1000
+mkdir(['Synth_runcorr/',num2str(window),'yrWindow/'])
+for n=1:1000
 
 load(['/srv/scratch/z3372730/Synth_Data/run',num2str(n),'syn.mat'])
 
