@@ -33,12 +33,12 @@ for n=1:1000 % This will take about 6 minutes ??????
         toc;
     end
 end
-mkdir(['Data/Synth_pointform/',num2str(window),'yrWindow/']);
+mkdir(['../Data/Synth_pointform/',num2str(window),'yrWindow/']);
 for i=W_bound:E_bound
     for j=S_bound:N_bound
         spot_ts = ts_series(:,:,j,i);
         spot_pr = pr_series(:,:,j,i);
-        save(['Data/Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
+        save(['../Data/Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
             'spot_ts','spot_pr','window');
     end
 end

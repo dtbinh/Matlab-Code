@@ -81,9 +81,9 @@ S_lat = -90; N_lat = 90; W_lon = 0; E_lon = 360;
 
 for i=W_bound:E_bound
     for j=S_bound:N_bound
-        if exist(['Synth_runcorr/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],'file')
+        if exist(['../Data/Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],'file')
             % This takes 0.3 seconds per point
-            load(['Synth_runcorr/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat']);
+            load(['../Data/Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat']);
             spotz_ts = 0.5*log( (1+spot_ts)./(1-spot_ts) ); % Fishers Z Score
             spotz_pr = 0.5*log( (1+spot_pr)./(1-spot_pr) );
             pr_runcorrz = 0.5*log( (1+pr_runcorr)./(1-pr_runcorr) );
