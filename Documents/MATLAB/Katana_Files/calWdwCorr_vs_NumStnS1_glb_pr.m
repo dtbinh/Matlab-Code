@@ -69,28 +69,27 @@ RV_WDW = [15:(499-14)];
 DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_pr'];                                 %%%%%%%
 numstnstocompare = [3:70];                                     %%%%%%%%
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
-% CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
-CAL_WDW = 1:499;
-%% Beginning the Loop
-for c=1:1 %size(CAL_WDW,1)
+CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
 
-all_stn_MRV=nan(max(numstnstocompare), NUM_TRIALS, NUM_YRS,'single');
-all_stn_corr_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_rmse_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_EPC = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
-all_stn_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
-all_stn_corr_EPC = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_rmse_EPC = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_corr_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_rmse_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_CPS = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
-all_stn_CPS_RV = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
-all_stn_corr_CPS = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_rmse_CPS = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_corr_CPS_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
-all_stn_rmse_CPS_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
-    
-    
+all_stn_MRV=nan(max(numstnstocompare), size(CAL_WDW,1), NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_MRV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_rmse_MRV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_EPC = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
+all_stn_EPC_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_EPC = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_rmse_EPC = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_corr_EPC_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_rmse_EPC_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_CPS = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
+all_stn_CPS_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_CPS = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_rmse_CPS = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_corr_CPS_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+all_stn_rmse_CPS_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
+
+%% Beginning the Loop
+for c=1:size(CAL_WDW,1)
+
 for NUM_STNS = numstnstocompare
 
 all_stn_pr=zeros(NUM_TRIALS,NUM_STNS,NUM_YRS);
@@ -167,12 +166,12 @@ stn_corr_EPC_RV = nan(NUM_TRIALS,1);
 stn_rmse_EPC_RV = nan(NUM_TRIALS,1);
 
 for n=1:NUM_TRIALS
-    [eof_stn(n,:,:),PC_stn(n,:,CAL_WDW),expvar_stn(n,:)] = caleof(squeeze(all_stn_pr(n,:,CAL_WDW))', NUM_OF_EOFS, 1);
+    [eof_stn(n,:,:),PC_stn(n,:,CAL_WDW(c,:)),expvar_stn(n,:)] = caleof(squeeze(all_stn_pr(n,:,CAL_WDW(c,:)))', NUM_OF_EOFS, 1);
 end
 
 % Flipping EOFs where necessary so PC is similar to Nino34 correlation
 for n=1:NUM_TRIALS
-    if corr(n34_ind(CAL_WDW), squeeze(PC_stn(n,1,CAL_WDW))) < 0
+    if corr(n34_ind(CAL_WDW(c,:)), squeeze(PC_stn(n,1,CAL_WDW(c,:)))) < 0
         PC_stn(n,1,:) = -PC_stn(n,1,:);
         eof_stn(n,1,:) = -eof_stn(n,1,:);
     end
@@ -207,7 +206,7 @@ stn_corr_CPS_RV = nan(NUM_TRIALS,1);
 stn_rmse_CPS_RV = nan(NUM_TRIALS,1);
 
 for n=1:NUM_TRIALS
-    corr_matrix = corr(n34_ind(CAL_WDW)*ones(1,NUM_STNS), squeeze(all_stn_pr(n,:,CAL_WDW))');
+    corr_matrix = corr(n34_ind(CAL_WDW(c,:))*ones(1,NUM_STNS), squeeze(all_stn_pr(n,:,CAL_WDW(c,:)))');
     stn_CPS(n,:) = corr_matrix(1,:)*squeeze(all_stn_pr(n,:,:));
 end
 
@@ -225,31 +224,32 @@ for n=1:NUM_TRIALS
     stn_rmse_CPS_RV(n) = single(sqrt(mean((n34_ind_RV(RV_WDW)-squeeze(stn_CPS_RV(n,RV_WDW))').^2)));
 end
 
-all_stn_MRV(NUM_STNS,:,:) = stn_MRV;
-all_stn_corr_MRV(NUM_STNS,:) = stn_corr_MRV;
-all_stn_rmse_MRV(NUM_STNS,:) = stn_rmse_MRV;
-all_stn_EPC(NUM_STNS,:,:) = stn_EPC;
-all_stn_EPC_RV(NUM_STNS,:,:) = stn_EPC_RV;
-all_stn_corr_EPC(NUM_STNS,:) = stn_corr_EPC;
-all_stn_rmse_EPC(NUM_STNS,:) = stn_rmse_EPC;
-all_stn_corr_EPC_RV(NUM_STNS,:) = stn_corr_EPC_RV;
-all_stn_rmse_EPC_RV(NUM_STNS,:) = stn_rmse_EPC_RV;
-all_stn_CPS(NUM_STNS,:,:) = stn_CPS;
-all_stn_CPS_RV(NUM_STNS,:,:) = stn_CPS_RV;
-all_stn_corr_CPS(NUM_STNS,:) = stn_corr_CPS;
-all_stn_rmse_CPS(NUM_STNS,:) = stn_rmse_CPS;
-all_stn_corr_CPS_RV(NUM_STNS,:) = stn_corr_CPS_RV;
-all_stn_rmse_CPS_RV(NUM_STNS,:) = stn_rmse_CPS_RV;
+all_stn_MRV(NUM_STNS,c,:,:) = stn_MRV;
+all_stn_corr_MRV(NUM_STNS,c,:) = stn_corr_MRV;
+all_stn_rmse_MRV(NUM_STNS,c,:) = stn_rmse_MRV;
+all_stn_EPC(NUM_STNS,c,:,:) = stn_EPC;
+all_stn_EPC_RV(NUM_STNS,c,:,:) = stn_EPC_RV;
+all_stn_corr_EPC(NUM_STNS,c,:) = stn_corr_EPC;
+all_stn_rmse_EPC(NUM_STNS,c,:) = stn_rmse_EPC;
+all_stn_corr_EPC_RV(NUM_STNS,c,:) = stn_corr_EPC_RV;
+all_stn_rmse_EPC_RV(NUM_STNS,c,:) = stn_rmse_EPC_RV;
+all_stn_CPS(NUM_STNS,c,:,:) = stn_CPS;
+all_stn_CPS_RV(NUM_STNS,c,:,:) = stn_CPS_RV;
+all_stn_corr_CPS(NUM_STNS,c,:) = stn_corr_CPS;
+all_stn_rmse_CPS(NUM_STNS,c,:) = stn_rmse_CPS;
+all_stn_corr_CPS_RV(NUM_STNS,c,:) = stn_corr_CPS_RV;
+all_stn_rmse_CPS_RV(NUM_STNS,c,:) = stn_rmse_CPS_RV;
 toc;
 end
 % That took about an hour per calibration window
+
+end
+
 save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(CAL_WDW(end)),'/tonsofstats.mat'],...
      'all_stn_MRV','all_stn_corr_MRV','all_stn_rmse_MRV', ...
      'DIR_NAME','CAL_WDW','all_stn_EPC','all_stn_corr_EPC','all_stn_rmse_EPC','all_stn_EPC_RV', ...
      'all_stn_corr_EPC_RV','all_stn_rmse_EPC_RV','all_stn_CPS','all_stn_CPS_RV', ...
      'all_stn_corr_CPS','all_stn_rmse_CPS','all_stn_corr_CPS_RV','all_stn_rmse_CPS_RV','-v7.3','window');
-
-end
 
 % %% Plotting Method
 % DIR_NAME = 'Pseudoproxies/glb';
