@@ -65,8 +65,8 @@ end
 
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
-load DataFiles/runcorr.mat
-load DataFiles/nonstat_map.mat
+load DataFiles/runcorr61yrwdw.mat
+load DataFiles/nonstat_map61yrwdw.mat
 
 %% Line Quantile Plots (newer version)
 
@@ -99,11 +99,11 @@ set(text(0.15,0.07,'0.25'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundC
 set(text(0,-0.28,'0.05'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.26,0.76,'1.0'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.31,-0.33,'0.0'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-ylabel('Running Correlations (30 yr windows)'); xlabel('Correlations over 499 yr period');
-title('Correlation percentiles for modeled temperature')
+ylabel(['Running Correlations (',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
+title(['Correlation percentiles for modeled temperature, rcor=',num2str(window),'yrs'])
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,'Plots/quant_plots_ts.jpg')
+saveas(gcf,['Plots/quant_plots_ts_rcor',num2str(window),'yr.jpg'])
 
 % Precip
 
@@ -135,11 +135,11 @@ set(text(0.15,0.06,'0.25'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundC
 set(text(0,-0.28,'0.05'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.26,0.76,'1.0'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.35,-0.40,'0.0'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-ylabel('Running Correlations (30 yr windows)'); xlabel('Correlations over 499 yr period');
-title('Correlation percentiles for modeled precipitation')
+ylabel(['Running Correlations (',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
+title(['Correlation percentiles for modeled precipitation, rcor=',num2str(window),'yrs'])
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,'Plots/quant_plots_pr.jpg')
+saveas(gcf,['Plots/quant_plots_pr_rcor',num2str(window),'yr.jpg'])
 %% Plot of Variability in Correlation
 % Rainfall
 clf;
@@ -225,12 +225,12 @@ plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
 sig_stns = find(nonstat_tsmaprecord>0);
 corr_ts_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
 scatter(corr_ts_3d(sig_stns),ts_runcorr(sig_stns),1,squeeze(nonstat_tsmaprecord(sig_stns)),'k')
-ylabel('Running Correlations (using 30 yr windows)'); xlabel('Correlations over 499 yr period');
+ylabel('Running Correlations (using ',num2str(window),' yr windows)'); xlabel('Correlations over 499 yr period');
 title('Correlation percentiles for modeled temperature')
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,'Plots/scatter(corr_ts,ts_runcorr,nstat_map).jpg')
+saveas(gcf,['Plots/scatter(corr_ts,ts_runcorr,nstat_map)_rcor',num2str(window),'.jpg'])
 
 
 figure; clf; axes; hold on;
@@ -239,9 +239,9 @@ plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
 sig_stns = find(nonstat_prmaprecord>0);
 corr_pr_3d = permute(repmat(corr_pr,[1 1 499]),[3 1 2]);
 scatter(corr_pr_3d(sig_stns),pr_runcorr(sig_stns),1,squeeze(nonstat_prmaprecord(sig_stns)),'k')
-ylabel('Running Correlations (using 30 yr windows)'); xlabel('Correlations over 499 yr period');
+ylabel('Running Correlations (using ',num2str(window),' yr windows)'); xlabel('Correlations over 499 yr period');
 title('Correlation percentiles for modeled precipitation')
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
 set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,'Plots/scatter(corr_pr,pr_runcorr,nstat_map).jpg')
+saveas(gcf,['Plots/scatter(corr_pr,pr_runcorr,nstat_map)_rcor',num2str(window),'.jpg'])

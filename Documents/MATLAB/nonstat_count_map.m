@@ -138,56 +138,57 @@ title('Num of nonstationary stations for temp')
 
 %% Adding Difference in Percentiles Overlay
 
-% subplot(2,1,1)
-% hold on;
-% % [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(pr_pc(1,:,:,:)-pr_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
-% [c,h]=contour(lon,lat,squeeze(abs(mean(pr_pc(1,33:end,:,:)-pr_pc(2,33:end,:,:),2))),[0.1:0.2:0.7],'b');
-% clabel(c,h,'Color','b')
-% hold off;
-% subplot(2,1,2)
-% hold on
-% % [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(ts_pc(1,:,:,:)-ts_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
-% [c,h]=contour(lon,lat,squeeze(abs(mean(ts_pc(1,33:end,:,:)-ts_pc(2,33:end,:,:),2))),[0.1:0.2:0.7],'b');
-% clabel(c,h,'Color','b')
-% hold off;
-% % %% Removing insignificant teleconnections for Temperature
-% % 
-% % sig_chang         e=ones(size(ts_pc,3),size(ts_pc,4));
-% % for i=1:size(ts_pc,3)
-% %     for j=1:size(ts_pc,4)
-% %         if abs(max(ts_pc(1,:,i,j)-ts_pc(2,:,i,j)))<0.1
-% %             sig_change(i,j)=nan; % No significant change
-% %         end
-% %     end
-% % end
-% %% Examining Certain Stations plotting Z-scores
+subplot(2,1,1)
+hold on;
+% [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(pr_pc(1,:,:,:)-pr_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
+[c,h]=contour(lon,lat,double(squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2)))),[0.1:0.2:0.7],'b');
+clabel(c,h,'Color','b')
+hold off;
+subplot(2,1,2)
+hold on
+% [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(ts_pc(1,:,:,:)-ts_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
+[c,h]=contour(lon,lat,double(squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2)))),[0.1:0.2:0.7],'b');
+clabel(c,h,'Color','b')
+hold off;
+
+% %% Removing insignificant teleconnections for Temperature
 % 
-% x_lon = 226; [~,x_ind]= min(abs(lon-x_lon));
-% y_lat = 1; [~,y_ind]= min(abs(lat-y_lat));
-% 
-% load(['Synth_runcorr/',num2str(lon(x_ind)),'E',num2str(lat(y_ind)),'N_syncorr.mat']);
-% load('DataFiles/runcorr.mat');     
-% 
-% spotz_ts = 0.5*log( (1+spot_ts)./(1-spot_ts) );
-% spotz_pr = 0.5*log( (1+spot_pr)./(1-spot_pr) );
-% pr_runcorrz = 0.5*log( (1+pr_runcorr)./(1-pr_runcorr) );
-% ts_runcorrz = 0.5*log( (1+ts_runcorr)./(1-ts_runcorr) );
-% pr_pc_spotz = prctile(spotz_pr,[2.5,97.5]);
-% ts_pc_spotz = prctile(spotz_ts,[2.5,97.5]);
-% 
-% % Plot of percentiles and GFDL runcorrs
-% subplot(2,1,1)
-% plot(pr_pc_spotz'); hold on;
-% plot(squeeze(pr_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
-% hold off;
-% title(['Percentiles of Z scores of Runing correlations of pr at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
-% subplot(2,1,2)
-% plot(ts_pc_spotz'); hold on;
-% plot(squeeze(ts_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
-% hold off;
-% title(['Percentiles of Z scores of Runing correlations of ts at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
-% 
-% 
+% sig_chang         e=ones(size(ts_pc,3),size(ts_pc,4));
+% for i=1:size(ts_pc,3)
+%     for j=1:size(ts_pc,4)
+%         if abs(max(ts_pc(1,:,i,j)-ts_pc(2,:,i,j)))<0.1
+%             sig_change(i,j)=nan; % No significant change
+%         end
+%     end
+% end
+%% Examining Certain Stations plotting Z-scores
+
+x_lon = 226; [~,x_ind]= min(abs(lon-x_lon));
+y_lat = 1; [~,y_ind]= min(abs(lat-y_lat));
+
+load(['Synth_runcorr/',num2str(lon(x_ind)),'E',num2str(lat(y_ind)),'N_syncorr.mat']);
+load('DataFiles/runcorr.mat');     
+
+spotz_ts = 0.5*log( (1+spot_ts)./(1-spot_ts) );
+spotz_pr = 0.5*log( (1+spot_pr)./(1-spot_pr) );
+pr_runcorrz = 0.5*log( (1+pr_runcorr)./(1-pr_runcorr) );
+ts_runcorrz = 0.5*log( (1+ts_runcorr)./(1-ts_runcorr) );
+pr_pc_spotz = prctile(spotz_pr,[2.5,97.5]);
+ts_pc_spotz = prctile(spotz_ts,[2.5,97.5]);
+
+% Plot of percentiles and GFDL runcorrs
+subplot(2,1,1)
+plot(pr_pc_spotz'); hold on;
+plot(squeeze(pr_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
+hold off;
+title(['Percentiles of Z scores of Runing correlations of pr at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
+subplot(2,1,2)
+plot(ts_pc_spotz'); hold on;
+plot(squeeze(ts_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
+hold off;
+title(['Percentiles of Z scores of Runing correlations of ts at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
+
+
 % %% Plotting map of running nonstat
 % clf;
 % for i=1:(length(ts_runcorr(:,1,1))+1-run_wdw-runcorr_wdw)
@@ -196,7 +197,7 @@ title('Num of nonstationary stations for temp')
 %     M(i)=getframe(gcf);
 % end
 % movie2avi(M,'Plots/running_nonstat_ts.avi','FPS',8)
-
+% 
 % %% Plotting map of nonstat time series
 % clf;
 % for i=1:(length(ts_runcorr(:,1,1)))
