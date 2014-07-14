@@ -65,8 +65,8 @@ end
 
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
-load DataFiles/runcorr61yrwdw.mat
-load DataFiles/nonstat_map61yrwdw.mat
+load DataFiles/runcorr91yrwdw.mat
+load DataFiles/nonstat_map91yrwdw.mat
 
 %% Line Quantile Plots (newer version)
 
@@ -225,7 +225,7 @@ plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
 sig_stns = find(nonstat_tsmaprecord>0);
 corr_ts_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
 scatter(corr_ts_3d(sig_stns),ts_runcorr(sig_stns),1,squeeze(nonstat_tsmaprecord(sig_stns)),'k')
-ylabel('Running Correlations (using ',num2str(window),' yr windows)'); xlabel('Correlations over 499 yr period');
+ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
 title('Correlation percentiles for modeled temperature')
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
 set(gcf, 'PaperUnits', 'centimeters');
@@ -239,7 +239,7 @@ plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
 sig_stns = find(nonstat_prmaprecord>0);
 corr_pr_3d = permute(repmat(corr_pr,[1 1 499]),[3 1 2]);
 scatter(corr_pr_3d(sig_stns),pr_runcorr(sig_stns),1,squeeze(nonstat_prmaprecord(sig_stns)),'k')
-ylabel('Running Correlations (using ',num2str(window),' yr windows)'); xlabel('Correlations over 499 yr period');
+ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
 title('Correlation percentiles for modeled precipitation')
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
 set(gcf, 'PaperUnits', 'centimeters'); % May already be default

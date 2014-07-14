@@ -121,35 +121,40 @@ save('DataFiles/nonstat_map.mat','nonstat_prmap','nonstat_tsmap', ...
      'nonstat_tsmaprecord','nonstat_prmaprecord');
  
 %% Plotting Map
+load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map31yrwdw.mat
+NUM_CONTOURS = 10;
+
 subplot(2,1,1);
-contourf(lon,lat,nonstat_prmap,10);
+contourf(lon,lat,nonstat_prmap,NUM_CONTOURS);
 plotworld;
 colorbar;
 caxis([0, 200]);
-colormap(flipud(hot));
-title('Num of nonstationary stations for prec')
+colormap(flipud(hot(NUM_CONTOURS)));
+title(['Num of nonstationary stations for prec, rcor window:',num2str(window),'yrs'])
 subplot(2,1,2);
-contourf(lon,lat,nonstat_tsmap,10);
+contourf(lon,lat,nonstat_tsmap,NUM_CONTOURS);
 plotworld;
 caxis([0, 200]);
 colorbar
-colormap(flipud(hot));
-title('Num of nonstationary stations for temp')
+colormap(flipud(hot(NUM_CONTOURS)));
+title(['Num of nonstationary stations for temp, rcor window:',num2str(window),'yrs'])
 
 %% Adding Difference in Percentiles Overlay
 
 subplot(2,1,1)
 hold on;
 % [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(pr_pc(1,:,:,:)-pr_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
-[c,h]=contour(lon,lat,double(squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2)))),[0.1:0.2:0.7],'b');
+[c,h]=contour(lon,lat,double(squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2)))),[0.1:0.1:0.9],'b');
 clabel(c,h,'Color','b')
 hold off;
 subplot(2,1,2)
 hold on
 % [c,h]=contour(lon,lat,squeeze(max(abs(squeeze(ts_pc(1,:,:,:)-ts_pc(2,:,:,:))))),[0.1:0.1:0.9],'b');
-[c,h]=contour(lon,lat,double(squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2)))),[0.1:0.2:0.7],'b');
+[c,h]=contour(lon,lat,double(squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2)))),[0.1:0.1:0.9],'b');
 clabel(c,h,'Color','b')
 hold off;
+set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/nonstatmap+pc_rcor',num2str(window),'yr.jpg'])
 
 % %% Removing insignificant teleconnections for Temperature
 % 
@@ -163,31 +168,31 @@ hold off;
 % end
 %% Examining Certain Stations plotting Z-scores
 
-x_lon = 226; [~,x_ind]= min(abs(lon-x_lon));
-y_lat = 1; [~,y_ind]= min(abs(lat-y_lat));
-
-load(['Synth_runcorr/',num2str(lon(x_ind)),'E',num2str(lat(y_ind)),'N_syncorr.mat']);
-load('DataFiles/runcorr.mat');     
-
-spotz_ts = 0.5*log( (1+spot_ts)./(1-spot_ts) );
-spotz_pr = 0.5*log( (1+spot_pr)./(1-spot_pr) );
-pr_runcorrz = 0.5*log( (1+pr_runcorr)./(1-pr_runcorr) );
-ts_runcorrz = 0.5*log( (1+ts_runcorr)./(1-ts_runcorr) );
-pr_pc_spotz = prctile(spotz_pr,[2.5,97.5]);
-ts_pc_spotz = prctile(spotz_ts,[2.5,97.5]);
-
-% Plot of percentiles and GFDL runcorrs
-subplot(2,1,1)
-plot(pr_pc_spotz'); hold on;
-plot(squeeze(pr_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
-hold off;
-title(['Percentiles of Z scores of Runing correlations of pr at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
-subplot(2,1,2)
-plot(ts_pc_spotz'); hold on;
-plot(squeeze(ts_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
-hold off;
-title(['Percentiles of Z scores of Runing correlations of ts at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
-
+% x_lon = 226; [~,x_ind]= min(abs(lon-x_lon));
+% y_lat = 1; [~,y_ind]= min(abs(lat-y_lat));
+% 
+% load(['Synth_runcorr/',num2str(lon(x_ind)),'E',num2str(lat(y_ind)),'N_syncorr.mat']);
+% load('DataFiles/runcorr.mat');
+% 
+% spotz_ts = 0.5*log( (1+spot_ts)./(1-spot_ts) );
+% spotz_pr = 0.5*log( (1+spot_pr)./(1-spot_pr) );
+% pr_runcorrz = 0.5*log( (1+pr_runcorr)./(1-pr_runcorr) );
+% ts_runcorrz = 0.5*log( (1+ts_runcorr)./(1-ts_runcorr) );
+% pr_pc_spotz = prctile(spotz_pr,[2.5,97.5]);
+% ts_pc_spotz = prctile(spotz_ts,[2.5,97.5]);
+% 
+% % Plot of percentiles and GFDL runcorrs
+% subplot(2,1,1)
+% plot(pr_pc_spotz'); hold on;
+% plot(squeeze(pr_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
+% hold off;
+% title(['Percentiles of Z scores of Runing correlations of pr at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
+% subplot(2,1,2)
+% plot(ts_pc_spotz'); hold on;
+% plot(squeeze(ts_runcorrz(:,y_ind,x_ind)),'k','LineWidth',3);
+% hold off;
+% title(['Percentiles of Z scores of Runing correlations of ts at ', num2str(x_lon),'E, ',num2str(y_lat),'N']);
+% 
 
 % %% Plotting map of running nonstat
 % clf;
