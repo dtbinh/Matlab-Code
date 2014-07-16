@@ -69,7 +69,7 @@ nonstat_tsmaprecord=zeros(length(n34_ind),length(lat),length(lon),'single');
 nonstat_prmaprecord=zeros(length(n34_ind),length(lat),length(lon),'single');
 pr_pc = nan(2,length(n34_ind),length(lat),length(lon),'single');
 ts_pc = nan(2,length(n34_ind),length(lat),length(lon),'single');
-load('DataFiles/runcorr',num2str(window),'yrwdw.mat');
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
 runcorr_wdw = window; % Running correlation window in the runcorr.mat file
 
 % Limits of box

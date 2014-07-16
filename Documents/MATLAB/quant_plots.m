@@ -65,8 +65,10 @@ end
 
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
-load DataFiles/runcorr91yrwdw.mat
-load DataFiles/nonstat_map91yrwdw.mat
+%% Loading Stuff
+window = 91;
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
+load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
 
 %% Line Quantile Plots (newer version)
 
@@ -78,7 +80,7 @@ bin_sizes = histc(squeeze(sorted_corr),bin);
 current_index = 1; ts_runcorr_quan = nan(7,length(bin_sizes));
 for m=1:length(bin_sizes)
     ts_runcorr_quan(:,m) = quantile(reshape(sorted_ts_runcorr(:,current_index:(current_index-1+bin_sizes(m))),[],1), ...
-                 [0.0,0.05,0.25,0.5,0.75,0.95,1]);
+                 [0.01,0.05,0.25,0.5,0.75,0.95,0.99]);
     current_index = current_index + bin_sizes(m);
 end
 
@@ -97,8 +99,8 @@ set(text(0.1,0.25,'0.75'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundCo
 set(text(0,0,'0.50'),'FontSize',15,'Rotation',40,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.15,0.07,'0.25'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center','Visible','off')
 set(text(0,-0.28,'0.05'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-set(text(0.26,0.76,'1.0'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-set(text(0.31,-0.33,'0.0'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
+set(text(0.26,0.76,'0.99'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
+set(text(0.31,-0.33,'0.01'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 ylabel(['Running Correlations (',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
 title(['Correlation percentiles for modeled temperature, rcor=',num2str(window),'yrs'])
 set(gcf, 'PaperUnits', 'centimeters');
@@ -114,7 +116,7 @@ bin_sizes = histc(squeeze(sorted_corr),bin);
 current_index = 1; pr_runcorr_quan = nan(7,length(bin_sizes));
 for m=1:length(bin_sizes)
     pr_runcorr_quan(:,m) = quantile(reshape(sorted_pr_runcorr(:,current_index:(current_index-1+bin_sizes(m))),[],1), ...
-                 [0.0,0.05,0.25,0.5,0.75,0.95,1.0]);
+                 [0.01,0.05,0.25,0.5,0.75,0.95,0.99]);
     current_index = current_index + bin_sizes(m);
 end
 
@@ -133,8 +135,8 @@ set(text(0.1,0.25,'0.75'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundCo
 set(text(0,0.0,'0.50'),'FontSize',15,'Rotation',40,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.15,0.06,'0.25'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center','Visible','off')
 set(text(0,-0.28,'0.05'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-set(text(0.26,0.76,'1.0'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-set(text(0.35,-0.40,'0.0'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
+set(text(0.26,0.76,'0.99'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
+set(text(0.35,-0.40,'0.01'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 ylabel(['Running Correlations (',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
 title(['Correlation percentiles for modeled precipitation, rcor=',num2str(window),'yrs'])
 set(gcf, 'PaperUnits', 'centimeters');
@@ -226,12 +228,12 @@ sig_stns = find(nonstat_tsmaprecord>0);
 corr_ts_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
 scatter(corr_ts_3d(sig_stns),ts_runcorr(sig_stns),1,squeeze(nonstat_tsmaprecord(sig_stns)),'k')
 ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
-title('Correlation percentiles for modeled temperature')
+title(['Correlation percentiles for modeled temperature - rcor:',num2str(window),'yr'])
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
 saveas(gcf,['Plots/scatter(corr_ts,ts_runcorr,nstat_map)_rcor',num2str(window),'.jpg'])
-
+close;
 
 figure; clf; axes; hold on;
 plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
@@ -240,8 +242,9 @@ sig_stns = find(nonstat_prmaprecord>0);
 corr_pr_3d = permute(repmat(corr_pr,[1 1 499]),[3 1 2]);
 scatter(corr_pr_3d(sig_stns),pr_runcorr(sig_stns),1,squeeze(nonstat_prmaprecord(sig_stns)),'k')
 ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
-title('Correlation percentiles for modeled precipitation')
+title(['Correlation percentiles for modeled precipitation - rcor:',num2str(window),'yr'])
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
 set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
 saveas(gcf,['Plots/scatter(corr_pr,pr_runcorr,nstat_map)_rcor',num2str(window),'.jpg'])
+close;

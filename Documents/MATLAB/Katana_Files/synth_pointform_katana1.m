@@ -27,9 +27,9 @@ tic;
 
 for n=1:1000 % This will take about 6 minutes ??????
     for m=1:24
-        load(['../Data/',num2str(m),'Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat']);
-        ts_series(n,:,:,((m-1)*6+1):(m*6)) = ts_synruncorr;
-        pr_series(n,:,:,((m-1)*6+1):(m*6)) = pr_synruncorr;
+        load(['../Data/',num2str(m),'/Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat']);
+        ts_series(n,:,:,((m-1)*6+1):(m*6)) = ts_synruncorr(:,:,((m-1)*6+1):(m*6));
+        pr_series(n,:,:,((m-1)*6+1):(m*6)) = pr_synruncorr(:,:,((m-1)*6+1):(m*6));
         toc;
     end
 end

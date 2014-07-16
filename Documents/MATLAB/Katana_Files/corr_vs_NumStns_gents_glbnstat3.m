@@ -147,7 +147,7 @@ for NUM_STNS = 3:STN_MAX
     end
     
     save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat'], ...
-             'stn_lat','stn_lon','stn_pr','indice_pool','corr_ts','window');
+             'stn_lat','stn_lon','stn_ts','indice_pool','corr_ts','window');
 
 end
 

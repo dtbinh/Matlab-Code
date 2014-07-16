@@ -389,7 +389,7 @@ subplot(1,3,3)
     corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-    jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
+    jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
     xlim([0,70]); ylim([0,1]); grid on
 %     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
