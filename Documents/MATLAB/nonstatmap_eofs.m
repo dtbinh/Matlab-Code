@@ -58,7 +58,7 @@ window = 31; % The running window in years
 
 % Optional Loading
 
-load('DataFiles/nonstat_map.mat')
+load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 
 %% Formatting for EOFs
 
@@ -67,8 +67,8 @@ NUM_OF_EOFS = 5;
 
 % Probably dont need to do it for our purposes
 
-pr_runcorr_fm = reshape(pr_runcorr(32:end,:,:),size(pr_runcorr(32:end,:,:),1),size(pr_runcorr,2)*size(pr_runcorr,3));
-ts_runcorr_fm = reshape(ts_runcorr(32:end,:,:),size(ts_runcorr(32:end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+pr_runcorr_fm = reshape(pr_runcorr((window+1):end,:,:),size(pr_runcorr((window+1):end,:,:),1),size(pr_runcorr,2)*size(pr_runcorr,3));
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
 tic;
 [eof_pr,PC_pr,expvar_pr] = caleof(pr_runcorr_fm, NUM_OF_EOFS, 1);
 [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
@@ -80,25 +80,25 @@ eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
 
 %% EOF Plots
 figure;
-for n=1:
+for n=1:1
     subplot(2,1,n)
     contourf(lon,lat,squeeze(eof_ts_fm(n,:,:)));
     plotworld;
     caxis([-0.025,0.025])
     colormap(redblue(13))
     caxis([-0.025,0.025])
-    title(['EOF ',num2str(n),' of Temp running correlations, Explained Variance: ',num2str(expvar_ts(n)),'%']);
+    title(['EOF ',num2str(n),' of Temp running correlations, rcor:',num2str(window),'yr, Explained Variance: ',num2str(expvar_ts(n)),'%']);
     subplot(2,3,n+3)
     plot(PC_ts(n,:))
 end
 figure;
-for n=1:3
-    subplot(2,3,n)
+for n=1:1
+    subplot(2,1,n)
     pcolor(lon,lat,squeeze(eof_pr_fm(n,:,:)));
     plotworld;
     colorbar
     colormap(redblue(13))
-    title(['EOF ',num2str(n),' of Precip running correlations, Explained Variance: ',num2str(expvar_pr(n)),'%']);
+    title(['EOF ',num2str(n),' of Precip running correlations, rcor:',num2str(window),'yr, Explained Variance: ',num2str(expvar_pr(n)),'%']);
     subplot(2,3,n+3)
     plot(PC_pr(n,:))
 end

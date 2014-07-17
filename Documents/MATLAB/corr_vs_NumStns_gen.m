@@ -62,7 +62,8 @@ RV_WDW = [15:(499-14)];
 
 %% Beggining of Loop
 GROUP_NAME = 'glb_ts';
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)]; mkdir(DIR_NAME);
+% DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)]; mkdir(DIR_NAME);
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 % load DataFiles/runcorr_eofs.mat
@@ -84,7 +85,14 @@ S_lat = -90; N_lat = 90; W_lon = 0; E_lon = 360; % Global
 
 % Selection from areas with absolute correlation over a certain threshold
 MIN_COR = 0.3;
-CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
+
+% Calibration windows set to being 10 overlapping windows over 499 years
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+% CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
 
 % Changing correlation in correlation matrix so that certain areas are not
 % picked up in the station selection

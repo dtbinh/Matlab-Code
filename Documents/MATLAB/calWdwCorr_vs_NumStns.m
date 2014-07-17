@@ -66,10 +66,16 @@ RV_WDW = [15:(499-14)];
 
 %% Loading proxies
 GROUP_NAME = 'glb_ts';
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
+% DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
 numstnstocompare = [3:70];                                     %%%%%%%%
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
-CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
+% Calibration windows set to being 10 overlapping windows over 499 years
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
 
 %% Beginning the Loop
 for c=1:size(CAL_WDW,1)
