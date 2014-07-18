@@ -1,7 +1,7 @@
 % This script will calculate the range of the error in the calibration windows 
 % for varying station numbers, using staggered windows. It also outputs a
 % mat file containing alot of statistics produced for each method,
-% num_stns, and calibration window. Series 1
+% num_stns, and calibration window. Series 2
 
 % Should look like 10 percentile lines for each calibration window, vs the num_stns.
 
@@ -66,7 +66,7 @@ RV_WDW = [15:(499-14)];
 
 %% Loading proxies
 
-DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_ts'];                                 %%%%%%%
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_pr_nstat_sigpcd_ideal'];                                 %%%%%%%
 numstnstocompare = [3:70];                                     %%%%%%%%
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
 % Calibration windows set to being 10 overlapping windows over 499 years
@@ -77,41 +77,42 @@ for c=0:9
 end
 % CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
 
-all_stn_MRV=nan(max(numstnstocompare), size(CAL_WDW,1), NUM_TRIALS, NUM_YRS,'single');
-all_stn_corr_MRV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_rmse_MRV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_EPC = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
-all_stn_EPC_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
-all_stn_corr_EPC = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_rmse_EPC = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_corr_EPC_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_rmse_EPC_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_CPS = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
-all_stn_CPS_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS, NUM_YRS,'single');
-all_stn_corr_CPS = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_rmse_CPS = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_corr_CPS_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-all_stn_rmse_CPS_RV = nan(max(numstnstocompare), size(CAL_WDW,1),NUM_TRIALS,'single');
-
 %% Beginning the Loop
 for c=1:size(CAL_WDW,1)
+
+all_stn_MRV=nan(max(numstnstocompare), NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_EPC = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
+all_stn_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_EPC = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_EPC = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_corr_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_CPS = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
+all_stn_CPS_RV = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_CPS = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_CPS = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_corr_CPS_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_CPS_RV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+    
     
 for NUM_STNS = numstnstocompare
 
-all_stn_ts=zeros(NUM_TRIALS,NUM_STNS,NUM_YRS);
-load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(NUM_YRS),'/',num2str(NUM_STNS),'stns_1000prox.mat']);
+all_stn_pr=zeros(NUM_TRIALS,NUM_STNS,NUM_YRS);
+load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat']);
 all_stn_lat=stn_lat;
 all_stn_lon=stn_lon;
 
-stn_ts_mn=mean(stn_ts,3); 
-stn_ts_std=squeeze(std(permute(stn_ts,[3,1,2])));
+stn_pr_mn=mean(stn_pr,3); 
+stn_pr_std=squeeze(std(permute(stn_pr,[3,1,2])));
 for n=1:NUM_TRIALS
     for m=1:NUM_STNS
-       all_stn_ts(n,m,:)= single((stn_ts(n,m,:)-stn_ts_mn(n,m))./(stn_ts_std(n,m)));
+       all_stn_pr(n,m,:)= single((stn_pr(n,m,:)-stn_pr_mn(n,m))./(stn_pr_std(n,m)));
     end
 end
 
-clear stn_lat stn_lon stn_ts stn_ts_mn stn_ts_std
+clear stn_lat stn_lon stn_pr stn_pr_mn stn_pr_std
 
 %% McGregor et al 2013 method of Median Running Variances
 
@@ -122,7 +123,7 @@ stn_rmse_MRV = nan(NUM_TRIALS,1);
 for n=1:NUM_TRIALS
     stn_movvar=nan(NUM_STNS,NUM_YRS);
     for m=1:NUM_STNS
-        stn_movvar(m,:) = movingvar(squeeze(all_stn_ts(n,m,:)),VAR_WDW);
+        stn_movvar(m,:) = movingvar(squeeze(all_stn_pr(n,m,:)),VAR_WDW);
     end
     stn_MRV(n,:) = single(median(stn_movvar));
 end
@@ -135,20 +136,20 @@ end
 
 %% McGregor et al 2013 method of Running Variance of the Median
 
-poscorr_all_stn_ts = all_stn_ts;
+poscorr_all_stn_pr = all_stn_pr;
 for n=1:NUM_TRIALS
     for m=1:NUM_STNS
-        if corr(n34_ind, squeeze(all_stn_ts(n,m,:))) < 0
-            poscorr_all_stn_ts(n,m,:) = -all_stn_ts(n,m,:);
+        if corr(n34_ind, squeeze(all_stn_pr(n,m,:))) < 0
+            poscorr_all_stn_pr(n,m,:) = -all_stn_pr(n,m,:);
         end
     end
 end
 
 stn_RVM=nan(NUM_TRIALS, NUM_YRS);
 for n=1:NUM_TRIALS
-    med_ts = median(squeeze(poscorr_all_stn_ts(n,:,:)))';
-    med_ts = (med_ts-mean(med_ts))./std(med_ts);
-    stn_RVM(n,:) = single(movingvar(med_ts,VAR_WDW));
+    med_pr = median(squeeze(poscorr_all_stn_pr(n,:,:)))';
+    med_pr = (med_pr-mean(med_pr))./std(med_pr);
+    stn_RVM(n,:) = single(movingvar(med_pr,VAR_WDW));
 end
 
 % Skill Evaluation
@@ -172,7 +173,7 @@ stn_corr_EPC_RV = nan(NUM_TRIALS,1);
 stn_rmse_EPC_RV = nan(NUM_TRIALS,1);
 
 for n=1:NUM_TRIALS
-    [eof_stn(n,:,:),PC_stn(n,:,CAL_WDW(c,:)),expvar_stn(n,:)] = caleof(squeeze(all_stn_ts(n,:,CAL_WDW(c,:)))', NUM_OF_EOFS, 1);
+    [eof_stn(n,:,:),PC_stn(n,:,CAL_WDW(c,:)),expvar_stn(n,:)] = caleof(squeeze(all_stn_pr(n,:,CAL_WDW(c,:)))', NUM_OF_EOFS, 1);
 end
 
 % Flipping EOFs where necessary so PC is similar to Nino34 correlation
@@ -187,7 +188,7 @@ end
 % normalising
 
 for n=1:NUM_TRIALS
-    temp = squeeze(eof_stn(n,:,:))*squeeze(all_stn_ts(n,:,:));
+    temp = squeeze(eof_stn(n,:,:))*squeeze(all_stn_pr(n,:,:));
     stn_EPC(n,:) = single(squeeze(temp(1,:))./std(squeeze(temp(1,:))));
     stn_EPC_RV(n,:) = single(movingvar(squeeze(stn_EPC(n,:)'),VAR_WDW));
 end
@@ -212,8 +213,8 @@ stn_corr_CPS_RV = nan(NUM_TRIALS,1);
 stn_rmse_CPS_RV = nan(NUM_TRIALS,1);
 
 for n=1:NUM_TRIALS
-    corr_matrix = corr(n34_ind(CAL_WDW(c,:))*ones(1,NUM_STNS), squeeze(all_stn_ts(n,:,CAL_WDW(c,:)))');
-    stn_CPS(n,:) = corr_matrix(1,:)*squeeze(all_stn_ts(n,:,:));
+    corr_matrix = corr(n34_ind(CAL_WDW(c,:))*ones(1,NUM_STNS), squeeze(all_stn_pr(n,:,CAL_WDW(c,:)))');
+    stn_CPS(n,:) = corr_matrix(1,:)*squeeze(all_stn_pr(n,:,:));
 end
 
 % Normalising (it already has mean ~0)
@@ -230,33 +231,32 @@ for n=1:NUM_TRIALS
     stn_rmse_CPS_RV(n) = single(sqrt(mean((n34_ind_RV(RV_WDW)-squeeze(stn_CPS_RV(n,RV_WDW))').^2)));
 end
 
-all_stn_MRV(NUM_STNS,c,:,:) = stn_MRV;
-all_stn_corr_MRV(NUM_STNS,c,:) = stn_corr_MRV;
-all_stn_rmse_MRV(NUM_STNS,c,:) = stn_rmse_MRV;
-all_stn_EPC(NUM_STNS,c,:,:) = stn_EPC;
-all_stn_EPC_RV(NUM_STNS,c,:,:) = stn_EPC_RV;
-all_stn_corr_EPC(NUM_STNS,c,:) = stn_corr_EPC;
-all_stn_rmse_EPC(NUM_STNS,c,:) = stn_rmse_EPC;
-all_stn_corr_EPC_RV(NUM_STNS,c,:) = stn_corr_EPC_RV;
-all_stn_rmse_EPC_RV(NUM_STNS,c,:) = stn_rmse_EPC_RV;
-all_stn_CPS(NUM_STNS,c,:,:) = stn_CPS;
-all_stn_CPS_RV(NUM_STNS,c,:,:) = stn_CPS_RV;
-all_stn_corr_CPS(NUM_STNS,c,:) = stn_corr_CPS;
-all_stn_rmse_CPS(NUM_STNS,c,:) = stn_rmse_CPS;
-all_stn_corr_CPS_RV(NUM_STNS,c,:) = stn_corr_CPS_RV;
-all_stn_rmse_CPS_RV(NUM_STNS,c,:) = stn_rmse_CPS_RV;
+all_stn_MRV(NUM_STNS,:,:) = stn_MRV;
+all_stn_corr_MRV(NUM_STNS,:) = stn_corr_MRV;
+all_stn_rmse_MRV(NUM_STNS,:) = stn_rmse_MRV;
+all_stn_EPC(NUM_STNS,:,:) = stn_EPC;
+all_stn_EPC_RV(NUM_STNS,:,:) = stn_EPC_RV;
+all_stn_corr_EPC(NUM_STNS,:) = stn_corr_EPC;
+all_stn_rmse_EPC(NUM_STNS,:) = stn_rmse_EPC;
+all_stn_corr_EPC_RV(NUM_STNS,:) = stn_corr_EPC_RV;
+all_stn_rmse_EPC_RV(NUM_STNS,:) = stn_rmse_EPC_RV;
+all_stn_CPS(NUM_STNS,:,:) = stn_CPS;
+all_stn_CPS_RV(NUM_STNS,:,:) = stn_CPS_RV;
+all_stn_corr_CPS(NUM_STNS,:) = stn_corr_CPS;
+all_stn_rmse_CPS(NUM_STNS,:) = stn_rmse_CPS;
+all_stn_corr_CPS_RV(NUM_STNS,:) = stn_corr_CPS_RV;
+all_stn_rmse_CPS_RV(NUM_STNS,:) = stn_rmse_CPS_RV;
 toc;
 end
 % That took about an hour per calibration window
-
-end
-
-save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(NUM_YRS),'/tonsofstats.mat'],...
+save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'],...
      'all_stn_MRV','all_stn_corr_MRV','all_stn_rmse_MRV', ...
      'DIR_NAME','CAL_WDW','all_stn_EPC','all_stn_corr_EPC','all_stn_rmse_EPC','all_stn_EPC_RV', ...
      'all_stn_corr_EPC_RV','all_stn_rmse_EPC_RV','all_stn_CPS','all_stn_CPS_RV', ...
      'all_stn_corr_CPS','all_stn_rmse_CPS','all_stn_corr_CPS_RV','all_stn_rmse_CPS_RV','-v7.3','window');
-     
+
+end
+
 % %% Plotting Method
 % DIR_NAME = 'Pseudoproxies/glb';
 % CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];

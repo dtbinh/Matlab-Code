@@ -99,7 +99,7 @@ for c=1:size(CAL_WDW,1)
 for NUM_STNS = numstnstocompare
 
 all_stn_ts=zeros(NUM_TRIALS,NUM_STNS,NUM_YRS);
-load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(CAL_WDW(end)),'/',num2str(NUM_STNS),'stns_1000prox.mat']);
+load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(NUM_YRS),'/',num2str(NUM_STNS),'stns_1000prox.mat']);
 all_stn_lat=stn_lat;
 all_stn_lon=stn_lon;
 
@@ -251,7 +251,7 @@ end
 
 end
 
-save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(CAL_WDW(end)),'/tonsofstats.mat'],...
+save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(1)),'-',num2str(NUM_YRS),'/tonsofstats.mat'],...
      'all_stn_MRV','all_stn_corr_MRV','all_stn_rmse_MRV', ...
      'DIR_NAME','CAL_WDW','all_stn_EPC','all_stn_corr_EPC','all_stn_rmse_EPC','all_stn_EPC_RV', ...
      'all_stn_corr_EPC_RV','all_stn_rmse_EPC_RV','all_stn_CPS','all_stn_CPS_RV', ...
