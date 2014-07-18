@@ -67,7 +67,7 @@ window = 31; % The running window in years
 
 % Optional Loading
 
-load('DataFiles/runcorr.mat')
+load(['DataFiles/runcorr',num2str(window),'yr.mat'])
 
 %% Formatting for EOFs
 
@@ -76,8 +76,8 @@ NUM_OF_EOFS = 5;
 
 % Probably dont need to do it for our purposes
 
-pr_runcorr_fm = reshape(pr_runcorr(32:end,:,:),size(pr_runcorr(32:end,:,:),1),size(pr_runcorr,2)*size(pr_runcorr,3));
-ts_runcorr_fm = reshape(ts_runcorr(32:end,:,:),size(ts_runcorr(32:end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+pr_runcorr_fm = reshape(pr_runcorr((window+1):end,:,:),size(pr_runcorr((window+1):end,:,:),1),size(pr_runcorr,2)*size(pr_runcorr,3));
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
 tic;
 [eof_pr,PC_pr,expvar_pr] = caleof(pr_runcorr_fm, NUM_OF_EOFS, 2);
 [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 2);
