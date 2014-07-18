@@ -1,4 +1,7 @@
-% This script will generate the pseudoproxies for the reconstructions based on several criteria, which is selected
+% This script will produce a plot of the percentiles of correlation
+% corresponding to the number of stations. This is mainly a combination of
+% code in recons.m and station_select.m, but modified for many station
+% output
 % This script needs mexcdf to be installed in matlab to run, the
 % function 'movingvar', 'plotworld', and the folder DataFiles
 
@@ -61,20 +64,19 @@ n34_ind_RV = movingvar(n34_ind,VAR_WDW);
 RV_WDW = [15:(499-14)];
 
 %% Beggining of Loop
-GROUP_NAME = 'glb_ts';
-% DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)]; mkdir(DIR_NAME);
-DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
+
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_pr_nstat_sigpcd'] ; mkdir(DIR_NAME);
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 % load DataFiles/runcorr_eofs.mat
 
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
-lsfrac=nc_varget('DataFiles/sftlf_A1.static.nc','sftlf'); lsfrac(isnan(lsfrac)) = 0 ;
+% lsfrac=nc_varget('DataFiles/sftlf_A1.static.nc','sftlf'); lsfrac(isnan(lsfrac)) = 0 ;
 % Random selection boundaries
 
 % S_lat = -50; N_lat = 15; W_lon = 280; E_lon = 330; % South America
 % S_lat = -40; N_lat = -12; W_lon = 110; E_lon = 160; % Australia
-% S_lat = 15; N_lat = 45; W_lon = 235; E_lon = 270; % USA
+% S_lat = 10; N_lat = 50; W_lon = 235; E_lon = 280; % USA
 S_lat = -90; N_lat = 90; W_lon = 0; E_lon = 360; % Global
 % S_lat = -60; N_lat = 60; W_lon = 0; E_lon = 360; % Nonpolar
 % S_lat = -10; N_lat = 10; W_lon = 100; E_lon = 300; % Tropical
@@ -85,7 +87,6 @@ S_lat = -90; N_lat = 90; W_lon = 0; E_lon = 360; % Global
 
 % Selection from areas with absolute correlation over a certain threshold
 MIN_COR = 0.3;
-
 % Calibration windows set to being 10 overlapping windows over 499 years
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -109,10 +110,10 @@ indice_pool_num = zeros(STN_MAX,1);
 
 for c=1:size(CAL_WDW,1)
 
-    corr_ts = nan(size(ats,2),size(ats,3),'single');
+    corr_pr = nan(size(apr,2),size(apr,3),'single');
     for i=S_bound:N_bound
         for j=W_bound:E_bound
-            corr_ts(i,j) = corr(n34_ind(CAL_WDW(c,:)),ats(CAL_WDW(c,:),i,j));
+            corr_pr(i,j) = corr(n34_ind(CAL_WDW(c,:)),apr(CAL_WDW(c,:),i,j));
         end
     end
     
@@ -127,13 +128,13 @@ for NUM_STNS = 3:STN_MAX
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Conditions - Replace 1 with desired conditions
 
-    indice_pool = find(abs(corr_ts)>MIN_COR & ...
-                       1 & ...
-                       1 & ...
+    indice_pool = find(abs(corr_pr)>MIN_COR & ...
+                       nonstat_prmap > ceil(0.1*(NUM_YRS-window)) & ...
+                       squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) > 0.3 & ...
                        1 & ...
                        1                                                     );
 
-    %  - squeeze(abs(mean(ts_pc(1,33:end,:,:)-ts_pc(2,33:end,:,:),2))) > 0.3
+    %  - squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) > 0.3
     %  - nonstat_tsmap > ceil(0.1*(NUM_YRS-window))
     %  - lsfrac > 0
     %  - squeeze(eof_ts_fm(1,:,:)) > 0.01
@@ -141,7 +142,7 @@ for NUM_STNS = 3:STN_MAX
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for m=1:NUM_TRIALS
 
-        [stn_lat(m,:),stn_lon(m,:)] = ind2sub(size(corr_ts),indice_pool(randperm(length(indice_pool),NUM_STNS)));
+        [stn_lat(m,:),stn_lon(m,:)] = ind2sub(size(corr_pr),indice_pool(randperm(length(indice_pool),NUM_STNS)));
 
         for n=1:NUM_STNS
 
@@ -152,7 +153,8 @@ for NUM_STNS = 3:STN_MAX
     end
     
     save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat'], ...
-             'stn_lat','stn_lon','stn_ts','indice_pool','corr_ts','window');
+             'stn_lat','stn_lon','stn_pr','indice_pool','corr_pr','window');
+
 end
 
 % Writing README file
@@ -169,13 +171,13 @@ fprintf(fid,['E_lon = ',num2str(E_lon),'\n\n']);
 fprintf(fid,'Selection from areas with absolute correlation over a certain threshold.\n');
 fprintf(fid,['MIN_COR = ',num2str(MIN_COR),'\n']);
 fprintf(fid,['CAL_WDW = ',num2str(CAL_WDW(c,1)),':',num2str(CAL_WDW(c,end)),'\n\n']);
-fprintf(fid,'Data is also using temperature only\n');
-% fprintf(fid,'Data is also using precipitation only\n');
+% fprintf(fid,'Data is also using temperature only\n');
+fprintf(fid,'Data is also using precipitation only\n');
 fprintf(fid,'This file was produced using the UNSW Katana Computational Cluster.\n\n');
 fprintf(fid,'Station selection conditions:\n');
-fprintf(fid,'abs(corr_ts)>MIN_COR\n');
-% fprintf(fid,'squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) > 0.3\n');
-% fprintf(fid,'nonstat_tsmap > ceil(0.1*(NUM_YRS-window))\n');
+fprintf(fid,'abs(corr_pr)>MIN_COR\n');
+fprintf(fid,'squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) > 0.3\n');
+fprintf(fid,'nonstat_prmap > ceil(0.1*(NUM_YRS-window))\n');
 % fprintf(fid,'lsfrac > 0\n');
 % fprintf(fid,'Tropical regions have not been included\n');
 % fprintf(fid,'eof_ts_fm2 > 0.01\n');

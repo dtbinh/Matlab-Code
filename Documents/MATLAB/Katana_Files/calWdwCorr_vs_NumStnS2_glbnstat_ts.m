@@ -69,7 +69,13 @@ RV_WDW = [15:(499-14)];
 DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_ts_nstat_sigpcd'];                                 %%%%%%%
 numstnstocompare = [3:70];                                     %%%%%%%%
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
-CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
+% Calibration windows set to being 10 overlapping windows over 499 years
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+% CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
 
 %% Beginning the Loop
 for c=1:size(CAL_WDW,1)
@@ -129,30 +135,30 @@ for n=1:NUM_TRIALS
 end
 
 %% McGregor et al 2013 method of Running Variance of the Median
-
-poscorr_all_stn_ts = all_stn_ts;
-for n=1:NUM_TRIALS
-    for m=1:NUM_STNS
-        if corr(n34_ind, squeeze(all_stn_ts(n,m,:))) < 0
-            poscorr_all_stn_ts(n,m,:) = -all_stn_ts(n,m,:);
-        end
-    end
-end
-
-stn_RVM=nan(NUM_TRIALS, NUM_YRS);
-for n=1:NUM_TRIALS
-    med_ts = median(squeeze(poscorr_all_stn_ts(n,:,:)))';
-    med_ts = (med_ts-mean(med_ts))./std(med_ts);
-    stn_RVM(n,:) = single(movingvar(med_ts,VAR_WDW));
-end
-
-% Skill Evaluation
-stn_corr_RVM = nan(NUM_TRIALS,1);
-stn_rmse_RVM = nan(NUM_TRIALS,1);
-for n=1:NUM_TRIALS
-    stn_corr_RVM(n) = single(corr(squeeze(stn_RVM(n,RV_WDW))',n34_ind_RV(RV_WDW)));
-    stn_rmse_RVM(n) = single(sqrt(mean((n34_ind_RV(RV_WDW)-stn_RVM(n,RV_WDW)').^2)));
-end
+% 
+% poscorr_all_stn_ts = all_stn_ts;
+% for n=1:NUM_TRIALS
+%     for m=1:NUM_STNS
+%         if corr(n34_ind, squeeze(all_stn_ts(n,m,:))) < 0
+%             poscorr_all_stn_ts(n,m,:) = -all_stn_ts(n,m,:);
+%         end
+%     end
+% end
+% 
+% stn_RVM=nan(NUM_TRIALS, NUM_YRS);
+% for n=1:NUM_TRIALS
+%     med_ts = median(squeeze(poscorr_all_stn_ts(n,:,:)))';
+%     med_ts = (med_ts-mean(med_ts))./std(med_ts);
+%     stn_RVM(n,:) = single(movingvar(med_ts,VAR_WDW));
+% end
+% 
+% % Skill Evaluation
+% stn_corr_RVM = nan(NUM_TRIALS,1);
+% stn_rmse_RVM = nan(NUM_TRIALS,1);
+% for n=1:NUM_TRIALS
+%     stn_corr_RVM(n) = single(corr(squeeze(stn_RVM(n,RV_WDW))',n34_ind_RV(RV_WDW)));
+%     stn_rmse_RVM(n) = single(sqrt(mean((n34_ind_RV(RV_WDW)-stn_RVM(n,RV_WDW)').^2)));
+% end
 %% Braganza et al 2009 method of EOF construction
 
 NUM_OF_EOFS = 3;
@@ -250,168 +256,3 @@ save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/to
      'all_stn_corr_CPS','all_stn_rmse_CPS','all_stn_corr_CPS_RV','all_stn_rmse_CPS_RV','-v7.3');
 
 end
-
-% %% Plotting Method
-% DIR_NAME = 'Pseudoproxies/glb';
-% CAL_WDW = [1:50; 51:100; 101:150; 151:200; 201:250; 251:300; 301:350; 351:400; 401:450; 450:499];
-% temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-% temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-% temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-% 
-% for c=1:size(CAL_WDW,1)
-%     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
-%      'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV')
-%     temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
-%     temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
-%     temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
-% end
-% method = 'all';
-% 
-% % Plotting EPC
-% 
-% if strcmp(method,'EPC') | strcmp(method,'all')
-% subplot(1,3,1)
-%     corr_RV_qn = quantile(temp_corr_EPC_RV,[.05 .5 .95], 3);
-% %     clf; axes; hold on; rgbmap = jet(size(CAL_WDW,1)); rgbmap(2:3,:) = rgbmap(1:2,:); rgbmap(1,:) = [0 0 0];
-% %     HA = nan(size(CAL_WDW,1),3);
-% %     for c=1:size(CAL_WDW,1)
-% %         HA(c,1) = plot(squeeze(corr_RV_qn(:,c,1)),'-v');
-% %         set(HA(c,1),'Color',rgbmap(c,:),'MarkerFaceColor',rgbmap(c,:));
-% %         HA(c,2) = plot(squeeze(corr_RV_qn(:,c,3)),'-^');
-% %         set(HA(c,2),'Color',rgbmap(c,:),'MarkerFaceColor',rgbmap(c,:));
-% %     end
-% %     for c=1:size(CAL_WDW,1)
-% %         HA(c,3) = plot(squeeze(corr_RV_qn(:,c,2)),'LineWidth',2);
-% %         set(HA(c,3),'Color',rgbmap(c,:));
-% %     end
-% %     title([strrep(DIR_NAME(15:end),'_','\_'), ' - Correlation percentiles of EPC\_RV for each calibration window'])
-% %     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
-% %     grid on
-% %     ylim([0 1])
-% %     legend([HA(1:end,3);HA(1,1);HA(1,2)],'Year 1-50 median','Year 51-100 median','Year 101-150 median','Year 151-200 median',...
-% %                        'Year 201-250 median','Year 251-300 median','Year 301-350 median','Year 351-400 median',...
-% %                        'Year 401-450 median','Year 450-499 median', '5^t^h Percentile','95^t^h Percentile',...
-% %                        'location','southeast' );
-% 
-% % Range Plotting
-%     
-%     corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-%     corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-%     corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
-% %     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
-%     xlim([0,70]); ylim([0,1]); grid on
-%     ylabel('Correlation')
-%     title(['EPC\_RV'])
-%     
-% %     saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_epc.jpg'])
-% end
-% 
-% if strcmp(method,'CPS') | strcmp(method,'all') 
-% % Plotting CPS
-% subplot(1,3,2)
-%     corr_RV_qn = quantile(temp_corr_CPS_RV,[.05 .5 .95], 3);
-% %     clf; axes; hold on; rgbmap = jet(size(CAL_WDW,1)); rgbmap(2:3,:) = rgbmap(1:2,:); rgbmap(1,:) = [0 0 0];
-% %     HA = nan(size(CAL_WDW,1),3);
-% %     for c=1:size(CAL_WDW,1)
-% %         HA(c,1) = plot(squeeze(corr_RV_qn(:,c,1)),'-v');
-% %         set(HA(c,1),'Color',rgbmap(c,:),'MarkerFaceColor',rgbmap(c,:));
-% %         HA(c,2) = plot(squeeze(corr_RV_qn(:,c,3)),'-^');
-% %         set(HA(c,2),'Color',rgbmap(c,:),'MarkerFaceColor',rgbmap(c,:));
-% %     end
-% %     for c=1:size(CAL_WDW,1)
-% %         HA(c,3) = plot(squeeze(corr_RV_qn(:,c,2)),'LineWidth',2);
-% %         set(HA(c,3),'Color',rgbmap(c,:));
-% %     end
-% %     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
-% %     grid on
-% %     ylim([0 1])
-% %     legend([HA(1:end,3);HA(1,1);HA(1,2)],'Year 1-50 median','Year 51-100 median','Year 101-150 median','Year 151-200 median',...
-% %                        'Year 201-250 median','Year 251-300 median','Year 301-350 median','Year 351-400 median',...
-% %                        'Year 401-450 median','Year 450-499 median', '5^t^h Percentile','95^t^h Percentile',...
-% %                        'location','southeast' );
-%                    
-%     corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-%     corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-%     corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
-% %     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
-%     xlim([0,70]); ylim([0,1]); grid on
-%     xlabel('Number of Stations included in reconstruction');
-%     
-%     title(['CPS\_RV'])
-% %     saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'_cps.jpg'])
-% end
-%     
-% if strcmp(method,'MRV') | strcmp(method,'all')
-% % Plotting MRV
-% subplot(1,3,3)
-%     corr_RV_qn = quantile(temp_corr_MRV,[.05 .5 .95], 3);
-% %     clf; axes; hold on; rgbmap = jet(size(CAL_WDW,1)); rgbmap(2:3,:) = rgbmap(1:2,:); rgbmap(1,:) = [0 0 0];
-% %     HA = nan(size(CAL_WDW,1),3);
-% %     for c=1:size(CAL_WDW,1)
-% %         HA(c,1) = plot(squeeze(corr_RV_qn(:,c,1)),'-v');
-% %         set(HA(c,1),'Color',rgbmap(c,:),'MarkerFaceColor',rgbmap(c,:));
-% %         HA(c,2) = plot(squeeze(corr_RV_qn(:,c,3)),'-^');
-% %         set(HA(c,2),'Color',rgbmap(c,:),'MarkerFaceColor',rgbmap(c,:));
-% %     end
-% %     for c=1:size(CAL_WDW,1)
-% %         HA(c,3) = plot(squeeze(corr_RV_qn(:,c,2)),'LineWidth',2);
-% %         set(HA(c,3),'Color',rgbmap(c,:));
-% %     end
-% %     title([strrep(DIR_NAME(15:end),'_','\_'), ' - Correlation percentiles of MRV for each calibration window proxy group'])
-% %     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
-% %     grid on
-% %     ylim([0 1])
-% %     legend([HA(1:end,3);HA(1,1);HA(1,2)],'Year 1-50 median','Year 51-100 median','Year 101-150 median','Year 151-200 median',...
-% %                        'Year 201-250 median','Year 251-300 median','Year 301-350 median','Year 351-400 median',...
-% %                        'Year 401-450 median','Year 450-499 median', '5^t^h Percentile','95^t^h Percentile',...
-% %                        'location','southeast' );
-% %     clf;
-% %     HA(1) = plot(squeeze(corr_RV_qn(:,1)),'-kv'); hold on;
-% %     set(HA(1),'MarkerFaceColor','k');
-% %     HA(2) = plot(squeeze(corr_RV_qn(:,3)),'-k^');
-% %     set(HA(2),'MarkerFaceColor','k');
-% %     HA(3) = plot(squeeze(corr_RV_qn(:,2)),'k','LineWidth',2); hold off;
-% %
-% %     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
-% %     grid on
-% %     ylim([0 1])
-% %     legend('5^t^h Percentile','95^t^h Percentile','Median',...
-% %                        'location','southeast' );
-% 
-%     corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-%     corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-%     corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-%     jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','g','k','add',0.5);
-%     legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast')
-%     xlim([0,70]); ylim([0,1]); grid on
-% %     xlabel('Number of Stations included in reconstruction'); ylabel('Correlation')
-%         
-%     title(['MRV'])
-% end
-% 
-% if strcmp(method,'all')
-% %     close
-%     suptitle([strrep(DIR_NAME(15:end),'_','\_'),' - Ranges of Correlation percentiles'])
-%     legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','southeast');
-%     set(gcf, 'PaperPosition', [0 0 28 19]);
-%     for i=1:3
-% %         subplot(1,3,i)
-%         set(gca, 'FontSize',14, ...
-%             'LineWidth', 1.0, ...
-%             'Box', 'on', ...
-%             'YTick', [0:0.1:1]); 
-%     end
-%         
-%         
-%         
-%     set(legendH, 'FontSize',10);
-%     saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',DIR_NAME(15:end),'.jpg'])
-% end
