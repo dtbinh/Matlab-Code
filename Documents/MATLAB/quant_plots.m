@@ -66,7 +66,7 @@ end
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 %% Loading Stuff
-window = 31;
+window = 31; NUM_YRS = 499;
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
 
@@ -225,8 +225,8 @@ figure; clf; axes; hold on;
 plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
 plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
 sig_stns = find(nonstat_tsmaprecord>0);
-corr_ts_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
-scatter(corr_ts_3d(sig_stns),ts_runcorr(sig_stns),1,squeeze(nonstat_tsmaprecord(sig_stns)),'k')
+corr_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
+scatter(corr_3d(sig_stns),ts_runcorr(sig_stns),1,squeeze(nonstat_tsmaprecord(sig_stns)),'k')
 ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
 title(['Correlation percentiles for modeled temperature - rcor:',num2str(window),'yr'])
 grid on; axis equal; xlim([-1 1]); ylim([-1 1]);
@@ -259,8 +259,8 @@ for window=[31,61,91]
     plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
     plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
     sig_stns = find(nonstat_tsmaprecord>0);
-    corr_ts_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
-    data1 = corr_ts_3d(sig_stns);
+    corr_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
+    data1 = corr_3d(sig_stns);
     data2 = ts_runcorr(sig_stns);
     values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1}); % dont know what the 51s are
     colormap(flipud(gray))
@@ -297,6 +297,76 @@ for window=[31,61,91]
     set(gcf, 'PaperUnits', 'centimeters'); % May already be default
     set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
     saveas(gcf,['Plots/hist3(corr_pr_3d,pr_runcorr)_rcor',num2str(window),'.jpg'])
+    xlim([-1,1]); ylim([-1, 1]); hold off;
+    close;
+    
+end
+
+%% Plotting Density plot with other conditions
+
+for window=[31,61,91]
+    load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
+    load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
+
+    clf; axes; hold on;
+    plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
+    plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
+    
+    nonstat_map_ind = find(nonstat_tsmap > ceil(0.1*(NUM_YRS-window)) & ...
+        1 );
+    % squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) > 0.3
+    [a,b] = ind2sub(size(nonstat_tsmap),nonstat_map_ind);
+    corr_3d = permute(repmat(corr_ts,[1 1 499]),[3,1,2]);
+    runcr = nan(size(ts_runcorr)); corr_3d_fmt = nan(size(corr_3d));
+    for i=1:length(a)
+        indices = find(nonstat_tsmaprecord(:,a(i),b(i)));
+        corr_3d_fmt(indices,a(i),b(i)) = corr_3d(indices,a(i),b(i));
+        runcr(indices,a(i),b(i)) = ts_runcorr(indices,a(i),b(i));
+    end
+    data1 = corr_3d_fmt;
+    data2 = runcr;
+    values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1});
+    colormap(flipud(gray))
+    caxis([0,100])
+    pcolor(-1:0.01:1,-1:0.01:1,values'); shading flat
+    colorbar
+    axis equal
+    xlim([-1,1]); ylim([-1, 1]);
+    ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
+    title(['Correlation percentiles for modeled temperature - rcor:',num2str(window),'yr'])
+    set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+    saveas(gcf,['Plots/hist3(corr_ts_3d,ts_runcorr)_rcor_nstat',num2str(window),'.jpg'])
+    xlim([-1,1]); ylim([-1, 1]); hold off;
+
+    clf; axes; hold on;
+    plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
+    plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
+    nonstat_map_ind = find(nonstat_prmap > ceil(0.1*(NUM_YRS-window)) & ...
+        1 );
+    % squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) > 0.3
+    [a,b] = ind2sub(size(nonstat_prmap),nonstat_map_ind);
+    corr_3d = permute(repmat(corr_pr,[1 1 499]),[3,1,2]);
+    runcr = nan(size(pr_runcorr)); corr_3d_fmt = nan(size(corr_3d));
+    for i=1:length(a)
+        indices = find(nonstat_prmaprecord(:,a(i),b(i)));
+        corr_3d_fmt(indices,a(i),b(i)) = corr_3d(indices,a(i),b(i));
+        runcr(indices,a(i),b(i)) = pr_runcorr(indices,a(i),b(i));
+    end
+    data1 = corr_3d_fmt;
+    data2 = runcr;
+    values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1});
+    colormap(flipud(gray))
+    caxis([0,100])
+    pcolor(-1:0.01:1,-1:0.01:1,values'); shading flat
+    colorbar
+    axis equal
+    xlim([-1,1]); ylim([-1, 1]);
+    ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
+    title(['Correlation percentiles for modeled precipitation - rcor:',num2str(window),'yr'])
+    set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+    saveas(gcf,['Plots/hist3(corr_pr_3d,pr_runcorr)_rcor_nstat',num2str(window),'.jpg'])
     xlim([-1,1]); ylim([-1, 1]); hold off;
     close;
     
