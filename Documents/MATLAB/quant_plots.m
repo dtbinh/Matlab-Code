@@ -66,7 +66,7 @@ end
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 %% Loading Stuff
-window = 91;
+window = 31;
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
 
@@ -248,3 +248,56 @@ set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
 saveas(gcf,['Plots/scatter(corr_pr,pr_runcorr,nstat_map)_rcor',num2str(window),'.jpg'])
 close;
+
+%% Plotting Density plot 
+
+for window=[31,61,91]
+    load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
+    load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
+
+    clf; axes; hold on;
+    plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
+    plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
+    sig_stns = find(nonstat_tsmaprecord>0);
+    corr_ts_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
+    data1 = corr_ts_3d(sig_stns);
+    data2 = ts_runcorr(sig_stns);
+    values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1}); % dont know what the 51s are
+    colormap(flipud(gray))
+    caxis([0,200])
+    % imagesc(values)
+    pcolor(-1:0.01:1,-1:0.01:1,values'); shading flat
+    colorbar
+    axis equal
+    xlim([-1,1]); ylim([-1, 1]);
+    ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
+    title(['Correlation percentiles for modeled temperature - rcor:',num2str(window),'yr'])
+    set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+    saveas(gcf,['Plots/hist3(corr_ts_3d,ts_runcorr)_rcor',num2str(window),'.jpg'])
+    xlim([-1,1]); ylim([-1, 1]); hold off;
+
+    clf; axes; hold on;
+    plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
+    plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
+    sig_stns = find(nonstat_prmaprecord>0);
+    corr_pr_3d = permute(repmat(corr_pr,[1 1 499]),[3 1 2]);
+    data1 = corr_pr_3d(sig_stns);
+    data2 = pr_runcorr(sig_stns); 
+    values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1}); % dont know what the 51s are
+    colormap(flipud(gray))
+    caxis([0,200])
+    % imagesc(values)
+    pcolor(-1:0.01:1,-1:0.01:1,values'); shading flat
+    colorbar
+    axis equal
+    xlim([-1,1]); ylim([-1, 1]);
+    ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel('Correlations over 499 yr period');
+    title(['Correlation percentiles for modeled precipitation - rcor:',num2str(window),'yr'])
+    set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+    set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+    saveas(gcf,['Plots/hist3(corr_pr_3d,pr_runcorr)_rcor',num2str(window),'.jpg'])
+    xlim([-1,1]); ylim([-1, 1]); hold off;
+    close;
+    
+end

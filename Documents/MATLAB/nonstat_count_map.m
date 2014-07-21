@@ -253,15 +253,3 @@ end
 plotworld; hold on; run_hnd=scatter(lon(js), lat(is),'r.'); mean_hnd=scatter(lon(js2),lat(is2),'b.');
 xlim([0,360]); ylim([-90,90]); hold off;
 legend([run_hnd, mean_hnd],'abs(runcorr) > 0.3','corr\_ts > 0.3')
-
-%% Plotting Density plot 
-
-
-% or use scatplot (need to download and install though)
-data1 = randn(1,1e5); %// example data
-data2 = randn(1,1e5) + .5*data1; %// example data correlated to above
-values = hist3([data1(:) data2(:)],[51 51]); % dont know what the 51s are
-imagesc(values)
-colorbar
-axis equal
-axis xy
