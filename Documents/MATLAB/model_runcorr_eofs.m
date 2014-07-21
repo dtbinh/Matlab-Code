@@ -67,7 +67,7 @@ window = 31; % The running window in years
 
 % Optional Loading
 
-load(['DataFiles/runcorr',num2str(window),'yr.mat'])
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
 
 %% Formatting for EOFs
 
@@ -87,7 +87,7 @@ toc;
 eof_pr_fm = reshape(eof_pr,NUM_OF_EOFS,size(pr_runcorr,2),size(pr_runcorr,3));
 eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
 
-%% EOF Plots
+%% EOF and PC Plots
 figure;
 for n=1:NUM_OF_EOFS
     subplot(NUM_OF_EOFS,2,2*n-1)
@@ -101,17 +101,71 @@ for n=1:NUM_OF_EOFS
     plot(PC_ts(n,:))
 end
 figure;
-for n=1:3
-    subplot(2,3,n)
-    pcolor(lon,lat,squeeze(eof_pr_fm(n,:,:)));
+for n=1:NUM_OF_EOFS
+    subplot(NUM_OF_EOFS,2,2*n-1)
+    contourf(lon,lat,squeeze(eof_pr_fm(n,:,:)));
     plotworld;
-    colorbar
-    colormap(redblue(13))
-    title(['EOF ',num2str(n),' of Precip running correlations, Explained Variance: ',num2str(expvar_pr(n)),'%']);
-    subplot(2,3,n+3)
+    caxis([-0.025,0.025])
+    colormap(redblue(13)); colorbar;
+    caxis([-0.025,0.025])
+    title(['EOF ',num2str(n),' of Prec running correlations, Explained Variance: ',num2str(expvar_pr(n)),'%']);
+    subplot(NUM_OF_EOFS,2,2*n)
     plot(PC_pr(n,:))
 end
 
+%% EOF1 Plots of all windows
+THE_EOF = 10;
+NUM_OF_EOFS = 10;
+for window = [31,61,91]
+    load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
+    pr_runcorr_fm = reshape(pr_runcorr((window+1):end,:,:),size(pr_runcorr((window+1):end,:,:),1),size(pr_runcorr,2)*size(pr_runcorr,3));
+    ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+    [eof_pr,PC_pr,expvar_pr] = caleof(pr_runcorr_fm, NUM_OF_EOFS, 2);
+    [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 2);
+    eof_pr_fm = reshape(eof_pr,NUM_OF_EOFS,size(pr_runcorr,2),size(pr_runcorr,3));
+    eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+    subplot(3,2,2*floor((window/30))-1)
+    contourf(lon,lat,squeeze(eof_ts_fm(1,:,:)));
+    plotworld;
+    caxis([-0.025,0.025])
+    colormap(redblue(13)); colorbar;
+    caxis([-0.025,0.025])
+    title(['EOF ',num2str(THE_EOF),' of Temp, rcor=',num2str(window),'yr, Explained Variance: ',num2str(expvar_ts(THE_EOF)),'%']);
+    subplot(3,2,2*floor((window/30)));
+    contourf(lon,lat,squeeze(eof_pr_fm(1,:,:)));
+    plotworld;
+    caxis([-0.025,0.025])
+    colormap(redblue(13)); colorbar;
+    caxis([-0.025,0.025])
+    title(['EOF ',num2str(THE_EOF),' of Prec, rcor=',num2str(window),'yr, Explained Variance: ',num2str(expvar_pr(THE_EOF)),'%']);
+end
+
+
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 28 19]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/eof',num2str(THE_EOF),'_rcor_pr&ts.jpg'])
+
+% Explained variance plots
+for window = [31,61,91]
+    load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
+    pr_runcorr_fm = reshape(pr_runcorr((window+1):end,:,:),size(pr_runcorr((window+1):end,:,:),1),size(pr_runcorr,2)*size(pr_runcorr,3));
+    ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+    [eof_pr,PC_pr,expvar_pr] = caleof(pr_runcorr_fm, NUM_OF_EOFS, 2);
+    [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 2);
+    eof_pr_fm = reshape(eof_pr,NUM_OF_EOFS,size(pr_runcorr,2),size(pr_runcorr,3));
+    eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+    subplot(3,2,2*floor((window/30))-1)
+    plot(expvar_ts)
+    grid on; ylim([0,40])
+    title(['EOF Explained variance of Temp, rcor=',num2str(window),'yr']);
+    subplot(3,2,2*floor((window/30)));
+    plot(expvar_pr)
+    title(['EOF Explained variance of Prec, rcor=',num2str(window),'yr']);
+    grid on; ylim([0,40])
+end
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/eof_expvar_rcor_pr&ts.jpg'])
 
 %% EOF over correlation
 
