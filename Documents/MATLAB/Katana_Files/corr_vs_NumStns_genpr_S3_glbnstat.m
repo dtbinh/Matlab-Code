@@ -59,7 +59,7 @@ n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
-window = 31; % The running window in years
+% window = 31; % The running window in years
 n34_ind_RV = movingvar(n34_ind,VAR_WDW);
 RV_WDW = [15:(499-14)];
 
