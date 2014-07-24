@@ -151,7 +151,7 @@ saveas(gcf,['Plots/calWdwCorr_vs_NumStns_S2_',GROUP_NAME,num2str(window),'yr.jpg
 close
 
 %% Series 3 Proxies Plotting
-DIR_NAME = [DIR_NAME,'_ideal']
+DIR_NAME = [DIR_NAME,'_ideal'];
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9

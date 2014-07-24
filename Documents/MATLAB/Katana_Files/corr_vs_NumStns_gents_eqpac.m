@@ -65,7 +65,7 @@ RV_WDW = [15:(499-14)];
 
 %% Beggining of Loop
 
-DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_ts_eqpac'] ; mkdir(DIR_NAME);
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/eqpac_ts'] ; mkdir(DIR_NAME);
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 % load DataFiles/runcorr_eofs.mat

@@ -139,6 +139,8 @@ colorbar
 colormap(flipud(hot(NUM_CONTOURS)));
 title(['Num of nonstationary stations for temp, rcor window:',num2str(window),'yrs'])
 
+% pcolor(lon,lat,double(nonstat_tsmap)); plotworld; colorbar; caxis([0,200]); colormap(flipud(hot));
+
 %% Adding Difference in Percentiles Overlay
 
 subplot(2,1,1)
