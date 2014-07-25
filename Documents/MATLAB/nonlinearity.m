@@ -55,10 +55,10 @@ clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file
 % ats_n = (ats(:,1,1)./std(ats(:,1,1)));
 % apr_n = (apr(:,1,1)./std(apr(:,1,1)));
 % n34_ind_n = std((n34_ind./std(n34_ind)));
-% [sorted,sort_ind] = sort(squeeze(n34_ind))
-[~,y]= min(abs(lat--20));
-[~,x]= min(abs(lon-276));
-scatter(n34_ind,squeeze(apr(:,y,x)));
+[sorted,sort_ind] = sort(squeeze(n34_ind));
+[~,y]= min(abs(lat--20)); y=45;
+[~,x]= min(abs(lon-276)); x=70;
+scatter(n34_ind,squeeze(ats(:,y,x)));
 % xlim([-3,3]);
 % ylim([-2,5]*10^-5);
 % xlabel('Nino3.4 Index'); ylabel('ats');
@@ -82,20 +82,45 @@ colorbar;
 
 [sorted,sort_ind] = sort(squeeze(n34_ind));
 plsd = nan(size(squeeze(ats(1,:,:)))); % Phase linear slope difference
-
+nina_lincoef = nan(2,90,144); nino_lincoef = nan(2,90,144);
 for i=1:length(lat)
     for j=1:length(lon)
         a_sorted = squeeze(ats(sort_ind,i,j));
         middle = find(sorted>0,1);
-        nina_lincoef = polyfit(sorted(1:middle-1),a_sorted(1:middle-1),1);
-        nino_lincoef = polyfit(sorted(middle:end),a_sorted(middle:end),1);
-        plsd(i,j) = nino_lincoef(1)-nina_lincoef(1);
+        nina_linco = polyfit(sorted(1:middle-1),a_sorted(1:middle-1),1);
+        nino_linco = polyfit(sorted(middle:end),a_sorted(middle:end),1);
+        nina_lincoef(:,i,j) = nina_linco; nino_lincoef(:,i,j) = nino_linco;
+        plsd(i,j) = nino_linco(1)-nina_linco(1);
     end
 end
 
-[c,h] = contour(lon,lat,plsd,10,'b'); plotworld; colorbar; %colormap(b2r(-2,2));
+[c,h] = contourf(lon,lat,plsd,10,'b'); plotworld; colorbar; %colormap(redblue(13));
 %clabel(c,h,'Color','b')
 title('Difference between linear fit slopes of El Nino and La Nina (nino-nina) (temp)');
+
+subplot(2,1,1)
+pcolor(lon,lat,nino_lincoef); plotworld;
+title('n34>0 regression coefficient')
+subplot(2,1,2)
+pcolor(lon,lat,nina_lincoef); plotworld;
+title('n34<0 regression coefficient')
+colormap(b2r(-1.5,1.5))
+% colormap(b2r(-5e-5,5e-5))
+
+%% Making ella temperature series
+
+ella_ts = nan(499,90,144);
+for i=1:length(lat)
+    for j=1:length(lon)
+        el_ind = find(n34_ind>=0);
+        la_ind = find(n34_ind<0);
+        ella_ts(el_ind,i,j) = n34_ind(el_ind)*nino_lincoef(1,i,j)+nino_lincoef(2,i,j);
+        ella_ts(la_ind,i,j) = n34_ind(la_ind)*nina_lincoef(1,i,j)+nina_lincoef(2,i,j);
+    end
+end
+        
+save('DataFiles/ella_ts.mat', 'ella_ts')    
+        
 %% Plotting individual points
 
 [~,y]= min(abs(lat-1));

@@ -75,7 +75,7 @@ load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
 % Temp
 bin = -1.0:0.02:1.0;
 [sorted_corr sorted_corr_ind] = sort(corr_ts(:));
-sorted_ts_runcorr = ts_runcorr(:,sorted_corr_ind);
+sorted_ts_runcorr = ts_runcorr(:,sorted_corr_ind); % This will need to be checked
 bin_sizes = histc(squeeze(sorted_corr),bin);
 current_index = 1; ts_runcorr_quan = nan(7,length(bin_sizes));
 for m=1:length(bin_sizes)
@@ -314,6 +314,8 @@ for window=[31,61,91]
     
     nonstat_map_ind = find(nonstat_tsmap > ceil(0.1*(NUM_YRS-window)) & ...
         1 );
+    nonstat_map_ind = (1:length(nonstat_tsmap(:)))';
+    % nonstat_tsmap > ceil(0.1*(NUM_YRS-window))
     % squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) > 0.3
     [a,b] = ind2sub(size(nonstat_tsmap),nonstat_map_ind);
     corr_3d = permute(repmat(corr_ts,[1 1 499]),[3,1,2]);

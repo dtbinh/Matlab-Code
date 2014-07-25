@@ -12,7 +12,7 @@ numstnstocompare = 70; NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
 %% Plotting
 for window = [31, 61,91]
 % window = 61;
-GROUP_NAME = 'glb_pr_nstat_sigpcd';
+GROUP_NAME = 'glb_ts_eqpac';
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 %% Series 1 Proxies plotting
