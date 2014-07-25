@@ -40,7 +40,7 @@ window = 31;
 %% Calculating Running Correlations
 if ~exist(['../DataFiles/ella_runcorr31yrwdw.mat'],'file')
 % Limits of box to calculate corr coefs
-S_lat = -20; N_lat = 20; W_lon = 140; E_lon = 300;
+S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
 [~,S_bound]= min(abs(lat-S_lat));
 [~,N_bound]= min(abs(lat-N_lat));
 [~,W_bound]= min(abs(lon-W_lon));
@@ -94,9 +94,11 @@ end
 assert(S_lat == -20);
 %% Calculating the Synthetic Series
 
+ts_series = zeros(1000,499,90,144,'single');
 mkdir('../Data/ella_Synth_Data')
+mkdir(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/'])
 for n=1:1000
-    tic;
+    toc;
     eta_nu = randn(length(n34_ind),1);
     nu_ts=zeros(length(n34_ind),size(ats,2),size(ats,3),'single');
     nu_ts(1,:,:)=NaN;
@@ -110,42 +112,20 @@ for n=1:1000
     end
     
    save(['../Data/ella_Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','eta_nu')
-   toc;
-end
-display('ella_synth_data made');
-assert(S_lat == -20);
-%% Calculating running correlations from SYNTHETIC data
-tic;
-mkdir(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/'])
-for n=1:1000
-
-load(['/srv/scratch/z3372730/Data/ella_Synth_Data/run',num2str(n),'syn.mat'])
-
-% USE IF OLD FILES EXIST ALREADY
-if  ~exist(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'file')
-    ts_synruncorr=NaN(size(nu_ts),'single');
-else
-    load(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'])
-end
-
-% Running Correlation of Temperature
-for i=S_bound:N_bound
-    for j=W_bound:E_bound
-        ts_synruncorr(:,i,j)=movingCorrelation([squeeze(nu_ts(:,i,j)),n34_ind],window,2);
-        % Note that this running correlation places the value after the window
+   
+    % Running Correlation of Temperature
+    for i=S_bound:N_bound
+        for j=W_bound:E_bound
+            ts_synruncorr(:,i,j)=movingCorrelation([squeeze(nu_ts(:,i,j)),n34_ind],window,2);
+            % Note that this running correlation places the value after the window
+        end
     end
+    save(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','window');
+    ts_series(n,:,:,:) = ts_synruncorr;
+    toc;
 end
-
-save(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','window');
-	
-toc;
-end
+display('ella_synth_data and runcorr made');
 assert(S_lat == -20);
-display('ella_synth_runcorr made')
-
-ts_series = zeros(1000,499,90,144,'single');
-tic;
-        load(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat']);
 
 mkdir(['../Data/ella_Synth_pointform/',num2str(window),'yrWindow/']);
 for i=W_bound:E_bound
@@ -153,7 +133,7 @@ for i=W_bound:E_bound
         spot_ts = ts_series(:,:,j,i);
         spot_pr = pr_series(:,:,j,i);
         save(['../Data/ella_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
-            'spot_ts','spot_pr','window');
+            'spot_ts','window');
     end
 end
 
