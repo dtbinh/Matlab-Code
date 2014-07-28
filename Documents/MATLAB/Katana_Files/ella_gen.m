@@ -38,7 +38,7 @@ n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
 window = 31;
 
 %% Calculating Running Correlations
-if ~exist(['../DataFiles/ella_runcorr31yrwdw.mat'],'file')
+% if ~exist('../DataFiles/ella_runcorr31yrwdw.mat','file')
 % Limits of box to calculate corr coefs
 S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
 [~,S_bound]= min(abs(lat-S_lat));
@@ -46,92 +46,99 @@ S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
 [~,W_bound]= min(abs(lon-W_lon));
 [~,E_bound]= min(abs(lon-E_lon));
 
-% Running Correlation of Temperature
-ts_runcorr=nan(size(ats));
-for i=S_bound:N_bound
-    for j=W_bound:E_bound
-	ts_runcorr(:,i,j)=movingCorrelation([squeeze(ats(:,i,j)),n34_ind],window,2);
-	% Note that this running correlation places the value after the window
-    end
-end
-
-save(['DataFiles/ella_runcorr',num2str(window),'yrwdw.mat'],'ts_runcorr');
-display('ella_runcorr saved');
-
-end
+% % Running Correlation of Temperature
+% ts_runcorr=nan(size(ats));
+% for i=S_bound:N_bound
+%     for j=W_bound:E_bound
+% 	ts_runcorr(:,i,j)=movingCorrelation([squeeze(ats(:,i,j)),n34_ind],window,2);
+% 	% Note that this running correlation places the value after the window
+%     end
+% end
+% 
+% save(['DataFiles/ella_runcorr',num2str(window),'yrwdw.mat'],'ts_runcorr');
+% display('ella_runcorr saved');
+% 
+% end
 
 %% Regressions, Correlations, Autocorrelations and Standard Deviations
-reg_ats = zeros(size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        reg_ats(i,j) = regress(ats(:,i,j),n34_ind);
-    end
-end
-
-corr_ts = zeros(size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        corr_ts(i,j) = corr(n34_ind,ats(:,i,j));
-    end
-end
-
-atcorr_ts = zeros(2,size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        atcorr_ts(:,i,j) = autocorr(ats(:,i,j),1);
-    end
-end
-
-atcorr_ts = squeeze(atcorr_ts(2,:,:));
-
-
-sigma_ts = zeros(size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        sigma_ts(i,j) = std(ats(:,i,j));
-    end
-end
-assert(S_lat == -20);
-%% Calculating the Synthetic Series
+% reg_ats = zeros(size(ats,2),size(ats,3));
+% for i=1:size(ats,2)
+%     for j=1:size(ats,3)
+%         reg_ats(i,j) = regress(ats(:,i,j),n34_ind);
+%     end
+% end
+% 
+% corr_ts = zeros(size(ats,2),size(ats,3));
+% for i=1:size(ats,2)
+%     for j=1:size(ats,3)
+%         corr_ts(i,j) = corr(n34_ind,ats(:,i,j));
+%     end
+% end
+% 
+% atcorr_ts = zeros(2,size(ats,2),size(ats,3));
+% for i=1:size(ats,2)
+%     for j=1:size(ats,3)
+%         atcorr_ts(:,i,j) = autocorr(ats(:,i,j),1);
+%     end
+% end
+% 
+% atcorr_ts = squeeze(atcorr_ts(2,:,:));
+% 
+% 
+% sigma_ts = zeros(size(ats,2),size(ats,3));
+% for i=1:size(ats,2)
+%     for j=1:size(ats,3)
+%         sigma_ts(i,j) = std(ats(:,i,j));
+%     end
+% end
+% assert(S_lat == -15);
+% %% Calculating the Synthetic Series
+% 
+% ts_series = zeros(1000,499,90,144,'single');
+% ts_synruncorr = nan(499,90,144);
+% mkdir('../Data/ella_Synth_Data')
+% mkdir(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/'])
+% tic;
+% for n=1:1000
+%     eta_nu = randn(length(n34_ind),1);
+%     nu_ts=zeros(length(n34_ind),size(ats,2),size(ats,3),'single');
+%     nu_ts(1,:,:)=NaN;
+% 
+%     for i=S_bound:N_bound
+%         for j=W_bound:E_bound
+%             nu_ts(2:end,i,j) = reg_ats(i,j)*n34_ind(2:end) + ...
+%                 sigma_ts(i,j)*sqrt(1.0-corr_ts(i,j)^2) * ...
+%                 (eta_nu(2:end) + atcorr_ts(i,j)*eta_nu(1:end-1));
+%         end
+%     end
+%     
+%    save(['../Data/ella_Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','eta_nu')
+%    
+%     % Running Correlation of Temperature
+%     for i=S_bound:N_bound
+%         for j=W_bound:E_bound
+%             ts_synruncorr(:,i,j)=movingCorrelation([squeeze(nu_ts(:,i,j)),n34_ind],window,2);
+%             % Note that this running correlation places the value after the window
+%         end
+%     end
+%     save(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','window');
+%     ts_series(n,:,:,:) = ts_synruncorr;
+%     toc;
+% end
+% display('ella_synth_data and runcorr made');
+% assert(S_lat == -15);
 
 ts_series = zeros(1000,499,90,144,'single');
-mkdir('../Data/ella_Synth_Data')
-mkdir(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/'])
 for n=1:1000
-    toc;
-    eta_nu = randn(length(n34_ind),1);
-    nu_ts=zeros(length(n34_ind),size(ats,2),size(ats,3),'single');
-    nu_ts(1,:,:)=NaN;
-
-    for i=S_bound:N_bound
-        for j=W_bound:E_bound
-            nu_ts(2:end,i,j) = reg_ats(i,j)*n34_ind(2:end) + ...
-                sigma_ts(i,j)*sqrt(1.0-corr_ts(i,j)^2) * ...
-                (eta_nu(2:end) + atcorr_ts(i,j)*eta_nu(1:end-1));
-        end
-    end
-    
-   save(['../Data/ella_Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','eta_nu')
-   
-    % Running Correlation of Temperature
-    for i=S_bound:N_bound
-        for j=W_bound:E_bound
-            ts_synruncorr(:,i,j)=movingCorrelation([squeeze(nu_ts(:,i,j)),n34_ind],window,2);
-            % Note that this running correlation places the value after the window
-        end
-    end
-    save(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','window');
+    load(['../Data/ella_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat']);
     ts_series(n,:,:,:) = ts_synruncorr;
-    toc;
 end
-display('ella_synth_data and runcorr made');
-assert(S_lat == -20);
-
+display('Stuff reloaded')
+    
 mkdir(['../Data/ella_Synth_pointform/',num2str(window),'yrWindow/']);
 for i=W_bound:E_bound
     for j=S_bound:N_bound
         spot_ts = ts_series(:,:,j,i);
-        spot_pr = pr_series(:,:,j,i);
         save(['../Data/ella_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
             'spot_ts','window');
     end
@@ -143,7 +150,6 @@ display('ella_synthpointform complete')
 
 nonstat_tsmap=nan(length(lat),length(lon),'single');
 running_nonstat_tsmap=nan(499,length(lat),length(lon),'single');
-nonstat_tsmaprecord=zeros(length(n34_ind),length(lat),length(lon),'single');
 ts_pc = nan(2,length(n34_ind),length(lat),length(lon),'single');
 load(['DataFiles/ella_runcorr',num2str(window),'yrwdw.mat']);
 runcorr_wdw = window; % Running correlation window in the runcorr.mat file
@@ -161,10 +167,7 @@ for i=W_bound:E_bound
             ts_pc(:,:,j,i) = prctile(spot_ts,[2.5,97.5]);
             
             nonstat_tsmap(j,i)=length( find(squeeze(ts_runcorrz(:,j,i))<ts_pc_spotz(1,:)'|...
-                                          squeeze(ts_runcorrz(:,j,i))>ts_pc_spotz(2,:)')   );
-            nonstat_tsmaprecord(find(squeeze(ts_runcorrz(:,j,i))<ts_pc_spotz(1,:)'|...
-                                          squeeze(ts_runcorrz(:,j,i))>ts_pc_spotz(2,:)'),j,i) = 1;
-            
+                                          squeeze(ts_runcorrz(:,j,i))>ts_pc_spotz(2,:)')   );            
                                         
         else
             disp(['Data at ',num2str(lon(i)),'E',num2str(lat(j)),'N does not exist']);
@@ -174,6 +177,6 @@ end
 
 save(['DataFiles/ella_nonstat_map',num2str(window),'yrwdw.mat'],'nonstat_tsmap', ...
      'ts_pc',...
-     'nonstat_tsmaprecord','window');
+     'window');
      
 display('ella_nonstat_map complete')
