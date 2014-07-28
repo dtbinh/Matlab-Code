@@ -39,7 +39,7 @@ window = 31;
 
 %% Calculating Running Correlations
 if ~exist('../DataFiles/Iveof_runcorr31yrwdw.mat','file')
-Limits of box to calculate corr coefs
+% Limits of box to calculate corr coefs
 S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
 [~,S_bound]= min(abs(lat-S_lat));
 [~,N_bound]= min(abs(lat-N_lat));
