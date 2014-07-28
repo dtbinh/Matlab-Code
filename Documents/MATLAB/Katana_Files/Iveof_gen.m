@@ -38,7 +38,7 @@ n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
 window = 31;
 
 %% Calculating Running Correlations
-if ~exist('../DataFiles/veof_runcorr31yrwdw.mat','file')
+if ~exist('../DataFiles/Iveof_runcorr31yrwdw.mat','file')
 Limits of box to calculate corr coefs
 S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
 [~,S_bound]= min(abs(lat-S_lat));
@@ -55,8 +55,8 @@ for i=S_bound:N_bound
     end
 end
 
-save(['DataFiles/veof_runcorr',num2str(window),'yrwdw.mat'],'ts_runcorr');
-display('veof_runcorr saved');
+save(['DataFiles/Iveof_runcorr',num2str(window),'yrwdw.mat'],'ts_runcorr');
+display('Iveof_runcorr saved');
 
 end
 
@@ -96,8 +96,8 @@ assert(S_lat == -15);
 
 ts_series = zeros(1000,499,90,144,'single');
 ts_synruncorr = nan(499,90,144);
-mkdir('../Data/veof_Synth_Data')
-mkdir(['../Data/veof_Synth_runcorr/',num2str(window),'yrWindow/'])
+mkdir('../Data/Iveof_Synth_Data')
+mkdir(['../Data/Iveof_Synth_runcorr/',num2str(window),'yrWindow/'])
 tic;
 for n=1:1000
     eta_nu = randn(length(n34_ind),1);
@@ -112,7 +112,7 @@ for n=1:1000
         end
     end
     
-   save(['../Data/veof_Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','eta_nu')
+   save(['../Data/Iveof_Synth_Data/run',num2str(n),'syn.mat'],'nu_ts','eta_nu')
    
     % Running Correlation of Temperature
     for i=S_bound:N_bound
@@ -121,44 +121,44 @@ for n=1:1000
             % Note that this running correlation places the value after the window
         end
     end
-    save(['../Data/veof_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','window');
+    save(['../Data/Iveof_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat'],'ts_synruncorr','window');
     ts_series(n,:,:,:) = ts_synruncorr;
     toc;
 end
-display('veof_synth_data and runcorr made');
+display('Iveof_synth_data and runcorr made');
 assert(S_lat == -15);
 
 % ts_series = zeros(1000,499,90,144,'single');
 % for n=1:1000
-%     load(['../Data/veof_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat']);
+%     load(['../Data/Iveof_Synth_runcorr/',num2str(window),'yrWindow/run',num2str(n),'syncorr.mat']);
 %     ts_series(n,:,:,:) = ts_synruncorr;
 % end
 % display('Stuff reloaded')
     
-mkdir(['../Data/veof_Synth_pointform/',num2str(window),'yrWindow/']);
+mkdir(['../Data/Iveof_Synth_pointform/',num2str(window),'yrWindow/']);
 for i=W_bound:E_bound
     for j=S_bound:N_bound
         spot_ts = ts_series(:,:,j,i);
-        save(['../Data/veof_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
+        save(['../Data/Iveof_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],...
             'spot_ts','window');
     end
 end
 
-display('veof_synthpointform complete')
+display('Iveof_synthpointform complete')
 
 %% Fitting Distributions and Obtaining percentiles
 
 nonstat_tsmap=nan(length(lat),length(lon),'single');
 running_nonstat_tsmap=nan(499,length(lat),length(lon),'single');
 ts_pc = nan(2,length(n34_ind),length(lat),length(lon),'single');
-load(['DataFiles/veof_runcorr',num2str(window),'yrwdw.mat']);
+load(['DataFiles/Iveof_runcorr',num2str(window),'yrwdw.mat']);
 runcorr_wdw = window; % Running correlation window in the runcorr.mat file
 
 for i=W_bound:E_bound
     for j=S_bound:N_bound
-        if exist(['../Data/veof_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],'file')
+        if exist(['../Data/Iveof_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat'],'file')
             % This takes 0.3 seconds per point
-            load(['../Data/veof_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat']);
+            load(['../Data/Iveof_Synth_pointform/',num2str(window),'yrWindow/',num2str(lon(i)),'E',num2str(lat(j)),'N_syncorr.mat']);
             spotz_ts = 0.5*log( (1+spot_ts)./(1-spot_ts) ); % Fishers Z Score
             ts_runcorrz = 0.5*log( (1+ts_runcorr)./(1-ts_runcorr) );
             
@@ -175,8 +175,8 @@ for i=W_bound:E_bound
     end
 end
 
-save(['DataFiles/veof_nonstat_map',num2str(window),'yrwdw.mat'],'nonstat_tsmap', ...
+save(['DataFiles/Iveof_nonstat_map',num2str(window),'yrwdw.mat'],'nonstat_tsmap', ...
      'ts_pc',...
      'window');
      
-display('veof_nonstat_map complete')
+display('Iveof_nonstat_map complete')
