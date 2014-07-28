@@ -134,3 +134,47 @@ nina_lincoef = polyfit(sorted(1:middle-1),a_sorted(1:middle-1),1);
 nino_lincoef = polyfit(sorted(middle:end),a_sorted(middle:end),1);
 plot(linspace(-3,0),nina_lincoef(2)+nina_lincoef(1)*linspace(-3,0)); 
 plot(linspace(0,3),nino_lincoef(2)+nino_lincoef(1)*linspace(0,3)); hold off;
+
+%% Making EOF SSTs
+
+S_lat = -20; N_lat = 20; W_lon = 130; E_lon = 300;
+[~,S_bound]= min(abs(lat-S_lat));
+[~,N_bound]= min(abs(lat-N_lat));
+[~,W_bound]= min(abs(lon-W_lon));
+[~,E_bound]= min(abs(lon-E_lon));
+
+trop_ats = ats(:,S_bound:N_bound,W_bound:E_bound);
+NUM_OF_EOFS = 10;
+ats_trop_fm = reshape(trop_ats,size(trop_ats,1),size(trop_ats,2)*size(trop_ats,3));
+[eof_ats,PC_trop_ats,expvar_ats] = caleof(ats_trop_fm, NUM_OF_EOFS, 1);
+eof_ats_trop_fm = reshape(eof_ats,NUM_OF_EOFS,size(trop_ats,2),size(trop_ats,3));
+eof_ats_fm = nan(NUM_OF_EOFS,size(ats,2),size(ats,3),'single');
+eof_ats_fm(:,S_bound:N_bound,W_bound:E_bound) = eof_ats_trop_fm;
+for n=1:3
+    subplot(3,1,n);
+    THE_EOF = n;
+    pcolor(lon,lat,squeeze(double(eof_ats_fm(THE_EOF,:,:)))); plotworld;
+    title(['EOF ',num2str(THE_EOF),' of Annual Tempearture Anomalies, Explained Variance: ',num2str(expvar_ats(THE_EOF)),'%']);
+    xlim([110 320]); ylim([-30 30]);
+end
+
+% ats_fm = reshape(ats,size(ats,1),size(ats,2)*size(ats,3));
+ats_reg_eofs = nan(NUM_OF_EOFS+1,size(ats,2),size(ats,3));
+for i=1:length(lat)
+    for j=1:length(lon)
+        ats_reg_eofs(:,i,j) = regress(squeeze(ats(:,i,j)), [PC_trop_ats;ones(1,499)]');
+    end
+end
+eof_reg_map = nan(size(ats));
+for i=1:length(lat)
+    for j=1:length(lon)
+        eof_reg_map(:,i,j) = ats_reg_eofs([1:3,end],i,j)'*[PC_trop_ats(1:3,:);ones(1,499)];
+    end
+end        
+        
+EOFS_TO_USE = 3;
+ats_veof = nan(size(ats));
+ats_veof(:,S_bound:N_bound,W_bound:E_bound) = ...
+    reshape(PC_trop_ats(1:EOFS_TO_USE,:)'*eof_ats(1:EOFS_TO_USE,:),size(ats,1),size(trop_ats,2),size(trop_ats,3));
+ats_veof(:,S_bound:N_bound,1:W_bound) = eof_reg_map(:,S_bound:N_bound,1:W_bound);
+save('DataFiles/ats_veof.mat','ats_veof');
