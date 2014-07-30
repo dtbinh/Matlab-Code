@@ -171,10 +171,12 @@ for i=1:length(lat)
         eof_reg_map(:,i,j) = ats_reg_eofs([1:3,end],i,j)'*[PC_trop_ats(1:3,:);ones(1,499)];
     end
 end        
-        
 EOFS_TO_USE = 3;
 ats_veof = nan(size(ats));
 ats_veof(:,S_bound:N_bound,W_bound:E_bound) = ...
     reshape(PC_trop_ats(1:EOFS_TO_USE,:)'*eof_ats(1:EOFS_TO_USE,:),size(ats,1),size(trop_ats,2),size(trop_ats,3));
 ats_veof(:,S_bound:N_bound,1:W_bound) = eof_reg_map(:,S_bound:N_bound,1:W_bound);
+blah = eof_reg_map;
+blah(:,S_bound:N_bound,W_bound:E_bound) = ats_veof(:,S_bound:N_bound,W_bound:E_bound);
+ats_veof = blah;
 save('DataFiles/ats_veof.mat','ats_veof');
