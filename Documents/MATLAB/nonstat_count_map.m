@@ -121,7 +121,7 @@ save('DataFiles/nonstat_map.mat','nonstat_prmap','nonstat_tsmap', ...
      'nonstat_tsmaprecord','nonstat_prmaprecord');
  
 %% Plotting Map
-load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map31yrwdw.mat
+% load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map31yrwdw.mat
 NUM_CONTOURS = 10;
 
 subplot(2,1,1);

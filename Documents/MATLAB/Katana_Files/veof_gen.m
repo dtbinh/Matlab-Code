@@ -1,24 +1,6 @@
-% This matlab script will produce synthetic running correlations for
-% precipitation and temperature by using the same method as specified in
-% {Gallant et al, 2013, 'Nonstationary Australasian Teleconnections and
-%   Implications for Paleoclimate Reconstructions', Journal of Climate,
-%   vol. 26 pp. 8827-8849} as equation (1): MODIFIED - no CONSTANT TERM
-
-% nu(t) = a1*c(t) + sigma_nu*sqrt(1-r^2)*[eta_nu(t) + B*eta_nu(t-1)]
-
-% where: nu(t) is the synthetic precipitation/temperature series
-%        a0 is the first regression coefficient (also the mean of the data)
-%        a1 is the second regression coefficient
-%        c(t) is the Nino3.4 Index
-%        sigma_nu is the standard deviation of the actual precip/temp series
-%        r is the correlation between Nino3.4 index and precip/temp
-%        eta_nu is random Gaussian noise
-%        B is the autocorrelation of the climate variable at lag 1
-%        [eta_nu(t) + B*eta_nu(t-1)] is red noise
-
-% Note: This script requires the mexcdf package to be installed, and the
-% following files: plotworld.m, coast_v2.mat, b2r.m to be in the current
-% directory and in DataFiles
+% This script will make the non-stationarities  map data from scratch,
+% based on the veof temperature data. The veof temperature data is a
+% reconstruction of with the first 3 EOFs of the temperature data.
 
 %% Setup
 ts_file = 'DataFiles/ts_A1.nc';

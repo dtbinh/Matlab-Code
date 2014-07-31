@@ -97,9 +97,9 @@ for c=1:size(CAL_WDW,1)
             all_eof_EPC(floor(window/30),n,c,:,:) = eof_EPC;
             all_PC_EPC(floor(window/30),n,c,:,:) = PC_EPC;
             all_expvar_EPC(floor(window/30),n,c,:,:) = expvar_EPC;
-            all_eof_CPS(floor(window/30),n,c,:,:) = eof_EPC;
-            all_PC_CPS(floor(window/30),n,c,:,:) = PC_EPC;
-            all_expvar_CPS(floor(window/30),n,c,:,:) = expvar_EPC;
+            all_eof_CPS(floor(window/30),n,c,:,:) = eof_CPS;
+            all_PC_CPS(floor(window/30),n,c,:,:) = PC_CPS;
+            all_expvar_CPS(floor(window/30),n,c,:,:) = expvar_CPS;
 
             toc; % Took 1200s in total for all
     end
@@ -115,7 +115,9 @@ save(['DataFiles/reconEOFs_',GROUP_NAME,'.mat'],'all_eof_EPC','all_PC_EPC','all_
 
 GROUP_NAME = 'glb_ts';
 load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
-rcorwdw=1; groups=3:70; calwdw=10; recEOFs=1:5; modEOFs=1:5; 
+rcorwdw=1; groups=3:70; calwdw=1; recEOFs=1:5; modEOFs=1:5; 
+
+% EOF vs EOF corr plot
 axis equal;
 contourf(squeeze(mean(mean(mean(abs(corr_all_PC_EPC(rcorwdw,groups,calwdw,recEOFs,modEOFs)),1),2),3)),10);
 grid on; colorbar; caxis([0,1]); colormap(flipud(gray(10))); % The rows of contourf plot are same rows in corr  matrix
@@ -132,3 +134,96 @@ saveas(gcf,['Plots/mean(abs(corr(',GROUP_NAME,'_rcor', ...
       num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),'_grp',...
       num2str(groups(1)),':',num2str(groups(end)),'_calwdw',...
       num2str(calwdw(1)),':',num2str(calwdw(end)),'.jpg'                 ])
+  
+% More Plotting
+for rcorwdw = 1:3
+    
+subplot(3,2,rcorwdw*2-1)
+GROUP_NAME = 'glb_ts';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+rgbmap = hsv(7);
+for i=1:7
+    plot(squeeze(all_expvar_EPC(rcorwdw,i*10,calwdw,:)),'Color',rgbmap(i,:)); hold on;
+end
+hold off; legend('group=10','group=20','group=30','group=40','group=50','group=60','group=70','location','northeast');
+xlabel('EOF'); ylabel('Percentage Variance Explained');
+title(['Var Explained ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),'(',num2str(rcorwdw*30+1),'yrs)'   ])
+  
+subplot(3,2,rcorwdw*2)
+GROUP_NAME = 'glb_ts_nstat_sigpcd';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+rgbmap = hsv(7);
+for i=1:7
+    plot(squeeze(all_expvar_EPC(rcorwdw,i*10,calwdw,:)),'Color',rgbmap(i,:)); hold on;
+end
+hold off; legend('group=10','group=20','group=30','group=40','group=50','group=60','group=70','location','northeast');
+xlabel('EOF'); ylabel('Percentage Variance Explained');
+title(['Var Explained ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),'(',num2str(rcorwdw*30+1),'yrs),'  ])
+end
+
+set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+set(gcf, 'PaperPosition', [0 0 19 28]);
+% saveas(gcf,['Plots/varexp_EOF_',GROUP_NAME,'_rcor', ...
+%       num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),...
+% '.jpg'                 ])
+
+% More Plotting EOF vs n34
+for rcorwdw = 1:3
+    
+subplot(3,2,rcorwdw*2-1)
+GROUP_NAME = 'glb_ts';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+rgbmap = hsv(7);
+for i=1:7
+    plot(squeeze(all_PC_EPC(rcorwdw,i*10,calwdw,:)),'Color',rgbmap(i,:)); hold on;
+end
+hold off; legend('group=10','group=20','group=30','group=40','group=50','group=60','group=70','location','northeast');
+xlabel('EOF'); ylabel('Percentage Variance Explained');
+title(['Var Explained ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),'(',num2str(rcorwdw*30+1),'yrs)'   ])
+  
+subplot(3,2,rcorwdw*2)
+GROUP_NAME = 'glb_ts_nstat_sigpcd';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+rgbmap = hsv(7);
+for i=1:7
+    plot(squeeze(all_expvar_EPC(rcorwdw,i*10,calwdw,:)),'Color',rgbmap(i,:)); hold on;
+end
+hold off; legend('group=10','group=20','group=30','group=40','group=50','group=60','group=70','location','northeast');
+xlabel('EOF'); ylabel('Percentage Variance Explained');
+title(['Var Explained ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),'(',num2str(rcorwdw*30+1),'yrs),'  ])
+end
+
+set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+set(gcf, 'PaperPosition', [0 0 19 28]);
+
+%% Plotting PC time series
+calwdw=5;
+for rcorwdw = 1:3
+    
+subplot(3,1,rcorwdw)
+GROUP_NAME = 'glb_ts_nstat_sigpcd';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+rgbmap = hsv(7); corr_PC_n34 = nan(1,7);
+for i=1:7
+    plot(squeeze(all_PC_CPS(rcorwdw,i*10,calwdw,1,:)),'Color',rgbmap(i,:)); hold on;
+    corr_PC_n34(i) = corr(squeeze(all_PC_EPC(rcorwdw,i*10,calwdw,1,:)),n34_ind);
+end
+hold off; legend(['g=10, cor=',num2str(corr_PC_n34(1),'%.2f')], ...
+                 ['g=20, cor=',num2str(corr_PC_n34(2),'%.2f')], ...
+                 ['g=30, cor=',num2str(corr_PC_n34(3),'%.2f')], ...
+                 ['g=40, cor=',num2str(corr_PC_n34(4),'%.2f')], ...
+                 ['g=50, cor=',num2str(corr_PC_n34(5),'%.2f')], ...
+                 ['g=60, cor=',num2str(corr_PC_n34(6),'%.2f')], ...
+                 ['g=70, cor=',num2str(corr_PC_n34(7),'%.2f')], ...
+                 'location','northeast');
+xlabel('Year');
+title(['PC1 Time series ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw(1)),':',num2str(rcorwdw(end)),'(',num2str(rcorwdw*30+1),'yrs), calwdw=', num2str(calwdw) ...
+      ])
+end
+set(gcf, 'PaperUnits', 'centimeters'); % May already be default
+set(gcf, 'PaperPosition', [0 0 19 28]);

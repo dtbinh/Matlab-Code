@@ -40,7 +40,7 @@ window = 31;
 %% Calculating Running Correlations
 if ~exist('../DataFiles/Iveof_runcorr31yrwdw.mat','file')
 % Limits of box to calculate corr coefs
-S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
+S_lat = -15; N_lat = 15; W_lon = 0; E_lon = 130;
 [~,S_bound]= min(abs(lat-S_lat));
 [~,N_bound]= min(abs(lat-N_lat));
 [~,W_bound]= min(abs(lon-W_lon));
@@ -49,7 +49,7 @@ S_lat = -15; N_lat = 15; W_lon = 130; E_lon = 300;
 % Running Correlation of Temperature
 ts_runcorr=nan(size(ats));
 for i=S_bound:N_bound
-    for j=1:E_bound %%%%%%%%% !!!!!!!! To 0 deg east
+    for j=W_bound:E_bound %%%%%%%%% !!!!!!!! To 0 deg east
 	ts_runcorr(:,i,j)=movingCorrelation([squeeze(ats(:,i,j)),n34_ind],window,2);
 	% Note that this running correlation places the value after the window
     end
