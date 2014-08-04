@@ -1,4 +1,4 @@
-% This script will calculate the range of the error in the calibration windows 
+GlenfieldGGGGWWWOasdas% This script will calculate the range of the error in the calibration windows 
 % for varying station numbers, using staggered windows. It also outputs a
 % mat file containing alot of statistics produced for each method,
 % num_stns, and calibration window.

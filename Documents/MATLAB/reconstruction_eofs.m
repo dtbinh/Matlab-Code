@@ -66,7 +66,7 @@ display('EOF_ats done');
 %% Finding EOFs of reconstructions
 
 % More Setup
-GROUP_NAME = 'glb_ts';
+GROUP_NAME = 'glb_ts_nstat_sigpcd';
 NUM_OF_EOFS = 5; NUM_TRIALS = 1000; NUM_YRS = 499; numstnstocompare = [3:70]; NUM_CAL_WDW = 10;
 
 all_eof_EPC = nan(3,numstnstocompare(end), NUM_CAL_WDW, NUM_OF_EOFS, NUM_TRIALS,'single');
@@ -227,3 +227,50 @@ title(['PC1 Time series ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
 end
 set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]);
+
+%% Regression of EOF1 to ats
+GROUP_NAME = 'glb_ts';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+rcorwdw=3; groups=68; calwdw=9; 
+ats_reg_eof1 = nan(2,size(ats,2),size(ats,3));
+if corr(squeeze(all_PC_EPC(rcorwdw,groups,calwdw,1,:)),n34_ind) < 0
+    PC_temp = -squeeze(all_PC_EPC(rcorwdw,groups,calwdw,1,:));
+else
+    PC_temp = squeeze(all_PC_EPC(rcorwdw,groups,calwdw,1,:));
+end
+    
+for i=1:length(lat)
+    for j=1:length(lon)
+        ats_reg_eof1(:,i,j) = regress(squeeze(ats(:,i,j)), [PC_temp,ones(499,1)]);
+    end
+end
+pcolor(lon,lat,squeeze(ats_reg_eof1(1,:,:))); plotworld;
+colormap(b2r(-0.05,0.05)); colorbar;
+title(['Reg coefs - reconstruction PC1 and model temp ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw),'(',num2str(rcorwdw*30+1),'yrs), group=',...
+      num2str(groups),', calwdw=',...
+      num2str(calwdw)                                ])
+  
+%% Plotting Iterations vs Groups for EOF1 values
+
+calwdw=10;
+GROUP_NAME = 'glb_ts_nstat_sigpcd';
+load(['DataFiles/reconEOFs_',GROUP_NAME,'.mat']);
+for i=1:3
+    subplot(3,1,i)
+pcolor(double(abs(squeeze(all_eof_EPC(i,:,calwdw,1,:))))); shading flat;
+colorbar; colormap(flipud(hot)); caxis([0 0.03]);
+title(['EOF1 Values ',strrep(GROUP_NAME,'_','\_'),': rcorwdw=', ...
+      num2str(rcorwdw),'(',num2str(rcorwdw*30+1),'yrs), calwdw=',...
+      num2str(calwdw)                                ])
+xlabel('Reconstruction Iteration'); ylabel('Group no. (no. of proxies in reconstruction)');
+end
+
+%% Finding bad iterations
+
+all_eof1_EPC = squeeze(all_eof_EPC(:,:,:,1,:));
+[~,lowest_EOF] = min(abs(all_eof1_EPC(:)));
+[a,b,c,d] = ind2sub([3,70,10,1000],lowest_EOF)
+corr(all_stn_EPC(a,b,c,1,d),n34_ind)
+
+%% 
