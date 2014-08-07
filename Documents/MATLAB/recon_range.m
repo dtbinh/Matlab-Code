@@ -219,8 +219,14 @@ set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]);
 set(legendH, 'FontSize',10);
 saveas(gcf,['Plots/calWdwCorr_vs_NumStns_S3_',GROUP_NAME,num2str(window),'yr.jpg'])
 close
-
+end
 %% Other Proxies Plotting
+for window = [31, 61, 91]
+
+
+GROUP_NAME = 'ntrop_ts_nstat';
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9
@@ -288,12 +294,12 @@ set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]);
 set(legendH, 'FontSize',10);
 saveas(gcf,['Plots/calWdwCorr_vs_NumStns_',GROUP_NAME,num2str(window),'yr.jpg'])
 close
-end
 
+end
 %% Plotting Non-running variances
 for window = [31, 61, 91]
     
-GROUP_NAME = 'eqpac_pr';
+GROUP_NAME = 'glb_ts_nstat';
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
