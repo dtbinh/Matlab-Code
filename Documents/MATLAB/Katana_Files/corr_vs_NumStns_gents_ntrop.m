@@ -65,7 +65,7 @@ RV_WDW = [15:(499-14)];
 
 %% Beggining of Loop
 
-DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/ntrop_ts_nstat'] ; mkdir(DIR_NAME);
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/ntrop_ts'] ; mkdir(DIR_NAME);
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 % load DataFiles/runcorr_eofs.mat
@@ -128,7 +128,7 @@ for NUM_STNS = 3:STN_MAX
     % Conditions - Replace 1 with desired conditions
 
     indice_pool = find(abs(corr_ts)>MIN_COR & ...
-                       nonstat_tsmap > ceil(0.1*(NUM_YRS-window)) & ...
+                       1 & ...
                        1 & ...
                        1 & ...
                        1                                                     );
@@ -177,7 +177,7 @@ fprintf(fid,'This file was produced using the UNSW Katana Computational Cluster.
 fprintf(fid,'Station selection conditions:\n');
 fprintf(fid,'abs(corr_ts)>MIN_COR\n');
 % fprintf(fid,'squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) < 0.3\n');
-fprintf(fid,'nonstat_tsmap > ceil(0.1*(NUM_YRS-window))\n');
+% fprintf(fid,'nonstat_tsmap > ceil(0.1*(NUM_YRS-window))\n');
 % fprintf(fid,'lsfrac > 0\n');
 fprintf(fid,'Tropical regions have not been included\n');
 % fprintf(fid,'eof_ts_fm2 > 0.01\n');

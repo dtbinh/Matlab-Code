@@ -26,7 +26,7 @@ for i=1:(length(folderlist)-2)
     end
     subplot(3,1,rem(i-1,3)+1)
     values = hist3([lon_ind lat_ind],{1:length(lon) , 1:length(lat)})';
-    pcolor(lon,lat,values); plotworld; colormap(flipud(gray(10))); colorbar;
+    pcolor(lon,lat,values); plotworld; colormap(flipud(hot(10))); colorbar;
     xlim([0 360]); ylim([-90 90]);
     title([strrep(DIR_NAME(58:end),'_','\_'),' - Density with all CalWdws, mean no.: ',num2str(mean(num_prox),'%.0f'),', std: ',num2str(std(num_prox),'%.0f')]);
     set(gcf, 'PaperUnits', 'centimeters');

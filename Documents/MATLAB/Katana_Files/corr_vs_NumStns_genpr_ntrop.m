@@ -65,7 +65,7 @@ RV_WDW = [15:(499-14)];
 
 %% Beggining of Loop
 
-DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/ntrop_ts_nstat'] ; mkdir(DIR_NAME);
+DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/ntrop_pr'] ; mkdir(DIR_NAME);
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 % load DataFiles/runcorr_eofs.mat
@@ -109,13 +109,13 @@ indice_pool_num = zeros(STN_MAX,1);
 
 for c=1:size(CAL_WDW,1)
 
-    corr_ts = nan(size(ats,2),size(ats,3),'single');
+    corr_pr = nan(size(apr,2),size(apr,3),'single');
     for i=S_bound:N_bound
         for j=W_bound:E_bound
-            corr_ts(i,j) = corr(n34_ind(CAL_WDW(c,:)),ats(CAL_WDW(c,:),i,j));
+            corr_pr(i,j) = corr(n34_ind(CAL_WDW(c,:)),apr(CAL_WDW(c,:),i,j));
         end
     end
-    corr_ts(S_bd:N_bd,W_bd:E_bd) = 0;
+    corr_pr(S_bd:N_bd,W_bd:E_bd) = 0;
     mkdir([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end))])
 
 for NUM_STNS = 3:STN_MAX
@@ -127,14 +127,14 @@ for NUM_STNS = 3:STN_MAX
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Conditions - Replace 1 with desired conditions
 
-    indice_pool = find(abs(corr_ts)>MIN_COR & ...
-                       nonstat_tsmap > ceil(0.1*(NUM_YRS-window)) & ...
+    indice_pool = find(abs(corr_pr)>MIN_COR & ...
+                       1 & ...
                        1 & ...
                        1 & ...
                        1                                                     );
 
-    %  - squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) > 0.3
-    %  - squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) < 0.3
+    %  - squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) > 0.3
+    %  - squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) < 0.3
     %  - nonstat_tsmap > ceil(0.1*(NUM_YRS-window))
     %  - lsfrac > 0
     %  - squeeze(eof_ts_fm(1,:,:)) > 0.01
@@ -142,7 +142,7 @@ for NUM_STNS = 3:STN_MAX
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for m=1:NUM_TRIALS
 
-        [stn_lat(m,:),stn_lon(m,:)] = ind2sub(size(corr_ts),indice_pool(randperm(length(indice_pool),NUM_STNS)));
+        [stn_lat(m,:),stn_lon(m,:)] = ind2sub(size(corr_pr),indice_pool(randperm(length(indice_pool),NUM_STNS)));
 
         for n=1:NUM_STNS
 
@@ -153,7 +153,7 @@ for NUM_STNS = 3:STN_MAX
     end
     
     save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat'], ...
-             'stn_lat','stn_lon','stn_ts','indice_pool','corr_ts','window');
+             'stn_lat','stn_lon','stn_pr','indice_pool','corr_pr','window');
 
 end
 
@@ -171,13 +171,13 @@ fprintf(fid,['E_lon = ',num2str(E_lon),'\n\n']);
 fprintf(fid,'Selection from areas with absolute correlation over a certain threshold.\n');
 fprintf(fid,['MIN_COR = ',num2str(MIN_COR),'\n']);
 fprintf(fid,['CAL_WDW = ',num2str(CAL_WDW(c,1)),':',num2str(CAL_WDW(c,end)),'\n\n']);
-fprintf(fid,'Data is also using temperature only\n');
-% fprintf(fid,'Data is also using precipitation only\n');
+% fprintf(fid,'Data is also using temperature only\n');
+fprintf(fid,'Data is also using precipitation only\n');
 fprintf(fid,'This file was produced using the UNSW Katana Computational Cluster.\n\n');
 fprintf(fid,'Station selection conditions:\n');
-fprintf(fid,'abs(corr_ts)>MIN_COR\n');
-% fprintf(fid,'squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) < 0.3\n');
-fprintf(fid,'nonstat_tsmap > ceil(0.1*(NUM_YRS-window))\n');
+fprintf(fid,'abs(corr_pr)>MIN_COR\n');
+% fprintf(fid,'squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) < 0.3\n');
+% fprintf(fid,'nonstat_prmap > ceil(0.1*(NUM_YRS-window))\n');
 % fprintf(fid,'lsfrac > 0\n');
 fprintf(fid,'Tropical regions have not been included\n');
 % fprintf(fid,'eof_ts_fm2 > 0.01\n');
