@@ -224,7 +224,7 @@ end
 for window = [31, 61, 91]
 
 
-GROUP_NAME = 'ntrop_pr';
+GROUP_NAME = 'glb_ts_nstat';
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -301,7 +301,7 @@ end
 for window = [31, 61, 91]
 
 
-GROUP_NAME = 'ntrop_pr_nstat';
+GROUP_NAME = 'glb_ts_nstat';
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
