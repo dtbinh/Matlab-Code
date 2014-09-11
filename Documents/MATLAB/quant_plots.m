@@ -262,7 +262,7 @@ for window=[31,61,91]
     corr_3d = permute(repmat(corr_ts,[1 1 499]),[3 1 2]);
     data1 = corr_3d(sig_stns);
     data2 = ts_runcorr(sig_stns);
-    values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1}); % dont know what the 51s are
+    values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1});
     colormap(flipud(gray))
     caxis([0,200])
     % imagesc(values)
@@ -426,7 +426,7 @@ ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel(
 title(['Correlation percentiles for modeled temperature - rcor:',num2str(window),'yr'])
 set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,['Plots/hist3(corr_ts_3d,ts_runcorr)_rcor_nstat+lines',num2str(window),'.jpg'])
+% saveas(gcf,['Plots/hist3(corr_ts_3d,ts_runcorr)_rcor_nstat+lines',num2str(window),'.jpg'])
 xlim([-1,1]); ylim([-1, 1]); hold off;
 
 
@@ -483,7 +483,7 @@ ylabel(['Running Correlations (using ',num2str(window),' yr windows)']); xlabel(
 title(['Correlation percentiles for modeled precipitation - rcor:',num2str(window),'yr'])
 set(gcf, 'PaperUnits', 'centimeters'); % May already be default
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,['Plots/hist3(corr_pr_3d,pr_runcorr)_rcor_nstat+lines',num2str(window),'.jpg'])
+% saveas(gcf,['Plots/hist3(corr_pr_3d,pr_runcorr)_rcor_nstat+lines',num2str(window),'.jpg'])
 xlim([-1,1]); ylim([-1, 1]); hold off;
 close;
 end

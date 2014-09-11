@@ -148,7 +148,7 @@ set(gcf, 'PaperPosition', [0 0 28 19]);
 
 %% Figure 2-1
 figure;
-
+load DataFiles/nstat_cmaps.mat
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map31yrwdw.mat
 NUM_CONTOURS = 10;
 
@@ -158,7 +158,8 @@ plotworld;
 caxis([0, 200]);
 colorbar
 colormap(ncmap31);
-title(['Num of nonstationary stations for temp, rcor window:',num2str(window),'yrs'])
+num_nonstat = length(find(nonstat_tsmap>47));
+title(['Num of nonstationary stations for temp (',num2str(num_nonstat),'), rcor window:',num2str(window),'yrs'])
 cbfreeze;
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map61yrwdw.mat
 NUM_CONTOURS = 10;
@@ -169,7 +170,8 @@ plotworld;
 caxis([0, 200]);
 colorbar
 colormap(ncmap61);
-title(['Num of nonstationary stations for temp, rcor window:',num2str(window),'yrs'])
+num_nonstat = length(find(nonstat_tsmap>44));
+title(['Num of nonstationary stations for temp (',num2str(num_nonstat),'), rcor window:',num2str(window),'yrs'])
 cbfreeze;
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map91yrwdw.mat
 NUM_CONTOURS = 10;
@@ -180,7 +182,8 @@ plotworld;
 caxis([0, 200]);
 colorbar
 colormap(ncmap91);
-title(['Num of nonstationary stations for temp, rcor window:',num2str(window),'yrs'])
+num_nonstat = length(find(nonstat_tsmap>41));
+title(['Num of nonstationary stations for temp (',num2str(num_nonstat),'), rcor window:',num2str(window),'yrs'])
 cbfreeze
 
 %% Figure 2-2
@@ -374,54 +377,151 @@ set(legendH, 'FontSize',10);
 
 %% Figure 8 - Probabilities of Non-stationary Stations
 figure;
-GROUP_NAME = 'glb_ts'; NUM_TRIALS = 1000; c=1;
+GROUP_NAME = 'glb_ts'; NUM_TRIALS = 1000;
 for window = [31]
     load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
-    NUM_GROUPS=6; cmap = hsv(NUM_GROUPS); i=1; dataline = nan(NUM_GROUPS,42);
+    NUM_GROUPS=6; i=1; NUM_CAL_WDW = 10; cmap = hsv(NUM_GROUPS); cmap(2,2)=0.8;
+    clear CAL_WDW; overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+    for c=0:9
+        CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+    end
     for group_size=[3,5,10,30,50,70]
-        
-        all_nstat_yrs = nan([1,NUM_TRIALS]);
-        all_nstat_nstns = nan([1,NUM_TRIALS]);
         corrs = nan([1,NUM_TRIALS]);
+        nstat_nstns = nan(NUM_CAL_WDW,NUM_TRIALS);
+        for c=1:size(CAL_WDW,1)
 
-        DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
-        load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(group_size),'stns_1000prox.mat'], ...
-         'stn_lat','stn_lon','indice_pool');
+            DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+            load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(group_size),'stns_1000prox.mat'], ...
+             'stn_lat','stn_lon','indice_pool');
 
-        % Compare the lat and lon with nonstat map, save no. of nonstat, save
-        % nonstat year nums, and no. of nonstat points in reconstruction Plot
-        % numbers of non-stat stations/av years against Reconstruction skill. Also
-        % find percentages of the runs that have the numbers of the non-stat
-        % prox/av yrs
-
-        nstat_yrs = nan(size(stn_lat));
-        for m=1:group_size
-            for tr=1:NUM_TRIALS
-                nstat_yrs(tr,m) = nonstat_tsmap(stn_lat(tr,m),stn_lon(tr,m));
+            nstat_yrs = nan(size(stn_lat));
+            for m=1:group_size
+                for tr=1:NUM_TRIALS
+                    nstat_yrs(tr,m) = nonstat_tsmap(stn_lat(tr,m),stn_lon(tr,m));
+                end
             end
-        end
 
-        nstat_avyrs = mean(nstat_yrs,2);
-        nstat_nstns = sum(nstat_yrs > ceil(0.1*(NUM_YRS-window)),2)/group_size;
-        dataline(i,:)=histline(nstat_nstns,[-0.025:0.025:1.0]+0.025/2);
+            nstat_avyrs = mean(nstat_yrs,2);
+            nstat_nstns(c,:) = sum(nstat_yrs > ceil(0.1*(NUM_YRS-window)),2)/group_size;
+            
+        end
+        xbins = (0:1.0/group_size:1)-0.0000001; xbins(1)=0; xbins(end)=1;
+        h=histc(nstat_nstns(:),xbins)/100;
+        hold on; Hnd(i) = plot(xbins,h,'Color',cmap(i,:),'LineWidth',2);
+        h(~h) = NaN;
+        plot(xbins,h,'o','Color',cmap(i,:),'MarkerFaceColor',cmap(i,:),'MarkerSize',7);
         i=i+1;
     end
-
         
-        for n=1:NUM_GROUPS
-            s_dataline = smooth(dataline(n,:)); hold on;
-            plot([0:0.025:1.025],s_dataline,'Color',cmap(n,:),'LineWidth',2);
-        end
-        hold off;
-        grid minor
-        xlim([0 1]); ylim([0 500]); xlabel(' Proportion of non-stationary stations ','FontSize',14);
-        legend('Group Size of 3','Group Size of 5','Group Size of 10','Group Size of 30','Group Size of 50','Group Size of 70');
-        % h = findobj(gca,'Type','Patch');
-        % set(h,'FaceColor',[1 1 1], 'EdgeColor','black');
-        ylabel('Number of reconstructions (out of 1000)','FontSize',14)
-%         title('Proportion of nstat stns per reconstruction','FontSize',14);
+    hold off;
+    grid minor
+    xlim([0 1]); ylim([0 70]); xlabel(' Proportion of non-stationary stations ','FontSize',14);
+    legend([Hnd],'Group Size of 3','Group Size of 5','Group Size of 10','Group Size of 30','Group Size of 50','Group Size of 70');
+    % h = findobj(gca,'Type','Patch');
+    % set(h,'FaceColor',[1 1 1], 'EdgeColor','black');
+    ylabel('Percentage of reconstructions','FontSize',14)
+%     title('Proportion of nstat stns per reconstruction','FontSize',14);
 
 end
+
+%% Figure 9 - Histogram Comparisons
+figure;
+window = 31; numstnstocompare=70;
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+
+
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+glb_temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+glb_temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+glb_temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+ntrop_temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+ntrop_temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+ntrop_temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV')
+    glb_temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    glb_temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    glb_temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
+end
+
+GROUP_NAME = 'ntrop_ts'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV')
+    ntrop_temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    ntrop_temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    ntrop_temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
+end
+
+i=1; 
+for group_size = [5, 20, 50]
+% Plotting EPC
+subplot(3,3,1+(i-1)*3)
+cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
+glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
+for c=1:size(CAL_WDW,1)
+    h=histc(squeeze(glb_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
+    hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
+end
+for c=1:size(CAL_WDW,1)
+    h=histc(squeeze(ntrop_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
+    hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
+end
+hold off; grid on; xlim([0 1]); ylim([0 0.7]);
+ylabel(['Percentage of reconstructions (grp\_size=',num2str(group_size),')'])
+if group_size==5 title(['EPC\_RV']); end
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+
+% Plotting CPS
+subplot(3,3,2+(i-1)*3)
+cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
+glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
+for c=1:size(CAL_WDW,1)
+    h=histc(squeeze(glb_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
+    hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
+end
+for c=1:size(CAL_WDW,1)
+    h=histc(squeeze(ntrop_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
+    hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
+end
+hold off; grid on; xlim([0 1]); ylim([0 0.7]);
+if group_size==50 xlabel('Correlation with Nino3.4'); end
+if group_size==5 title(['CPS\_RV']); end
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+
+% Plotting MRV
+subplot(3,3,3+(i-1)*3)
+cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
+glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
+for c=1:size(CAL_WDW,1)
+    h=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
+    hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
+end
+for c=1:size(CAL_WDW,1)
+    h=histc(squeeze(ntrop_temp_corr_MRV(group_size,c,:)),bins)/1000;
+    hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
+end
+hold off; grid on; xlim([0 1]); ylim([0 0.7]);
+if group_size==5 title(['MRV']); end
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+
+i=i+1;
+end; clear i;
+suptitle(['PDFs of glb and ntrop experiments'])
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+legend([glb_Hnd(1), ntrop_Hnd(1)],'glb','ntrop','Location','northwest')
+% legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
+% set(legendH, 'FontSize',10);
+
 
 %% Appendix Figure 1
 
@@ -550,7 +650,7 @@ figure;
 numstnstocompare=70;
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_ts_nstat'; % Change group name to get other figs
+GROUP_NAME = 'ntrop_ts_nstat'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -616,3 +716,28 @@ set(gcf, 'PaperPosition', [0 0 28 19]);
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
+
+%% Appendix Figure 4
+tic;
+window=31;
+NUM_OF_EOFS = 10;
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+rc31_expvar = expvar_ts;
+window=61;
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+rc61_expvar = expvar_ts;
+window=91;
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+rc91_expvar = expvar_ts;
+save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar');
+
+toc;
