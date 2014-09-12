@@ -55,6 +55,7 @@ for i=1:size(ats,2)
     end
 end
 
+NUM_YRS=499; NUM_TRIALS=1000;
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 %% Figure 1-1
@@ -468,59 +469,63 @@ for group_size = [5, 20, 50]
 subplot(3,3,1+(i-1)*3)
 cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
+h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
-    h=histc(squeeze(glb_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
-    hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
+    h(c,:)=histc(squeeze(glb_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
+%     hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
 end
+jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
+h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
-    h=histc(squeeze(ntrop_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
-    hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
+    h(c,:)=histc(squeeze(ntrop_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
+%     hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
 end
+jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 ylabel(['Percentage of reconstructions (grp\_size=',num2str(group_size),')'])
 if group_size==5 title(['EPC\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting CPS
 subplot(3,3,2+(i-1)*3)
-cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
+h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
-    h=histc(squeeze(glb_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
-    hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
+    h(c,:)=histc(squeeze(glb_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
 end
-for c=1:size(CAL_WDW,1)
-    h=histc(squeeze(ntrop_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
-    hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
-end
+glb_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
-if group_size==50 xlabel('Correlation with Nino3.4'); end
+h=zeros(10,length(bins));
+for c=1:size(CAL_WDW,1)
+    h(c,:)=histc(squeeze(ntrop_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
+end
+ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
+if group_size==50 xlabel('Correlation with Nino3.4','FontSize',14); end
 if group_size==5 title(['CPS\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting MRV
 subplot(3,3,3+(i-1)*3)
-cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
-glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
+h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
-    h=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
-    hold on; glb_Hnd(c) = plot(bins,h,'','Color',cmap(9,:),'LineWidth',2);
+    h(c,:)=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
 end
+glb_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
+h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
-    h=histc(squeeze(ntrop_temp_corr_MRV(group_size,c,:)),bins)/1000;
-    hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
+    h(c,:)=histc(squeeze(ntrop_temp_corr_MRV(group_size,c,:)),bins)/1000;
 end
+ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 if group_size==5 title(['MRV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 i=i+1;
 end; clear i;
-suptitle(['PDFs of glb and ntrop experiments'])
+suptitle(['PDF range of glb and ntrop experiments'])
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
-legend([glb_Hnd(1), ntrop_Hnd(1)],'glb','ntrop','Location','northwest')
-% legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
-% set(legendH, 'FontSize',10);
+legend([glb_Hnd, ntrop_Hnd],'glb','ntrop','Location','northwest')
+
 
 
 %% Appendix Figure 1
@@ -718,26 +723,43 @@ legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Rang
 set(legendH, 'FontSize',10);
 
 %% Appendix Figure 4
-tic;
 window=31;
 NUM_OF_EOFS = 10;
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-rc31_expvar = expvar_ts;
-window=61;
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-rc61_expvar = expvar_ts;
-window=91;
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-rc91_expvar = expvar_ts;
-save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar');
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc31_expvar = expvar_ts;
+% window=61;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc61_expvar = expvar_ts;
+% window=91;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc91_expvar = expvar_ts;
+% save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar');
 
-toc;
+load('DataFiles/all_rcor_ts_eofs.mat')
+% subplot(2,2,1)
+% pcolor(lon,lat,squeeze(rc31_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 1 with window length 31 years')
+% subplot(2,2,2)
+% pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 1 with window length 61 years')
+% subplot(2,2,3)
+% pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 1 with window length 91 years')
+% subplot(2,2,4)
+cmap=hsv(3);
+plot(rc31_expvar,'','Color',cmap(1,:),'LineWidth',2); hold on;
+plot(rc61_expvar,'','Color',cmap(2,:),'LineWidth',2);
+plot(rc91_expvar,'','Color',cmap(3,:),'LineWidth',2); hold off;
+ylim([0 50]); xlim([1,10]); legend('31 Year','61 Year','91 Year');
+ylabel('Percentage %'); grid on;
+xlabel('Number of EOF')
+title('Explained Variance of Running correlation EOFs');
