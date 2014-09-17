@@ -220,20 +220,21 @@ end
 data1 = corr_3d_fmt;
 data2 = runcr;
 values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1});
-colormap(flipud(gray))
+colormap(flipud(hot))
 
 % The plotting part
 
 hold on; Hnd = nan(1,5); cmap = hsv(6);
 for n=5:-1:1
     HA(n) = plot(bin,ts_runcorr_quan(n,:));
-    set(HA(n),'Color',cmap(n,:),'LineWidth',2);
+    set(HA(n),'Color','k','LineWidth',2);
 end
 plot([-0.3,-0.3],[-1 1],'k'); plot([0.3,0.3],[-1 1],'k')
 plot([-1 1],[-0.3,-0.3],'k'); plot([-1 1],[0.3,0.3],'k')
 grid on; axis equal; axis([-1 1 -1 1]);
 set(HA([1,5]),'LineStyle','-','LineWidth',1); % hold off;
-set(HA([3]),'LineStyle','-','LineWidth',3);
+set(HA([3]),'LineStyle','-','LineStyle','-.');
+set(HA([1,2]),'LineStyle','-','LineStyle','--');
 ylabel(['Running Correlations (',num2str(window),' yr windows)']);
 xlabel('Correlations over 499 yr period');
 title(['Correlation percentiles for modeled temperature, rcor=',num2str(window),'yrs'])
@@ -258,7 +259,7 @@ colorbar
 caxis([0,100])
 end
 
-legend('99th Percentile','95th Percentile','50th Percentile','5th Percentile','1st Percentile');
+legend('99th Percentile','95th Percentile','50th Percentile','5th Percentile','1st Percentile','Orientation','vertical');
 
 %% Figure 3
 figure;
@@ -480,7 +481,11 @@ for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(ntrop_temp_corr_EPC_RV(group_size,c,:)),bins)/1000;
 %     hold on; ntrop_Hnd(c) = plot(bins,h,'-','Color',cmap(1,:),'LineWidth',1);
 end
+glb_all = squeeze(glb_temp_corr_EPC_RV(group_size,:,:));
+ntrop_all = squeeze(ntrop_temp_corr_EPC_RV(group_size,:,:));
+sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
 jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
+
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 ylabel(['Percentage of reconstructions (grp\_size=',num2str(group_size),')'])
 if group_size==5 title(['EPC\_RV']); end
@@ -499,6 +504,9 @@ h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(ntrop_temp_corr_CPS_RV(group_size,c,:)),bins)/1000;
 end
+glb_all = squeeze(glb_temp_corr_CPS_RV(group_size,:,:));
+ntrop_all = squeeze(ntrop_temp_corr_CPS_RV(group_size,:,:));
+sig_diff = kstest2(squeeze(glb_all(1,:)),squeeze(ntrop_all(1,:)),0.0001)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 if group_size==50 xlabel('Correlation with Nino3.4','FontSize',14); end
 if group_size==5 title(['CPS\_RV']); end
@@ -511,10 +519,20 @@ for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
 end
 glb_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
+ks_matrix_bin = nan(10,10); ks_matrix_val = ks_matrix_bin;
+for i=1:10
+    for j=1:10
+        [ks_matrix_bin(i,j),ks_matrix_val(i,j)]=kstest2(squeeze(ntrop_all(i,:)),squeeze(ntrop_all(j,:)),0.0001);
+    end
+end
+
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(ntrop_temp_corr_MRV(group_size,c,:)),bins)/1000;
 end
+glb_all = squeeze(glb_temp_corr_MRV(group_size,:,:));
+ntrop_all = squeeze(ntrop_temp_corr_MRV(group_size,:,:));
+sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 if group_size==5 title(['MRV']); end
