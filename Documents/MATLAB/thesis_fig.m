@@ -310,7 +310,7 @@ set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
 figure;
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_ts_nstat'; % Change group name to get other figs
+GROUP_NAME = 'ntrop_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -372,10 +372,11 @@ set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]);
 
 end
 suptitle([strrep(GROUP_NAME,'_','\_'),' - Ranges of Correlation percentiles'])
-set(gcf, 'PaperPosition', [0 0 28 19]);
+set(gcf, 'PaperPosition', [0 0 19 23]);
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
+% saveas('gcf','../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/Figs/Fig4.pdf','output','pdf');
 
 %% Figure 8 - Probabilities of Non-stationary Stations
 figure;
