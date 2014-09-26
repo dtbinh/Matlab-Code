@@ -168,6 +168,16 @@ saveas(gcf,['Plots/nonstatmap+pc_rcor',num2str(window),'yr.jpg'])
 %         end
 %     end
 % end
+
+%% EOFS + Nonstat_ts_map
+
+figure;
+pcolor(lon,lat,squeeze(rc31_eof_ts_fm(1,:,:)));
+plotworld; hold on;
+
+[c,h]=contour(lon,lat,nonstat_tsmap,0:25:100,'m'); hold off;
+clabel(c,h,'Color','m')
+colormap(b2r(-0.03,0.03));
 %% Examining Certain Stations plotting Z-scores
 
 % x_lon = 226; [~,x_ind]= min(abs(lon-x_lon));

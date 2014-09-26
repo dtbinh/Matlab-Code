@@ -55,7 +55,7 @@ for i=1:size(ats,2)
     end
 end
 
-NUM_YRS=499; NUM_TRIALS=1000;
+NUM_YRS=499; NUM_TRIALS=1000; numstnstocompare=3:70;
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 %% Figure 1-1
@@ -305,12 +305,43 @@ set(gca, ...
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
 
+% Statisical Difference in Methods
+subplot(3,1,1)
+ks_stat=nan(70,1); mw_stat=nan(70,1);
+for g=numstnstocompare
+    [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_MRV(g,:)),squeeze(all_stn_corr_EPC_RV(g,:)));
+    [mw_stat(g),~]=ranksum(all_stn_corr_MRV(g,:),all_stn_corr_EPC_RV(g,:));
+end
+semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
+title('MRV vs EPC\_RV');
+set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,10^-2])
+
+subplot(3,1,2)
+ks_stat=nan(70,1); mw_stat=nan(70,1);
+for g=numstnstocompare
+    [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_MRV(g,:)),squeeze(all_stn_corr_CPS_RV(g,:)));
+    [mw_stat(g),~]=ranksum(all_stn_corr_MRV(g,:),all_stn_corr_CPS_RV(g,:));
+end
+semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
+title('MRV vs CPS\_RV');
+set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,10^-2])
+
+subplot(3,1,3)
+ks_stat=nan(70,1); mw_stat=nan(70,1);
+for g=numstnstocompare
+    [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_CPS_RV(g,:)),squeeze(all_stn_corr_EPC_RV(g,:)));
+    [mw_stat(g),~]=ranksum(all_stn_corr_CPS_RV(g,:),all_stn_corr_EPC_RV(g,:));
+end
+semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
+title('CPS\_RV vs EPC\_RV');
+set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,0.01])
+
 
 %% Figure 4-7
 figure;
 for window = [31, 61, 91]
 
-GROUP_NAME = 'ntrop_ts'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -429,7 +460,7 @@ end
 
 %% Figure 9 - Histogram Comparisons
 figure;
-window = 31; numstnstocompare=70;
+window = 91; numstnstocompare=70;
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9
@@ -485,6 +516,7 @@ end
 glb_all = squeeze(glb_temp_corr_EPC_RV(group_size,:,:));
 ntrop_all = squeeze(ntrop_temp_corr_EPC_RV(group_size,:,:));
 sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
+ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
@@ -508,6 +540,7 @@ end
 glb_all = squeeze(glb_temp_corr_CPS_RV(group_size,:,:));
 ntrop_all = squeeze(ntrop_temp_corr_CPS_RV(group_size,:,:));
 sig_diff = kstest2(squeeze(glb_all(1,:)),squeeze(ntrop_all(1,:)),0.0001)
+ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 if group_size==50 xlabel('Correlation with Nino3.4','FontSize',14); end
 if group_size==5 title(['CPS\_RV']); end
@@ -534,6 +567,7 @@ end
 glb_all = squeeze(glb_temp_corr_MRV(group_size,:,:));
 ntrop_all = squeeze(ntrop_temp_corr_MRV(group_size,:,:));
 sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
+ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 if group_size==5 title(['MRV']); end
@@ -579,7 +613,6 @@ for i=1:(length(folderlist))
     set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
                 
 end
-
 
 end
 
@@ -674,7 +707,7 @@ figure;
 numstnstocompare=70;
 for window = [31, 61, 91]
 
-GROUP_NAME = 'ntrop_ts_nstat'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
