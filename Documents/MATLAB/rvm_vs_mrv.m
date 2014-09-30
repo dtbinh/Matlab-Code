@@ -53,8 +53,122 @@ clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
 window = 31; % The running window in years
 n34_ind_RV = movingvar(n34_ind,VAR_WDW);
-RV_WDW = [15:(499-14)]; c=1;
-
+RV_WDW = [15:(499-14)]; NUM_YRS=499; NUM_TRIALS=1000; NUM_STNS=10;
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+%% Loading Options
+c=1;
 GROUP_NAME = 'glb_ts';
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
-load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/10stns_1000prox'])
+load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox'])
+reconstruction_iteration = 104;
+%% Calculations
+% Normalising
+stn_ts_nm=nan(size(stn_ts)); % nm means normalised
+stn_ts_mn=mean(stn_ts,3); 
+stn_ts_std=squeeze(std(permute(stn_ts,[3,1,2])));
+for n=1:NUM_TRIALS
+    for m=1:NUM_STNS
+       stn_ts_nm(n,m,:)= single((stn_ts(n,m,:)-stn_ts_mn(n,m))./(stn_ts_std(n,m)));
+    end
+end
+
+poscorr_stn_ts = stn_ts_nm;
+for n=1:NUM_TRIALS
+    for m=1:NUM_STNS
+        if corr(n34_ind, squeeze(stn_ts_nm(n,m,:))) < 0
+            poscorr_stn_ts(n,m,:) = -stn_ts_nm(n,m,:);
+        end
+    end
+end
+% Calculating Running variance
+stn_movvar=nan(NUM_TRIALS,NUM_STNS,NUM_YRS);
+for n=1:NUM_TRIALS
+    for m=1:NUM_STNS
+        stn_movvar(n,m,:) = movingvar(squeeze(stn_ts_nm(n,m,:)),VAR_WDW);
+    end
+end
+stn_MRV = squeeze(single(median(permute(stn_movvar,[2,1,3]))));
+
+stn_RVM = nan(size(stn_MRV));
+med_ts_nm = nan(size(stn_MRV));
+for n=1:NUM_TRIALS
+    med_ts = median(squeeze(poscorr_stn_ts(n,:,:)))';
+    med_ts_nm(n,:) = (med_ts-mean(med_ts))./std(med_ts)';
+    stn_RVM(n,:) = single(movingvar(squeeze(med_ts_nm(n,:)'),VAR_WDW));
+end
+
+%% Plotting
+for n=1:5
+    subplot(5,1,n)
+    plot(n34_ind,'k','LineWidth',2); % 104 looks bad
+    hold on; plot(squeeze(poscorr_stn_ts(reconstruction_iteration,n,:)),'r'); hold off;
+    xlim([0 500]); ylim([-3 3]); grid on
+    title(['Lon:',num2str(lon(stn_lon(reconstruction_iteration,n))),'Lat:',num2str(lat(stn_lat(reconstruction_iteration,n)))])
+%     subplot(5,2,2*n)
+%     plot(squeeze(stn_movvar(104,n,:)),'b') % 104 looks bad
+%     hold on; plot(n34_ind_RV,'k'); hold off;
+%     xlim([0 500]); ylim([0 3]); grid on
+    
+end
+figure
+for n=6:10
+    subplot(5,1,n-5)
+    plot(n34_ind,'k','LineWidth',2); % 104 looks bad
+    hold on; plot(squeeze(poscorr_stn_ts(reconstruction_iteration,n,:)),'r'); hold off;
+    xlim([0 500]); ylim([-3 3]); grid on
+    title(['Lon:',num2str(lon(stn_lon(reconstruction_iteration,n))),'Lat:',num2str(lat(stn_lat(reconstruction_iteration,n)))])
+   
+%     subplot(5,2,2*n)
+%     plot(squeeze(stn_movvar(104,n,:)),'b') % 104 looks bad
+%     hold on; plot(n34_ind_RV,'k'); hold off;
+%     xlim([0 500]); ylim([0 3]); grid on
+    
+end
+
+% Running Variance
+for n=1:5
+    subplot(5,1,n)
+%     plot(n34_ind,'k','LineWidth',2); % 104 looks bad
+%     hold on; plot(squeeze(stn_ts_nm(reconstruction_iteration,n,:)),'r'); hold off;
+%     xlim([0 500]); ylim([-3 3]); grid on
+%     subplot(5,2,2*n)
+    plot(squeeze(stn_movvar(104,n,:)),'b') % 104 looks bad
+    hold on; plot(n34_ind_RV,'k'); hold off;
+    xlim([0 500]); ylim([0 3]); grid on
+    title(['Lon:',num2str(lon(stn_lon(reconstruction_iteration,n))),'Lat:',num2str(lat(stn_lat(reconstruction_iteration,n)))])
+ 
+    
+end
+figure
+for n=6:10
+    subplot(5,1,n-5)
+%     plot(n34_ind,'k','LineWidth',2); % 104 looks bad
+%     hold on; plot(squeeze(stn_ts_nm(reconstruction_iteration,n,:)),'r'); hold off;
+%     xlim([0 500]); ylim([-3 3]); grid on
+%     subplot(5,2,2*n)
+    plot(squeeze(stn_movvar(104,n,:)),'b') % 104 looks bad
+    hold on; plot(n34_ind_RV,'k'); hold off;
+    xlim([0 500]); ylim([0 3]); grid on
+    title(['Lon:',num2str(lon(stn_lon(reconstruction_iteration,n))),'Lat:',num2str(lat(stn_lat(reconstruction_iteration,n)))])
+
+end
+
+% Plotting Medians etc
+subplot(3,1,1)
+plot(n34_ind,'k','LineWidth',2); hold on;
+plot(squeeze(med_ts_nm(reconstruction_iteration,:)),'r'); hold off;
+title('Normalised Median of Time series')
+
+subplot(3,1,2)
+plot(n34_ind_RV,'k','LineWidth',2); hold on;
+plot(squeeze(stn_RVM(reconstruction_iteration,:)),'r'); hold off;
+title('RVM method')
+
+subplot(3,1,3)
+plot(n34_ind_RV,'k','LineWidth',2); hold on;
+plot(squeeze(stn_MRV(reconstruction_iteration,:)),'r'); hold off;
+title('MRV method')

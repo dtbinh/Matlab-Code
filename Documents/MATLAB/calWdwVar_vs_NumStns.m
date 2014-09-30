@@ -9,7 +9,7 @@
 % function 'movingvar', 'plotworld', and the folder DataFiles
 
 %% Setup
-tic;
+clear; clc;
 ts_file = 'DataFiles/ts_A1.nc'; pr_file = 'DataFiles/pr_A1.nc';
 lat = nc_varget(ts_file,'lat'); lon = nc_varget(ts_file,'lon');
 time = nc_varget(ts_file,'time'); % Assumes both files use the same time
@@ -60,7 +60,7 @@ n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
-window = 31; % The running window in years
+window = 61; % The running window in years
 n34_ind_RV = movingvar(n34_ind,VAR_WDW);
 RV_WDW = [15:(499-14)];
 
@@ -88,18 +88,10 @@ load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/to
 
 for g = numstnstocompare
     for i=1:NUM_TRIALS
-        if exist('all_stn_MRV','var') && ~exist('var_MRV','var')
-            var_MRV(g,i) = var(squeeze(all_stn_MRV(g,i,:)));
-        end
-        if exist('all_stn_CPS_RV','var') && ~exist('var_CPS_RV','var')
-            var_CPS_RV(g,i) = var(squeeze(all_stn_CPS_RV(g,i,:)));
-        end
-        if exist('all_stn_EPC_RV','var') && ~exist('var_EPC_RV','var')
-            var_EPC_RV(g,i) = var(squeeze(all_stn_EPC_RV(g,i,:)));
-        end
-        if exist('all_stn_RVM','var') && ~exist('var_RVM','var')
-            var_RVM(g,i) = var(squeeze(all_stn_RVM(g,i,:)));
-        end
+        var_MRV(g,i) = var(squeeze(all_stn_MRV(g,i,:)));
+        var_CPS_RV(g,i) = var(squeeze(all_stn_CPS_RV(g,i,:)));
+        var_EPC_RV(g,i) = var(squeeze(all_stn_EPC_RV(g,i,:)));
+        var_RVM(g,i) = var(squeeze(all_stn_RVM(g,i,:)));
     end
 end
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%

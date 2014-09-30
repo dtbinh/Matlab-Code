@@ -777,35 +777,39 @@ set(legendH, 'FontSize',10);
 %% Appendix Figure 4
 window=31;
 NUM_OF_EOFS = 10;
-% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
-% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-% rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-% rc31_expvar = expvar_ts;
-% window=61;
-% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-% rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-% rc61_expvar = expvar_ts;
-% window=91;
-% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-% rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-% rc91_expvar = expvar_ts;
-% save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar');
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+rc31_PC_ts = PC_ts;
+rc31_expvar = expvar_ts;
+window=61;
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+rc61_expvar = expvar_ts;
+rc61_PC_ts = PC_ts;
+window=91;
+load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+rc91_expvar = expvar_ts;
+rc91_PC_ts = PC_ts;
+save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar', ...
+       'rc31_PC_ts','rc61_PC_ts','rc91_PC_ts');
 
 load('DataFiles/all_rcor_ts_eofs.mat')
-% subplot(2,2,1)
-% pcolor(lon,lat,squeeze(rc31_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-% title('EOF 1 with window length 31 years')
-% subplot(2,2,2)
-% pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-% title('EOF 1 with window length 61 years')
-% subplot(2,2,3)
-% pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-% title('EOF 1 with window length 91 years')
+subplot(3,1,1)
+pcolor(lon,lat,squeeze(rc31_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+title('EOF 2 with window length 31 years')
+subplot(3,1,2)
+pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+title('EOF 2 with window length 61 years')
+subplot(3,1,3)
+pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+title('EOF 2 with window length 91 years')
 % subplot(2,2,4)
 cmap=hsv(3);
 plot(rc31_expvar,'','Color',cmap(1,:),'LineWidth',2); hold on;
@@ -815,3 +819,21 @@ ylim([0 50]); xlim([1,10]); legend('31 Year','61 Year','91 Year');
 ylabel('Percentage %'); grid on;
 xlabel('Number of EOF')
 title('Explained Variance of Running correlation EOFs');
+
+% Correlation between PC timeseries
+% a=rc61_PC_ts(2,:)'; b=rc91_PC_ts(2,:)';
+a=rc61_eof_ts_fm(2,:)'; b=rc91_eof_ts_fm(2,:)';
+corr(a,b)
+% cor = 0;
+% for i=0:30
+%     cor(i+1) = corr(a((i+1):400+i),b(1:400))
+% end
+% plot(cor); grid minor
+
+% Plotting PC Time series
+a=rc31_PC_ts(2,:)'; b=rc61_PC_ts(2,:)'; c=rc91_PC_ts(2,:)'; clf;
+plot(a,'r'); hold on;
+plot(b,'g'); grid on;
+plot(c,'b'); hold off
+legend('31yr rcor','61yr rcor','91yr rcor','location','southeast')
+title('EOF2 PC time series for varying rcor windows')
