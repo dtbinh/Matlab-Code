@@ -344,6 +344,7 @@ set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,0.01])
 
 %% Figure 4-7
 figure;
+s_Hnd = tight_subplot(3,4)
 for window = [31, 61, 91]
 
 GROUP_NAME = 'glb_ts'; % Change group name to get other figs
@@ -357,17 +358,21 @@ end
 temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_corr_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 
 for c=1:size(CAL_WDW,1)
     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
-     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV')
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
     temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
     temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
     temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
+    temp_corr_RVM(:,c,:) = all_stn_corr_RVM;
 end
 
 % Plotting EPC
-subplot(3,3,1+(floor(window/30)-1)*3)
+
+% subplot(3,4,1+(floor(window/30)-1)*4)
+axes(s_Hnd(1+(floor(window/30)-1)*4))
 corr_RV_qn = quantile(temp_corr_EPC_RV,[.05 .5 .95], 3);
 % Range Plotting
 corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
@@ -377,11 +382,10 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,1]); grid on
-ylabel(['Correlation (',num2str(window),'yrs of data)'])
-if window==31 title(['EPC\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
 % Plotting CPS
-subplot(3,3,2+(floor(window/30)-1)*3)
+% subplot(3,4,2+(floor(window/30)-1)*4)
+axes(s_Hnd(2+(floor(window/30)-1)*4))
 corr_RV_qn = quantile(temp_corr_CPS_RV,[.05 .5 .95], 3);
 corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
 corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
@@ -390,11 +394,10 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,1]); grid on
-if window==91 xlabel('Number of Stations included in reconstruction'); end
-if window==31 title(['CPS\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
 % Plotting MRV
-subplot(3,3,3+(floor(window/30)-1)*3)
+% subplot(3,4,3+(floor(window/30)-1)*4)
+axes(s_Hnd(3+(floor(window/30)-1)*4))
 corr_RV_qn = quantile(temp_corr_MRV,[.05 .5 .95], 3);
 corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
 corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
@@ -403,10 +406,38 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,1]); grid on
+
 if window==31 title(['MRV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+% set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+% Plotting RVM
+% subplot(3,4,4+(floor(window/30)-1)*4)
+axes(s_Hnd(4+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_corr_RVM,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,1]); grid on
+
 
 end
+
+axes(s_Hnd(1)); title(['EPC\_RV']);
+axes(s_Hnd(2)); title(['CPS\_RV']);
+axes(s_Hnd(3)); title(['MRV']);
+axes(s_Hnd(4)); title(['RVM']);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
+end
+
+axes(s_Hnd(10)); xlabel('Number of Stations included in reconstruction');
+set(gca,'YTickLabel',[0:0.2:1])
+ylabel(['Correlation (',num2str(window),'yrs of data)'])
 suptitle([strrep(GROUP_NAME,'_','\_'),' - Ranges of Correlation percentiles'])
 set(gcf, 'PaperPosition', [0 0 19 23]);
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
@@ -478,16 +509,19 @@ DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(
 glb_temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 glb_temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 glb_temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+glb_temp_corr_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 ntrop_temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 ntrop_temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 ntrop_temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+ntrop_temp_corr_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 
 for c=1:size(CAL_WDW,1)
     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
-     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV')
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
     glb_temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
     glb_temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
     glb_temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
+    glb_temp_corr_RVM(:,c,:) = all_stn_corr_RVM;
 end
 
 GROUP_NAME = 'ntrop_ts'; % Change group name to get other figs
@@ -495,16 +529,17 @@ DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(
 
 for c=1:size(CAL_WDW,1)
     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
-     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV')
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
     ntrop_temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
     ntrop_temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
     ntrop_temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
+    ntrop_temp_corr_RVM(:,c,:) = all_stn_corr_RVM;
 end
 
 i=1; 
 for group_size = [5, 20, 50]
 % Plotting EPC
-subplot(3,3,1+(i-1)*3)
+subplot(3,4,1+(i-1)*4)
 cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
 h=zeros(10,length(bins));
@@ -530,7 +565,7 @@ if group_size==5 title(['EPC\_RV']); end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting CPS
-subplot(3,3,2+(i-1)*3)
+subplot(3,4,2+(i-1)*4)
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
@@ -552,7 +587,7 @@ if group_size==5 title(['CPS\_RV']); end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting MRV
-subplot(3,3,3+(i-1)*3)
+subplot(3,4,3+(i-1)*4)
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
@@ -576,6 +611,33 @@ ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 if group_size==5 title(['MRV']); end
+set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
+
+% Plotting RVM
+subplot(3,4,4+(i-1)*4)
+h=zeros(10,length(bins));
+for c=1:size(CAL_WDW,1)
+    h(c,:)=histc(squeeze(glb_temp_corr_RVM(group_size,c,:)),bins)/1000;
+end
+glb_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
+ks_matrix_bin = nan(10,10); ks_matrix_val = ks_matrix_bin;
+for i=1:10
+    for j=1:10
+        [ks_matrix_bin(i,j),ks_matrix_val(i,j)]=kstest2(squeeze(ntrop_all(i,:)),squeeze(ntrop_all(j,:)),0.0001);
+    end
+end
+
+h=zeros(10,length(bins));
+for c=1:size(CAL_WDW,1)
+    h(c,:)=histc(squeeze(ntrop_temp_corr_RVM(group_size,c,:)),bins)/1000;
+end
+glb_all = squeeze(glb_temp_corr_RVM(group_size,:,:));
+ntrop_all = squeeze(ntrop_temp_corr_RVM(group_size,:,:));
+sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
+ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
+ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
+hold off; grid on; xlim([0 1]); ylim([0 0.7]);
+if group_size==5 title(['RVM']); end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 i=i+1;
@@ -780,42 +842,43 @@ legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Rang
 set(legendH, 'FontSize',10);
 
 %% Appendix Figure 4
-window=31;
-NUM_OF_EOFS = 10;
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
-ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-rc31_PC_ts = PC_ts;
-rc31_expvar = expvar_ts;
-window=61;
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-rc61_expvar = expvar_ts;
-rc61_PC_ts = PC_ts;
-window=91;
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-[eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-rc91_expvar = expvar_ts;
-rc91_PC_ts = PC_ts;
-save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar', ...
-       'rc31_PC_ts','rc61_PC_ts','rc91_PC_ts');
+% window=31;
+% NUM_OF_EOFS = 10;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc31_PC_ts = PC_ts;
+% rc31_expvar = expvar_ts;
+% window=61;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc61_expvar = expvar_ts;
+% rc61_PC_ts = PC_ts;
+% window=91;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc91_expvar = expvar_ts;
+% rc91_PC_ts = PC_ts;
+% save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar', ...
+%        'rc31_PC_ts','rc61_PC_ts','rc91_PC_ts');
 
 load('DataFiles/all_rcor_ts_eofs.mat')
-subplot(3,1,1)
-pcolor(lon,lat,squeeze(rc31_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-title('EOF 2 with window length 31 years')
 subplot(3,1,2)
-pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-title('EOF 2 with window length 61 years')
-subplot(3,1,3)
-pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-title('EOF 2 with window length 91 years')
+pcolor(lon,lat,squeeze(rc31_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+title('EOF1 (31yr window)')
+% subplot(3,1,2)
+% pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 2 with window length 61 years')
+% subplot(3,1,3)
+% pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 2 with window length 91 years')
 % subplot(2,2,4)
+subplot(3,1,1)
 cmap=hsv(3);
 plot(rc31_expvar,'','Color',cmap(1,:),'LineWidth',2); hold on;
 plot(rc61_expvar,'','Color',cmap(2,:),'LineWidth',2);
@@ -823,7 +886,8 @@ plot(rc91_expvar,'','Color',cmap(3,:),'LineWidth',2); hold off;
 ylim([0 50]); xlim([1,10]); legend('31 Year','61 Year','91 Year');
 ylabel('Percentage %'); grid on;
 xlabel('Number of EOF')
-title('Explained Variance of Running correlation EOFs');
+title('Explained Variance');
+
 
 % Correlation between PC timeseries
 % a=rc61_PC_ts(2,:)'; b=rc91_PC_ts(2,:)';
@@ -836,9 +900,9 @@ corr(a,b)
 % plot(cor); grid minor
 
 % Plotting PC Time series
-a=rc31_PC_ts(2,:)'; b=rc61_PC_ts(2,:)'; c=rc91_PC_ts(2,:)'; clf;
-plot(a,'r'); hold on;
-plot(b,'g'); grid on;
-plot(c,'b'); hold off
+a=rc31_PC_ts(1,:)'; b=rc61_PC_ts(1,:)'; c=rc91_PC_ts(1,:)'; clf;
+plot(a,'','Color',cmap(1,:)); hold on;
+plot(b,'','Color',cmap(2,:)); grid on;
+plot(c,'','Color',cmap(3,:)); hold off
 legend('31yr rcor','61yr rcor','91yr rcor','location','southeast')
-title('EOF2 PC time series for varying rcor windows')
+title('PC1')
