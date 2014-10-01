@@ -66,40 +66,43 @@ RV_WDW = [15:(499-14)];
 
 %% Loading proxies
 GROUP_NAME = 'glb_ts';
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
 % DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
 numstnstocompare = [3:70];                                     %%%%%%%%
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;
 % Calibration windows set to being 10 overlapping windows over 499 years
-NUM_CAL_WDW = 10; clear CAL_WDW;
-overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
-for c=0:9
-    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
-end
 
 %% Beginning the Loop
-for c=1:size(CAL_WDW,1)
-
-var_MRV=nan(max(numstnstocompare), NUM_TRIALS,'single');
-var_CPS_RV=nan(max(numstnstocompare), NUM_TRIALS,'single');
-var_EPC_RV=nan(max(numstnstocompare), NUM_TRIALS,'single');
-var_RVM=nan(max(numstnstocompare), NUM_TRIALS,'single');
-load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'])
-
-for g = numstnstocompare
-    for i=1:NUM_TRIALS
-        var_MRV(g,i) = var(squeeze(all_stn_MRV(g,i,:)));
-        var_CPS_RV(g,i) = var(squeeze(all_stn_CPS_RV(g,i,:)));
-        var_EPC_RV(g,i) = var(squeeze(all_stn_EPC_RV(g,i,:)));
-        var_RVM(g,i) = var(squeeze(all_stn_RVM(g,i,:)));
+for window = [31, 61, 91]
+    DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
+    NUM_CAL_WDW = 10; clear CAL_WDW;
+    overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+    for c=0:9
+        CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
     end
-end
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
-save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'],...
-     'all_stn_MRV','all_stn_corr_MRV','all_stn_rmse_MRV', ...
-     'all_stn_RVM','all_stn_corr_RVM','all_stn_rmse_RVM', ...
-     'DIR_NAME','CAL_WDW','all_stn_EPC','all_stn_corr_EPC','all_stn_rmse_EPC','all_stn_EPC_RV', ...
-     'all_stn_corr_EPC_RV','all_stn_rmse_EPC_RV','all_stn_CPS','all_stn_CPS_RV', ...
-     'var_MRV','var_CPS_RV','var_EPC_RV','var_RVM',...
-     'all_stn_corr_CPS','all_stn_rmse_CPS','all_stn_corr_CPS_RV','all_stn_rmse_CPS_RV','-v7.3');
+    for c=1:size(CAL_WDW,1)
+
+    var_MRV=nan(max(numstnstocompare), NUM_TRIALS,'single');
+    var_CPS_RV=nan(max(numstnstocompare), NUM_TRIALS,'single');
+    var_EPC_RV=nan(max(numstnstocompare), NUM_TRIALS,'single');
+    var_RVM=nan(max(numstnstocompare), NUM_TRIALS,'single');
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'])
+
+    for g = numstnstocompare
+        for i=1:NUM_TRIALS
+            var_MRV(g,i) = var(squeeze(all_stn_MRV(g,i,:)));
+            var_CPS_RV(g,i) = var(squeeze(all_stn_CPS_RV(g,i,:)));
+            var_EPC_RV(g,i) = var(squeeze(all_stn_EPC_RV(g,i,:)));
+            var_RVM(g,i) = var(squeeze(all_stn_RVM(g,i,:)));
+        end
+    end
+    DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
+    save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'],...
+         'all_stn_MRV','all_stn_corr_MRV','all_stn_rmse_MRV', ...
+         'all_stn_RVM','all_stn_corr_RVM','all_stn_rmse_RVM', ...
+         'DIR_NAME','CAL_WDW','all_stn_EPC','all_stn_corr_EPC','all_stn_rmse_EPC','all_stn_EPC_RV', ...
+         'all_stn_corr_EPC_RV','all_stn_rmse_EPC_RV','all_stn_CPS','all_stn_CPS_RV', ...
+         'var_MRV','var_CPS_RV','var_EPC_RV','var_RVM',...
+         'all_stn_corr_CPS','all_stn_rmse_CPS','all_stn_corr_CPS_RV','all_stn_rmse_CPS_RV','-v7.3');
+    end
+
 end

@@ -268,6 +268,7 @@ load('DataFiles/500yrCalWdw_meth_stats.mat')
 qEPC = quantile(all_stn_corr_EPC_RV,[.05 .5 .95], 2);
 qMRV = quantile(all_stn_corr_MRV,[.05 .5 .95], 2);
 qCPS = quantile(all_stn_corr_CPS_RV,[.05 .5 .95], 2);
+qRVM = quantile(all_stn_corr_RVM,[.05 .5 .95], 2);
 
 clf; axes; hold on; grid on;
 Hnd(1,1) = plot(squeeze(qMRV(:,1)),'--g');
@@ -277,16 +278,20 @@ Hnd(2,1) = plot(squeeze(qEPC(:,1)),'--r');
 Hnd(2,3) = plot(squeeze(qEPC(:,3)),'--r');
 Hnd(3,1) = plot(squeeze(qCPS(:,1)),'--b');
 Hnd(3,3) = plot(squeeze(qCPS(:,3)),'--b');
+Hnd(4,1) = plot(squeeze(qRVM(:,1)),'--m');
+Hnd(4,3) = plot(squeeze(qRVM(:,3)),'--m');
 Hnd(1,2) = plot(squeeze(qMRV(:,2)),'g','LineWidth',2);
 Hnd(2,2) = plot(squeeze(qEPC(:,2)),'r','LineWidth',2);
 Hnd(3,2) = plot(squeeze(qCPS(:,2)),'b','LineWidth',2);
+Hnd(4,2) = plot(squeeze(qRVM(:,2)),'m','LineWidth',2);
 hold off;
 set(Hnd(1,[1,3]),'Color','g','MarkerFaceColor','g');
 set(Hnd(2,[1,3]),'Color','r','MarkerFaceColor','r');
 set(Hnd(3,[1,3]),'Color','b','MarkerFaceColor','b');
+set(Hnd(4,[1,3]),'Color','m','MarkerFaceColor','m');
 ylabel('Percentile Correlations with Nino3.4 index','FontSize',14  ); 
 xlabel('Number of Stations used in reconstruction','FontSize',14  );
-legend([Hnd(1:3,2); Hnd(3,1); Hnd(3,3);],'MRV Median','EPC\_RV Median','CPS\_RV Median', ...
+legend([Hnd(1:4,2); Hnd(3,1); Hnd(3,3);],'MRV Median','EPC\_RV Median','CPS\_RV Median', 'RVM Median', ...
        '5^t^h Percentile','95^t^h Percentile','location','southeast'                );
 % title('Reconstructions from a global selection of pseudoproxies, using all 499 years of data')
 set(gca, ...

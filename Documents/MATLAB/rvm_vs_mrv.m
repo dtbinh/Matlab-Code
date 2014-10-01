@@ -102,11 +102,13 @@ for n=1:NUM_TRIALS
 end
 
 %% Plotting
+mov_corr = nan(NUM_STNS,NUM_YRS);
 for n=1:5
     subplot(5,1,n)
-    plot(n34_ind,'k','LineWidth',2); % 104 looks bad
-    hold on; plot(squeeze(poscorr_stn_ts(reconstruction_iteration,n,:)),'r'); hold off;
-    xlim([0 500]); ylim([-3 3]); grid on
+%     plot(n34_ind,'k','LineWidth',2); % 104 looks bad
+    mov_corr(n,:) = movingCorrelation([n34_ind,squeeze(poscorr_stn_ts(reconstruction_iteration,n,:))],VAR_WDW,2);
+    area(squeeze(mov_corr(n,32:end)));
+    xlim([0 500]); ylim([-1 1]); grid on
     title(['Lon:',num2str(lon(stn_lon(reconstruction_iteration,n))),'Lat:',num2str(lat(stn_lat(reconstruction_iteration,n)))])
 %     subplot(5,2,2*n)
 %     plot(squeeze(stn_movvar(104,n,:)),'b') % 104 looks bad
@@ -117,9 +119,9 @@ end
 figure
 for n=6:10
     subplot(5,1,n-5)
-    plot(n34_ind,'k','LineWidth',2); % 104 looks bad
-    hold on; plot(squeeze(poscorr_stn_ts(reconstruction_iteration,n,:)),'r'); hold off;
-    xlim([0 500]); ylim([-3 3]); grid on
+%     plot(n34_ind,'k','LineWidth',2); % 104 looks bad
+    mov_corr(n,:) = movingCorrelation([n34_ind,squeeze(poscorr_stn_ts(reconstruction_iteration,n,:))],VAR_WDW,2);
+    area(squeeze(mov_corr(n,32:end))); xlim([0 500]); ylim([-1 1]); grid on
     title(['Lon:',num2str(lon(stn_lon(reconstruction_iteration,n))),'Lat:',num2str(lat(stn_lat(reconstruction_iteration,n)))])
    
 %     subplot(5,2,2*n)
@@ -129,6 +131,7 @@ for n=6:10
     
 end
 
+figure
 % Running Variance
 for n=1:5
     subplot(5,1,n)
@@ -157,18 +160,32 @@ for n=6:10
 
 end
 
+figure
 % Plotting Medians etc
-subplot(3,1,1)
+subplot(4,1,1)
 plot(n34_ind,'k','LineWidth',2); hold on;
 plot(squeeze(med_ts_nm(reconstruction_iteration,:)),'r'); hold off;
 title('Normalised Median of Time series')
 
-subplot(3,1,2)
+subplot(4,1,2)
 plot(n34_ind_RV,'k','LineWidth',2); hold on;
 plot(squeeze(stn_RVM(reconstruction_iteration,:)),'r'); hold off;
 title('RVM method')
 
-subplot(3,1,3)
+subplot(4,1,3)
 plot(n34_ind_RV,'k','LineWidth',2); hold on;
 plot(squeeze(stn_MRV(reconstruction_iteration,:)),'r'); hold off;
 title('MRV method')
+
+subplot(4,1,4)
+temp=std(mov_corr); temp=temp(31:end);
+rvm=squeeze(stn_RVM(reconstruction_iteration,:)); rvm=rvm(16:end-15);
+[axH std_H rvm_H] = plotyy(1:469,temp,1:469,rvm);
+legend([std_H rvm_H],'std(r(ts))','RVM','orientation','horizontal')
+xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+title(['std of corr(proxy temp) vs RVM method, r=',num2str(corr(temp',rvm'))])
+
+% Scatterplot
+
+scatter(rvm,temp)
+xlabel('rvm'); ylabel('std(r(ts))');
