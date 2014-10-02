@@ -94,11 +94,11 @@ set(text(0.1,0.25,'0.75'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundCo
 set(text(0,0,'0.50'),'FontSize',15,'Rotation',40,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.15,0.07,'0.25'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center','Visible','off')
 set(text(0,-0.28,'0.05'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-set(text(0.26,0.76,'0.99'),'FontSize',15,'Rotation',30,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
+set(text(0.26,0.76,'0.99'),'FontSize',15,'Rotation',35,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
 set(text(0.31,-0.33,'0.01'),'FontSize',15,'Rotation',45,'Margin',0.1,'BackgroundColor',[1 1 1],'HorizontalAlignment','center')
-ylabel(['Running Correlations (',num2str(window),' yr windows)'],'FontSize',14);
-xlabel('Correlations over 499 yr period','FontSize',14);
-title(['Correlation percentiles for modeled temperature, rcor=',num2str(window),'yrs'],'FontSize',14)
+ylabel(['r(',num2str(window),'yr)'],'FontSize',14);
+xlabel('r(499yr)','FontSize',14);
+title(['Percentiles'],'FontSize',14,'FontWeight','bold')
 set(gca, ...
     'TickDir','in', ...
     'Box', 'on',    ...
@@ -124,7 +124,7 @@ figure;
 
 contourf(lon,lat,corr_ts); axis equal;
 shading flat
-title('Correlation Coefficients for Temperature','FontSize',14,'FontWeight','bold');
+title('r(ts,Nino3.4)','FontSize',14,'FontWeight','bold');
 plotworld;
 colormap(b2r(-1,1));
 set(gca, ...
@@ -160,7 +160,18 @@ caxis([0, 200]);
 colorbar
 colormap(ncmap31);
 num_nonstat = length(find(nonstat_tsmap>47));
-title(['Num of nonstationary stations for temp (',num2str(num_nonstat),'), rcor window:',num2str(window),'yrs'])
+title(['r(',num2str(window),'yr)'],'FontSize',14,'FontWeight','bold')
+set(gca, ...
+    'TickDir','out', ...
+    'Box', 'on',    ...
+    'YTick'       , -90:30:90, ...
+    'YTickLabel'  , {'90S','60S','30S','EQ','30N','60N','90N'} ,...
+    'LineWidth'   , 1,  ...    
+    'YLim'        , [-90 90], ...
+    'XLim'        , [0 360],  ...
+    'FontSize'    , 14   ...
+    );
+text(300,-50,['N=',num2str(num_nonstat)],'FontSize',14)
 cbfreeze;
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map61yrwdw.mat
 NUM_CONTOURS = 10;
@@ -172,7 +183,18 @@ caxis([0, 200]);
 colorbar
 colormap(ncmap61);
 num_nonstat = length(find(nonstat_tsmap>44));
-title(['Num of nonstationary stations for temp (',num2str(num_nonstat),'), rcor window:',num2str(window),'yrs'])
+title(['r(',num2str(window),'yr)'],'FontSize',14,'FontWeight','bold')
+set(gca, ...
+    'TickDir','out', ...
+    'Box', 'on',    ...
+    'YTick'       , -90:30:90, ...
+    'YTickLabel'  , {'90S','60S','30S','EQ','30N','60N','90N'} ,...
+    'LineWidth'   , 1,  ...    
+    'YLim'        , [-90 90], ...
+    'XLim'        , [0 360],  ...
+    'FontSize'    , 14   ...
+    );
+text(300,-50,['N=',num2str(num_nonstat)],'FontSize',14)
 cbfreeze;
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map91yrwdw.mat
 NUM_CONTOURS = 10;
@@ -184,7 +206,18 @@ caxis([0, 200]);
 colorbar
 colormap(ncmap91);
 num_nonstat = length(find(nonstat_tsmap>41));
-title(['Num of nonstationary stations for temp (',num2str(num_nonstat),'), rcor window:',num2str(window),'yrs'])
+title(['r(',num2str(window),'yr)'],'FontSize',14,'FontWeight','bold')
+set(gca, ...
+    'TickDir','out', ...
+    'Box', 'on',    ...
+    'YTick'       , -90:30:90, ...
+    'YTickLabel'  , {'90S','60S','30S','EQ','30N','60N','90N'} ,...
+    'LineWidth'   , 1,  ...    
+    'YLim'        , [-90 90], ...
+    'XLim'        , [0 360],  ...
+    'FontSize'    , 14   ...
+    );
+text(300,-50,['N=',num2str(num_nonstat)],'FontSize',14)
 cbfreeze
 
 %% Figure 2-2
@@ -220,7 +253,8 @@ end
 data1 = corr_3d_fmt;
 data2 = runcr;
 values = hist3([data1(:) data2(:)],{-1:0.01:1, -1:0.01:1});
-colormap(flipud(hot))
+cmap=hot(64);
+colormap(flipud(cmap(24:end,:)))
 
 % The plotting part
 
@@ -235,9 +269,9 @@ grid on; axis equal; axis([-1 1 -1 1]);
 set(HA([1,5]),'LineStyle','-','LineWidth',1); % hold off;
 set(HA([3]),'LineStyle','-','LineStyle','-.');
 set(HA([1,2]),'LineStyle','-','LineStyle','--');
-ylabel(['Running Correlations (',num2str(window),' yr windows)']);
-xlabel('Correlations over 499 yr period');
-title(['Correlation percentiles for modeled temperature, rcor=',num2str(window),'yrs'])
+ylabel(['r(',num2str(window),'yr)'],'FontSize'    , 14);
+xlabel('r(499yr)','FontSize'    , 14);
+% title(['Correlation percentiles for modeled temperature, rcor=',num2str(window),'yrs'])
 set(gca, ...
     'TickDir','in', ...
     'Box', 'on',    ...
@@ -251,7 +285,8 @@ set(gca, ...
     'XTick'       , [-1,-0.3,0,0.3,1], ...
     'LineWidth'   , 1,  ...    
     'YLim'        , [-1 1], ...
-    'XLim'        , [-1 1] ...
+    'XLim'        , [-1 1], ...
+    'FontSize'    , 14 ...
     );
 
 pcolor(-1:0.01:1,-1:0.01:1,values'); shading flat
@@ -259,7 +294,9 @@ colorbar
 caxis([0,100])
 end
 
-legend('99th Percentile','95th Percentile','50th Percentile','5th Percentile','1st Percentile','Orientation','vertical');
+h=legend('99th','95th','50th','5th','1st','Orientation','vertical');
+v = get(h,'title');
+set(v,'string','Percentiles','FontSize',14);
 
 %% Figure 3
 figure;
@@ -273,13 +310,13 @@ qRVM = quantile(all_stn_corr_RVM,[.05 .5 .95], 2);
 clf; axes; hold on; grid on;
 Hnd(1,1) = plot(squeeze(qMRV(:,1)),'--g');
 set(Hnd(1,1),'Color','g','MarkerFaceColor','g');
-Hnd(1,3) = plot(squeeze(qMRV(:,3)),'--g');
+Hnd(1,3) = plot(squeeze(qMRV(:,3)),'-.g');
 Hnd(2,1) = plot(squeeze(qEPC(:,1)),'--r');
-Hnd(2,3) = plot(squeeze(qEPC(:,3)),'--r');
+Hnd(2,3) = plot(squeeze(qEPC(:,3)),'-.r');
 Hnd(3,1) = plot(squeeze(qCPS(:,1)),'--b');
-Hnd(3,3) = plot(squeeze(qCPS(:,3)),'--b');
+Hnd(3,3) = plot(squeeze(qCPS(:,3)),'-.b');
 Hnd(4,1) = plot(squeeze(qRVM(:,1)),'--m');
-Hnd(4,3) = plot(squeeze(qRVM(:,3)),'--m');
+Hnd(4,3) = plot(squeeze(qRVM(:,3)),'-.m');
 Hnd(1,2) = plot(squeeze(qMRV(:,2)),'g','LineWidth',2);
 Hnd(2,2) = plot(squeeze(qEPC(:,2)),'r','LineWidth',2);
 Hnd(3,2) = plot(squeeze(qCPS(:,2)),'b','LineWidth',2);
@@ -289,8 +326,8 @@ set(Hnd(1,[1,3]),'Color','g','MarkerFaceColor','g');
 set(Hnd(2,[1,3]),'Color','r','MarkerFaceColor','r');
 set(Hnd(3,[1,3]),'Color','b','MarkerFaceColor','b');
 set(Hnd(4,[1,3]),'Color','m','MarkerFaceColor','m');
-ylabel('Percentile Correlations with Nino3.4 index','FontSize',14  ); 
-xlabel('Number of Stations used in reconstruction','FontSize',14  );
+ylabel('r(499yr)','FontSize',14  ); 
+xlabel('Network Size','FontSize',14  );
 legend([Hnd(1:4,2); Hnd(3,1); Hnd(3,3);],'MRV Median','EPC\_RV Median','CPS\_RV Median', 'RVM Median', ...
        '5^t^h Percentile','95^t^h Percentile','location','southeast'                );
 % title('Reconstructions from a global selection of pseudoproxies, using all 499 years of data')
@@ -355,7 +392,7 @@ figure;
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
-GROUP_NAME = 'peof_nSTCZ_ts'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -442,7 +479,7 @@ for i=1:12
     set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
 end
 
-axes(s_Hnd(9)); xlabel('Proxy Network Size');
+axes(s_Hnd(9)); xlabel('Network Size');
 for window = [31, 61, 91]
     axes(s_Hnd(1+(floor(window/30)-1)*4));
     set(gca,'YTickLabel',[0:0.2:1]);

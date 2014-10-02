@@ -262,8 +262,9 @@ for c=1:size(CAL_WDW,1)
             RVM_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_RVM(NUM_STNS,n,VAR_WDW+1:end))));
         end
         
-    end
     toc;
+    end
+
     
     EPC_RV_all_grps(c,:,:) = all_stn_corr_EPC_RV;
     CPS_RV_all_grps(c,:,:) = all_stn_corr_CPS_RV;
