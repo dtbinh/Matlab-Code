@@ -310,44 +310,52 @@ set(gca, ...
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
 
-% Statisical Difference in Methods
-subplot(3,1,1)
-ks_stat=nan(70,1); mw_stat=nan(70,1);
-for g=numstnstocompare
-    [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_MRV(g,:)),squeeze(all_stn_corr_EPC_RV(g,:)));
-    [mw_stat(g),~]=ranksum(all_stn_corr_MRV(g,:),all_stn_corr_EPC_RV(g,:));
-end
-semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
-title('MRV vs EPC\_RV');
-set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,10^-2])
-
-subplot(3,1,2)
-ks_stat=nan(70,1); mw_stat=nan(70,1);
-for g=numstnstocompare
-    [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_MRV(g,:)),squeeze(all_stn_corr_CPS_RV(g,:)));
-    [mw_stat(g),~]=ranksum(all_stn_corr_MRV(g,:),all_stn_corr_CPS_RV(g,:));
-end
-semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
-title('MRV vs CPS\_RV');
-set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,10^-2])
-
-subplot(3,1,3)
-ks_stat=nan(70,1); mw_stat=nan(70,1);
-for g=numstnstocompare
-    [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_CPS_RV(g,:)),squeeze(all_stn_corr_EPC_RV(g,:)));
-    [mw_stat(g),~]=ranksum(all_stn_corr_CPS_RV(g,:),all_stn_corr_EPC_RV(g,:));
-end
-semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
-title('CPS\_RV vs EPC\_RV');
-set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,0.01])
+% % Statisical Difference in Methods
+% subplot(3,1,1)
+% ks_stat=nan(70,1); mw_stat=nan(70,1);
+% for g=numstnstocompare
+%     [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_MRV(g,:)),squeeze(all_stn_corr_EPC_RV(g,:)));
+%     [mw_stat(g),~]=ranksum(all_stn_corr_MRV(g,:),all_stn_corr_EPC_RV(g,:));
+% end
+% semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
+% title('MRV vs EPC\_RV');
+% set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,10^-2])
+% 
+% subplot(3,1,2)
+% ks_stat=nan(70,1); mw_stat=nan(70,1);
+% for g=numstnstocompare
+%     [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_MRV(g,:)),squeeze(all_stn_corr_CPS_RV(g,:)));
+%     [mw_stat(g),~]=ranksum(all_stn_corr_MRV(g,:),all_stn_corr_CPS_RV(g,:));
+% end
+% semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
+% title('MRV vs CPS\_RV');
+% set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,10^-2])
+% 
+% subplot(3,1,3)
+% ks_stat=nan(70,1); mw_stat=nan(70,1);
+% for g=numstnstocompare
+%     [~,ks_stat(g)]=kstest2(squeeze(all_stn_corr_CPS_RV(g,:)),squeeze(all_stn_corr_EPC_RV(g,:)));
+%     [mw_stat(g),~]=ranksum(all_stn_corr_CPS_RV(g,:),all_stn_corr_EPC_RV(g,:));
+% end
+% semilogy(ks_stat,'b'); hold on; semilogy(mw_stat,'g'); hold off; ylim([10^-60,1]); xlim([3 70]); grid on;
+% title('CPS\_RV vs EPC\_RV');
+% set(gca,'YTick',[10^-60,10^-50,10^-40,10^-30,10^-20,10^-10,0.01])
+% 
+% % RVM and MRV performance - Figure 3 discrepancy with McGregor 2013 Fig4
+% 
+% NUM_STNS=3;
+% scatter(all_stn_corr_MRV(NUM_STNS,:),all_stn_corr_RVM(NUM_STNS,:))
+% ylim([-0.25 1]); xlim([-0.25 1]); grid on;
+% xlabel('MRV'); ylabel('RVM');
+% hold on; plot(0:0.1:1,0:0.1:1,'k'); hold off;
 
 
 %% Figure 4-7
 figure;
-s_Hnd = tight_subplot(3,4)
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_ts'; % Change group name to get other figs
+GROUP_NAME = 'peof_nSTCZ_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -407,8 +415,7 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,1]); grid on
 
-if window==31 title(['MRV']); end
-% set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
 % Plotting RVM
 % subplot(3,4,4+(floor(window/30)-1)*4)
 axes(s_Hnd(4+(floor(window/30)-1)*4))
@@ -424,10 +431,10 @@ xlim([0,70]); ylim([0,1]); grid on
 
 end
 
-axes(s_Hnd(1)); title(['EPC\_RV']);
-axes(s_Hnd(2)); title(['CPS\_RV']);
-axes(s_Hnd(3)); title(['MRV']);
-axes(s_Hnd(4)); title(['RVM']);
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',14);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',14);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',14);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
 
 for i=1:12
     axes(s_Hnd(i));
@@ -435,12 +442,20 @@ for i=1:12
     set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
 end
 
-axes(s_Hnd(10)); xlabel('Number of Stations included in reconstruction');
-set(gca,'YTickLabel',[0:0.2:1])
-ylabel(['Correlation (',num2str(window),'yrs of data)'])
-suptitle([strrep(GROUP_NAME,'_','\_'),' - Ranges of Correlation percentiles'])
+axes(s_Hnd(9)); xlabel('Proxy Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:0.2:1]);
+    ylabel(['r(',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+suptitle([strrep(GROUP_NAME,'_','\_')])
 set(gcf, 'PaperPosition', [0 0 19 23]);
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
 % saveas('gcf','../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/Figs/Fig4.pdf','output','pdf');
@@ -891,8 +906,8 @@ title('Explained Variance');
 
 % Correlation between PC timeseries
 % a=rc61_PC_ts(2,:)'; b=rc91_PC_ts(2,:)';
-a=rc61_eof_ts_fm(2,:)'; b=rc91_eof_ts_fm(2,:)';
-corr(a,b)
+% a=rc61_eof_ts_fm(2,:)'; b=rc91_eof_ts_fm(2,:)';
+% corr(a,b)
 % cor = 0;
 % for i=0:30
 %     cor(i+1) = corr(a((i+1):400+i),b(1:400))
@@ -900,7 +915,8 @@ corr(a,b)
 % plot(cor); grid minor
 
 % Plotting PC Time series
-a=rc31_PC_ts(1,:)'; b=rc61_PC_ts(1,:)'; c=rc91_PC_ts(1,:)'; clf;
+subplot(3,1,3)
+a=rc31_PC_ts(1,:)'; b=rc61_PC_ts(1,:)'; c=rc91_PC_ts(1,:)';
 plot(a,'','Color',cmap(1,:)); hold on;
 plot(b,'','Color',cmap(2,:)); grid on;
 plot(c,'','Color',cmap(3,:)); hold off

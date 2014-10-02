@@ -212,3 +212,113 @@ set(gcf, 'PaperPosition', [0 0 19 23]);
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
+
+%% Var
+
+figure;
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+for window = [31, 61, 91]
+
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+temp_var_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_var_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_var_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_var_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'var_EPC_RV','var_CPS_RV','var_MRV','var_RVM')
+    temp_var_EPC_RV(:,c,:) = var_EPC_RV;
+    temp_var_CPS_RV(:,c,:) = var_CPS_RV;
+    temp_var_MRV(:,c,:) = var_MRV;
+    temp_var_RVM(:,c,:) = var_RVM;
+end
+
+% Plotting EPC
+
+% subplot(3,4,1+(floor(window/30)-1)*4)
+axes(s_Hnd(1+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_var_EPC_RV,[.05 .5 .95], 3);
+% Range Plotting
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,0.15]); grid on
+
+% Plotting CPS
+% subplot(3,4,2+(floor(window/30)-1)*4)
+axes(s_Hnd(2+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_var_CPS_RV,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,0.15]); grid on
+
+% Plotting MRV
+% subplot(3,4,3+(floor(window/30)-1)*4)
+axes(s_Hnd(3+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_var_MRV,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,0.15]); grid on
+
+
+% Plotting RVM
+% subplot(3,4,4+(floor(window/30)-1)*4)
+axes(s_Hnd(4+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_var_RVM,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,0.15]); grid on
+
+
+end
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',14);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',14);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',14);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.05:0.15],'XTick', [0:20:70]); 
+end
+
+axes(s_Hnd(9)); xlabel('Proxy Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:0.05:0.15]);
+    ylabel(['sigma^2(',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+suptitle([strrep(GROUP_NAME,'_','\_')])
+set(gcf, 'PaperPosition', [0 0 19 23]);
+legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
+set(legendH, 'FontSize',10);

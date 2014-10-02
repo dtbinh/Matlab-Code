@@ -61,7 +61,7 @@ clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
 window = 31; % The running window in years
 n34_ind_RV = movingvar(n34_ind,VAR_WDW);
-RV_WDW = [15:(499-14)];
+RV_WDW = [16:(499-14)];
 
 %% Beggining of Loop
 
@@ -104,7 +104,6 @@ for NUM_STNS = STN_NUM_RG
         end
     end
     
-    
     % McGregor et al 2013 method of Median Running Variances
     stn_MRV=nan(NUM_TRIALS, NUM_YRS);
     for n=1:NUM_TRIALS
@@ -141,6 +140,21 @@ for NUM_STNS = STN_NUM_RG
         med_ts = (med_ts-mean(med_ts))./std(med_ts);
         stn_RVM(n,:) = single(movingvar(med_ts,VAR_WDW));
     end
+    
+    % Error Checking
+    for i=1:1000
+        for g=1:3
+            assert(abs(corr(squeeze(stn_ts(i,g,:)),n34_ind))>0.3)
+        end
+    end
+    
+    for n=1:NUM_TRIALS
+        for t=NUM_YRS
+            assert(stn_MRV(n,t)>0);
+            assert(stn_RVM(n,t)>0);
+        end
+    end
+    
 
     % Skill Evaluation
     stn_corr_RVM = nan(NUM_TRIALS,1);
@@ -219,54 +233,54 @@ for NUM_STNS = STN_NUM_RG
     all_stn_corr_CPS(NUM_STNS,:) = stn_corr_CPS;
     all_stn_rmse_CPS(NUM_STNS,:) = stn_rmse_CPS;
     toc;
-end % Took 40 min for 70 
+end % Took 60 min for 70 
 
 save('DataFiles/500yrCalWdw_meth_stats.mat','all_stn_corr_MRV','all_stn_rmse_MRV', ...
-     'all_stn_corr_RVM','all_stn_corr_RVM', ...
+     'all_stn_corr_RVM','all_stn_rmse_RVM', ...
      'all_stn_corr_EPC', 'all_stn_rmse_EPC', ...
      'all_stn_corr_EPC_RV', 'all_stn_rmse_EPC_RV', ...
      'all_stn_corr_CPS', 'all_stn_rmse_CPS', ...
      'all_stn_corr_CPS_RV', 'all_stn_rmse_CPS_RV'         );
 
-% %% Making the plot
-% 
-% qEPC = quantile(all_stn_corr_EPC_RV,[.05 .5 .95], 2);
-% qMRV = quantile(all_stn_corr_MRV,[.05 .5 .95], 2);
-% qCPS = quantile(all_stn_corr_CPS_RV,[.05 .5 .95], 2);
-% 
-% clf; axes; hold on; grid on;
-% Hnd(1,1) = plot(squeeze(qMRV(:,1)),'--g');
-% set(Hnd(1,1),'Color','g','MarkerFaceColor','g');
-% Hnd(1,3) = plot(squeeze(qMRV(:,3)),'--g');
-% Hnd(2,1) = plot(squeeze(qEPC(:,1)),'--r');
-% Hnd(2,3) = plot(squeeze(qEPC(:,3)),'--r');
-% Hnd(3,1) = plot(squeeze(qCPS(:,1)),'--b');
-% Hnd(3,3) = plot(squeeze(qCPS(:,3)),'--b');
-% Hnd(1,2) = plot(squeeze(qMRV(:,2)),'g','LineWidth',2);
-% Hnd(2,2) = plot(squeeze(qEPC(:,2)),'r','LineWidth',2);
-% Hnd(3,2) = plot(squeeze(qCPS(:,2)),'b','LineWidth',2);
-% hold off;
-% set(Hnd(1,[1,3]),'Color','g','MarkerFaceColor','g');
-% set(Hnd(2,[1,3]),'Color','r','MarkerFaceColor','r');
-% set(Hnd(3,[1,3]),'Color','b','MarkerFaceColor','b');
-% ylabel('Percentile Correlations with Nino3.4 index','FontSize',14  ); 
-% xlabel('Number of Stations used in reconstruction','FontSize',14  );
-% legend([Hnd(1:3,2); Hnd(3,1); Hnd(3,3);],'MRV Median','EPC\_RV Median','CPS\_RV Median', ...
-%        '5^t^h Percentile','95^t^h Percentile','location','southeast'                );
-% % title('Reconstructions from a global selection of pseudoproxies, using all 499 years of data')
-% set(gca, ...
-%     'TickDir','in', ...
-%     'Box', 'on',    ...
-%     'TickLength'  , [.02 .02] , ...
-%     'XMinorTick'  , 'on'      , ...
-%     'YMinorTick'  , 'on'      , ...
-%     'YGrid'       , 'on'      , ...
-%     'LineWidth'   , 1,  ...    
-%     'YLim'        , [0 1], ...
-%     'XLim'        , [0 70], ...
-%     'FontSize'    , 14 ...
-%     );
-% 
-% set(gcf, 'PaperUnits', 'centimeters');
-% set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
-% saveas(gcf,['Plots/corr_vsNumStns_eachMeth_glb.jpg'])
+%% Making the plot
+
+qEPC = quantile(all_stn_corr_EPC_RV,[.05 .5 .95], 2);
+qMRV = quantile(all_stn_corr_MRV,[.05 .5 .95], 2);
+qCPS = quantile(all_stn_corr_CPS_RV,[.05 .5 .95], 2);
+
+clf; axes; hold on; grid on;
+Hnd(1,1) = plot(squeeze(qMRV(:,1)),'--g');
+set(Hnd(1,1),'Color','g','MarkerFaceColor','g');
+Hnd(1,3) = plot(squeeze(qMRV(:,3)),'--g');
+Hnd(2,1) = plot(squeeze(qEPC(:,1)),'--r');
+Hnd(2,3) = plot(squeeze(qEPC(:,3)),'--r');
+Hnd(3,1) = plot(squeeze(qCPS(:,1)),'--b');
+Hnd(3,3) = plot(squeeze(qCPS(:,3)),'--b');
+Hnd(1,2) = plot(squeeze(qMRV(:,2)),'g','LineWidth',2);
+Hnd(2,2) = plot(squeeze(qEPC(:,2)),'r','LineWidth',2);
+Hnd(3,2) = plot(squeeze(qCPS(:,2)),'b','LineWidth',2);
+hold off;
+set(Hnd(1,[1,3]),'Color','g','MarkerFaceColor','g');
+set(Hnd(2,[1,3]),'Color','r','MarkerFaceColor','r');
+set(Hnd(3,[1,3]),'Color','b','MarkerFaceColor','b');
+ylabel('Percentile Correlations with Nino3.4 index','FontSize',14  ); 
+xlabel('Number of Stations used in reconstruction','FontSize',14  );
+legend([Hnd(1:3,2); Hnd(3,1); Hnd(3,3);],'MRV Median','EPC\_RV Median','CPS\_RV Median', ...
+       '5^t^h Percentile','95^t^h Percentile','location','southeast'                );
+% title('Reconstructions from a global selection of pseudoproxies, using all 499 years of data')
+set(gca, ...
+    'TickDir','in', ...
+    'Box', 'on',    ...
+    'TickLength'  , [.02 .02] , ...
+    'XMinorTick'  , 'on'      , ...
+    'YMinorTick'  , 'on'      , ...
+    'YGrid'       , 'on'      , ...
+    'LineWidth'   , 1,  ...    
+    'YLim'        , [0 1], ...
+    'XLim'        , [0 70], ...
+    'FontSize'    , 14 ...
+    );
+
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/corr_vsNumStns_eachMeth_glb.jpg'])
