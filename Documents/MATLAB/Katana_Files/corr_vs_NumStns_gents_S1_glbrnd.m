@@ -56,6 +56,21 @@ ats_anmn=squeeze(ats_anmn);
 apr_anmn=squeeze(apr_anmn);
 n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
 
+f1 = 3.215e-9;freq = 3.2150e-8;Rp = 1 ;Rs = 5 ;falloff = .3e-8 ;
+f2=3.215e-8;
+nyq = freq/2.0;
+h_Wp = f1 / nyq;
+h_Ws = (f1+falloff)/nyq;
+[high_n,high_Wn] = buttord(h_Wp,h_Ws,Rp,Rs);
+[high_b,high_a] = butter(high_n,high_Wn,'high');
+
+n34_ind = filtfilt(high_b,high_a,double(n34_ind));
+
+for i=1:90
+    for j=1:144
+        ats(:,i,j) = filtfilt(high_b,high_a,double(squeeze(ats(:,i,j)));
+    end
+end
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
@@ -66,8 +81,8 @@ RV_WDW = [15:(499-14)];
 %% Beggining of Loop
 
 DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/glb_ts'] ; mkdir(DIR_NAME);
-load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat']);
 % load DataFiles/runcorr_eofs.mat
 
 NUM_SYNRUNS = 1000; NUM_YRS = 499; NUM_TRIALS = 1000;

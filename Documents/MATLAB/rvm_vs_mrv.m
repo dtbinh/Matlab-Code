@@ -213,7 +213,7 @@ CPS_RV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRI
 MRV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
 RVM_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
 
-for c=1:size(CAL_WDW,1)
+for c=1:1% size(CAL_WDW,1)
     DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
      'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM', ...
