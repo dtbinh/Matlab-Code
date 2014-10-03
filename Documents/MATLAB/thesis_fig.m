@@ -308,24 +308,25 @@ qCPS = quantile(all_stn_corr_CPS_RV,[.05 .5 .95], 2);
 qRVM = quantile(all_stn_corr_RVM,[.05 .5 .95], 2);
 
 clf; axes; hold on; grid on;
-Hnd(1,1) = plot(squeeze(qMRV(:,1)),'--g');
-set(Hnd(1,1),'Color','g','MarkerFaceColor','g');
-Hnd(1,3) = plot(squeeze(qMRV(:,3)),'-.g');
+Hnd(1,1) = plot(squeeze(qMRV(:,1)),'--c');
+set(Hnd(1,1),'Color','g','MarkerFaceColor','c');
+Hnd(1,3) = plot(squeeze(qMRV(:,3)),'-.c');
 Hnd(2,1) = plot(squeeze(qEPC(:,1)),'--r');
 Hnd(2,3) = plot(squeeze(qEPC(:,3)),'-.r');
-Hnd(3,1) = plot(squeeze(qCPS(:,1)),'--b');
-Hnd(3,3) = plot(squeeze(qCPS(:,3)),'-.b');
+Hnd(3,1) = plot(squeeze(qCPS(:,1)),'--k');
+Hnd(3,3) = plot(squeeze(qCPS(:,3)),'-.k');
 Hnd(4,1) = plot(squeeze(qRVM(:,1)),'--m');
 Hnd(4,3) = plot(squeeze(qRVM(:,3)),'-.m');
-Hnd(1,2) = plot(squeeze(qMRV(:,2)),'g','LineWidth',2);
+Hnd(1,2) = plot(squeeze(qMRV(:,2)),'c','LineWidth',2);
 Hnd(2,2) = plot(squeeze(qEPC(:,2)),'r','LineWidth',2);
-Hnd(3,2) = plot(squeeze(qCPS(:,2)),'b','LineWidth',2);
+Hnd(3,2) = plot(squeeze(qCPS(:,2)),'k','LineWidth',2);
 Hnd(4,2) = plot(squeeze(qRVM(:,2)),'m','LineWidth',2);
 hold off;
-set(Hnd(1,[1,3]),'Color','g','MarkerFaceColor','g');
+set(Hnd(1,[1,3]),'Color','c','MarkerFaceColor','c');
 set(Hnd(2,[1,3]),'Color','r','MarkerFaceColor','r');
-set(Hnd(3,[1,3]),'Color','b','MarkerFaceColor','b');
-set(Hnd(4,[1,3]),'Color','m','MarkerFaceColor','m');
+set(Hnd(3,[1,3]),'Color','k','MarkerFaceColor','k');
+set(Hnd(4,[1,3]),'Color',[0.6 0.6 0.6],'MarkerFaceColor',[0.6 0.6 0.6]);
+set(Hnd(4,[2]),'Color',[0.6 0.6 0.6],'MarkerFaceColor',[0.6 0.6 0.6]);
 ylabel('r(499yr)','FontSize',14  ); 
 xlabel('Network Size','FontSize',14  );
 legend([Hnd(1:4,2); Hnd(3,1); Hnd(3,3);],'MRV Median','EPC\_RV Median','CPS\_RV Median', 'RVM Median', ...
@@ -392,7 +393,7 @@ figure;
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_ts'; % Change group name to get other figs
+GROUP_NAME = 'ntrop_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
@@ -548,13 +549,13 @@ end
 
 %% Figure 9 - Histogram Comparisons
 figure;
-window = 91; numstnstocompare=70;
+window = 31; numstnstocompare=70;
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9
     CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
 end
-
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 
 GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
@@ -591,7 +592,7 @@ end
 i=1; 
 for group_size = [5, 20, 50]
 % Plotting EPC
-subplot(3,4,1+(i-1)*4)
+axes(s_Hnd(1+(floor(window/30)-1)*4))
 cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
 h=zeros(10,length(bins));
@@ -617,7 +618,7 @@ if group_size==5 title(['EPC\_RV']); end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting CPS
-subplot(3,4,2+(i-1)*4)
+axes(s_Hnd(2+(floor(window/30)-1)*4))
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
@@ -639,7 +640,7 @@ if group_size==5 title(['CPS\_RV']); end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting MRV
-subplot(3,4,3+(i-1)*4)
+axes(s_Hnd(3+(floor(window/30)-1)*4))
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
@@ -666,7 +667,7 @@ if group_size==5 title(['MRV']); end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting RVM
-subplot(3,4,4+(i-1)*4)
+axes(s_Hnd(1+(i-1)*4))
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(glb_temp_corr_RVM(group_size,c,:)),bins)/1000;
