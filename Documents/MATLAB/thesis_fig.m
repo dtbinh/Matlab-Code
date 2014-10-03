@@ -555,7 +555,7 @@ overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9
     CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
 end
-s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+s_Hnd = tight_subplot(3,4,[0.01 0.02],[0.1 0.01],[0.1 0.01]);
 
 GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
@@ -590,9 +590,10 @@ for c=1:size(CAL_WDW,1)
 end
 
 i=1; 
-for group_size = [5, 20, 50]
+GROUPS = [5 20 50];
+for group_size = GROUPS
 % Plotting EPC
-axes(s_Hnd(1+(floor(window/30)-1)*4))
+axes(s_Hnd(1+(i-1)*4))
 cmap = hsv(size(CAL_WDW,1)+1); bins = 0:0.05:1; 
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
 h=zeros(10,length(bins));
@@ -614,11 +615,10 @@ jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
 ylabel(['Percentage of reconstructions (grp\_size=',num2str(group_size),')'])
-if group_size==5 title(['EPC\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
+% set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting CPS
-axes(s_Hnd(2+(floor(window/30)-1)*4))
+axes(s_Hnd(2+(i-1)*4))
 glb_Hnd = zeros(size(CAL_WDW,1),1); ntrop_Hnd = glb_Hnd;
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
@@ -635,23 +635,22 @@ ntrop_all = squeeze(ntrop_temp_corr_CPS_RV(group_size,:,:));
 sig_diff = kstest2(squeeze(glb_all(1,:)),squeeze(ntrop_all(1,:)),0.0001)
 ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
-if group_size==50 xlabel('Correlation with Nino3.4','FontSize',14); end
-if group_size==5 title(['CPS\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
+% if group_size==50 xlabel('Correlation with Nino3.4','FontSize',14); end
+% set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting MRV
-axes(s_Hnd(3+(floor(window/30)-1)*4))
+axes(s_Hnd(3+(i-1)*4))
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(glb_temp_corr_MRV(group_size,c,:)),bins)/1000;
 end
 glb_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
-ks_matrix_bin = nan(10,10); ks_matrix_val = ks_matrix_bin;
-for i=1:10
-    for j=1:10
-        [ks_matrix_bin(i,j),ks_matrix_val(i,j)]=kstest2(squeeze(ntrop_all(i,:)),squeeze(ntrop_all(j,:)),0.0001);
-    end
-end
+% ks_matrix_bin = nan(10,10); ks_matrix_val = ks_matrix_bin;
+% for i=1:10
+%     for j=1:10
+%         [ks_matrix_bin(i,j),ks_matrix_val(i,j)]=kstest2(squeeze(ntrop_all(i,:)),squeeze(ntrop_all(j,:)),0.0001);
+%     end
+% end
 
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
@@ -663,22 +662,21 @@ sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
 ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
-if group_size==5 title(['MRV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
+% set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 % Plotting RVM
-axes(s_Hnd(1+(i-1)*4))
+axes(s_Hnd(4+(i-1)*4))
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
     h(c,:)=histc(squeeze(glb_temp_corr_RVM(group_size,c,:)),bins)/1000;
 end
 glb_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'b','k',[],0.5);
-ks_matrix_bin = nan(10,10); ks_matrix_val = ks_matrix_bin;
-for i=1:10
-    for j=1:10
-        [ks_matrix_bin(i,j),ks_matrix_val(i,j)]=kstest2(squeeze(ntrop_all(i,:)),squeeze(ntrop_all(j,:)),0.0001);
-    end
-end
+% ks_matrix_bin = nan(10,10); ks_matrix_val = ks_matrix_bin;
+% for i=1:10
+%     for j=1:10
+%         [ks_matrix_bin(i,j),ks_matrix_val(i,j)]=kstest2(squeeze(ntrop_all(i,:)),squeeze(ntrop_all(j,:)),0.0001);
+%     end
+% end
 
 h=zeros(10,length(bins));
 for c=1:size(CAL_WDW,1)
@@ -690,12 +688,34 @@ sig_diff = kstest2(glb_all(:),ntrop_all(:),0.0001)
 ranksum(glb_all(:),ntrop_all(:),'alpha',0.01)
 ntrop_Hnd=jbfill([bins],max(h,[],1),min(h,[],1),'y','k','add',0.5);
 hold off; grid on; xlim([0 1]); ylim([0 0.7]);
-if group_size==5 title(['RVM']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
+% set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7],'XTick',[0:0.2:1]); 
 
 i=i+1;
 end; clear i;
-suptitle(['PDF range of glb and ntrop experiments'])
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',14);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',14);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',14);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:0.7],'XTick', [0:0.2:1]); 
+end
+
+axes(s_Hnd(10)); xlabel('Correlation with Nino3.4','FontSize',14);
+for i=1:3
+    axes(s_Hnd(1+(i-1)*4));
+    set(gca,'YTickLabel',[0:0.1:1]);
+    ylabel(['Network Size: ',num2str(GROUPS(i))])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:0.2:1]);
+end
+% suptitle(['PDF range of glb and ntrop experiments'])
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
 legend([glb_Hnd, ntrop_Hnd],'glb','ntrop','Location','northwest')
 
@@ -822,9 +842,11 @@ set(gcf, 'PaperPosition', [0 0 28 19]);
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
+
 %% Appendix Figure 3
 figure;
-numstnstocompare=70;
+numstnstocompare=3:70;
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
 GROUP_NAME = 'glb_ts'; % Change group name to get other figs
@@ -838,17 +860,21 @@ end
 temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_corr_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
 
 for c=1:size(CAL_WDW,1)
     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
-     'all_stn_rmse_EPC_RV','all_stn_rmse_CPS_RV','all_stn_rmse_MRV')
+     'all_stn_rmse_EPC_RV','all_stn_rmse_CPS_RV','all_stn_rmse_MRV','all_stn_rmse_RVM')
     temp_corr_EPC_RV(:,c,:) = all_stn_rmse_EPC_RV;
     temp_corr_CPS_RV(:,c,:) = all_stn_rmse_CPS_RV;
     temp_corr_MRV(:,c,:) = all_stn_rmse_MRV;
+    temp_corr_RVM(:,c,:) = all_stn_rmse_RVM;
 end
 
 % Plotting EPC
-subplot(3,3,1+(floor(window/30)-1)*3)
+
+% subplot(3,4,1+(floor(window/30)-1)*4)
+axes(s_Hnd(1+(floor(window/30)-1)*4))
 corr_RV_qn = quantile(temp_corr_EPC_RV,[.05 .5 .95], 3);
 % Range Plotting
 corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
@@ -858,11 +884,10 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,0.5]); grid on
-ylabel(['RMSE (',num2str(window),'yrs of data)'])
-if window==31 title(['EPC\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
 % Plotting CPS
-subplot(3,3,2+(floor(window/30)-1)*3)
+% subplot(3,4,2+(floor(window/30)-1)*4)
+axes(s_Hnd(2+(floor(window/30)-1)*4))
 corr_RV_qn = quantile(temp_corr_CPS_RV,[.05 .5 .95], 3);
 corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
 corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
@@ -871,11 +896,10 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,0.5]); grid on
-if window==91 xlabel('Number of Stations included in reconstruction'); end
-if window==31 title(['CPS\_RV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
 % Plotting MRV
-subplot(3,3,3+(floor(window/30)-1)*3)
+% subplot(3,4,3+(floor(window/30)-1)*4)
+axes(s_Hnd(3+(floor(window/30)-1)*4))
 corr_RV_qn = quantile(temp_corr_MRV,[.05 .5 .95], 3);
 corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
 corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
@@ -884,17 +908,52 @@ jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
 xlim([0,70]); ylim([0,0.5]); grid on
-if window==31 title(['MRV']); end
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
+
+% Plotting RVM
+% subplot(3,4,4+(floor(window/30)-1)*4)
+axes(s_Hnd(4+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_corr_RVM,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,0.5]); grid on
+
 
 end
-suptitle([strrep(GROUP_NAME,'_','\_'),' - Ranges of RMSE percentiles'])
-set(gcf, 'PaperPosition', [0 0 28 19]);
-set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1]); 
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',14);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',14);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',14);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1],'XTick', [0:20:70]); 
+end
+
+axes(s_Hnd(9)); xlabel('Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:0.2:1]);
+    ylabel(['r(',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+suptitle([strrep(GROUP_NAME,'_','\_')])
+set(gcf, 'PaperPosition', [0 0 19 23]);
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
-
 %% Appendix Figure 4
+figure;
 % window=31;
 % NUM_OF_EOFS = 10;
 % load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
@@ -922,7 +981,7 @@ set(legendH, 'FontSize',10);
 
 load('DataFiles/all_rcor_ts_eofs.mat')
 subplot(3,1,2)
-pcolor(lon,lat,squeeze(rc31_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+pcolor(lon,lat,squeeze(rc31_eof_ts_fm(1,:,:))); plotworld; colormap(b2r(-0.03,0.03))
 title('EOF1 (31yr window)')
 % subplot(3,1,2)
 % pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
