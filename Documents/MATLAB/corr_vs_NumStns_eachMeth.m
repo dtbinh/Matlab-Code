@@ -55,6 +55,16 @@ end
 ats_anmn=squeeze(ats_anmn);
 apr_anmn=squeeze(apr_anmn);
 n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
+f1 = 3.215e-9;freq = 3.2150e-8;Rp = 1 ;Rs = 5 ;falloff = .3e-8 ;
+f2=3.215e-8;
+nyq = freq/2.0;
+h_Wp = f1 / nyq;
+h_Ws = (f1+falloff)/nyq;
+[high_n,high_Wn] = buttord(h_Wp,h_Ws,Rp,Rs);
+[high_b,high_a] = butter(high_n,high_Wn,'high');
+
+% n34_ind = filtfilt(high_b,high_a,double(n34_ind));
+
 
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
 
@@ -66,7 +76,8 @@ RV_WDW = [16:(499-14)];
 %% Beggining of Loop
 
 GROUP_NAME = 'glb_ts';
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+% DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+DIR_NAME = ['/media/Ryans Spare Brick/REAL Stuff/CCRC Data Backup/MATLAB/Pseudoproxies/glb'];
 
 load DataFiles/runcorr.mat
 
@@ -95,7 +106,7 @@ all_stn_corr_CPS = nan(max(STN_NUM_RG), NUM_TRIALS);
 
 for NUM_STNS = STN_NUM_RG
     % Loading and normalising proxies
-    load([DIR_NAME,'/CalWdw:1-499/',num2str(NUM_STNS),'stns_1000prox.mat']);
+    load([num2str(NUM_STNS),'stns_1000prox.mat']);
     stn_ts_mn=mean(stn_ts,3);
     stn_ts_std=squeeze(std(permute(stn_ts,[3,1,2])));
     for n=1:NUM_TRIALS
@@ -104,24 +115,24 @@ for NUM_STNS = STN_NUM_RG
         end
     end
     
-    % McGregor et al 2013 method of Median Running Variances
-    stn_MRV=nan(NUM_TRIALS, NUM_YRS);
-    for n=1:NUM_TRIALS
-        stn_movvar=nan(NUM_STNS,NUM_YRS);
-        for m=1:NUM_STNS
-            stn_movvar(m,:) = movingvar(squeeze(stn_ts(n,m,:)),VAR_WDW);
-        end
-        stn_MRV(n,:) = median(stn_movvar);
-    end
-    % Skill Evaluation
-    stn_corr_MRV = nan(NUM_TRIALS,1);
-    stn_rmse_MRV = nan(NUM_TRIALS,1);
-    for n=1:NUM_TRIALS
-        stn_corr_MRV(n) = corr(squeeze(stn_MRV(n,RV_WDW))',n34_ind_RV(RV_WDW));
-        stn_rmse_MRV(n) = sqrt(mean((n34_ind_RV(RV_WDW)-stn_MRV(n,RV_WDW)').^2));
-    end
-    all_stn_corr_MRV(NUM_STNS,:) = stn_corr_MRV;
-    all_stn_rmse_MRV(NUM_STNS,:) = stn_rmse_MRV;
+%     % McGregor et al 2013 method of Median Running Variances
+%     stn_MRV=nan(NUM_TRIALS, NUM_YRS);
+%     for n=1:NUM_TRIALS
+%         stn_movvar=nan(NUM_STNS,NUM_YRS);
+%         for m=1:NUM_STNS
+%             stn_movvar(m,:) = movingvar(squeeze(stn_ts(n,m,:)),VAR_WDW);
+%         end
+%         stn_MRV(n,:) = median(stn_movvar);
+%     end
+%     % Skill Evaluation
+%     stn_corr_MRV = nan(NUM_TRIALS,1);
+%     stn_rmse_MRV = nan(NUM_TRIALS,1);
+%     for n=1:NUM_TRIALS
+%         stn_corr_MRV(n) = corr(squeeze(stn_MRV(n,RV_WDW))',n34_ind_RV(RV_WDW));
+%         stn_rmse_MRV(n) = sqrt(mean((n34_ind_RV(RV_WDW)-stn_MRV(n,RV_WDW)').^2));
+%     end
+%     all_stn_corr_MRV(NUM_STNS,:) = stn_corr_MRV;
+%     all_stn_rmse_MRV(NUM_STNS,:) = stn_rmse_MRV;
     
     % McGregor et al 2013 method of Running Variance of the Median
 
@@ -141,21 +152,21 @@ for NUM_STNS = STN_NUM_RG
         stn_RVM(n,:) = single(movingvar(med_ts,VAR_WDW));
     end
     
-    % Error Checking
-    for i=1:1000
-        for g=1:3
-            assert(abs(corr(squeeze(stn_ts(i,g,:)),n34_ind))>0.3)
-        end
-    end
-    
-    for n=1:NUM_TRIALS
-        for t=NUM_YRS
-            assert(stn_MRV(n,t)>0);
-            assert(stn_RVM(n,t)>0);
-        end
-    end
-    
-
+%     % Error Checking
+%     for i=1:1000
+%         for g=1:3
+%             assert(abs(corr(squeeze(stn_ts(i,g,:)),n34_ind))>0.3)
+%         end
+%     end
+%     
+%     for n=1:NUM_TRIALS
+%         for t=NUM_YRS
+%             assert(stn_MRV(n,t)>0);
+%             assert(stn_RVM(n,t)>0);
+%         end
+%     end
+%     
+% 
     % Skill Evaluation
     stn_corr_RVM = nan(NUM_TRIALS,1);
     stn_rmse_RVM = nan(NUM_TRIALS,1);
@@ -165,82 +176,82 @@ for NUM_STNS = STN_NUM_RG
     end
     all_stn_corr_RVM(NUM_STNS,:) = stn_corr_RVM;
     all_stn_rmse_RVM(NUM_STNS,:) = stn_rmse_RVM;
-    
-    % Braganza et al 2009 method of EOF construction
-    NUM_OF_EOFS = 3;
-    eof_stn = nan(NUM_TRIALS,NUM_OF_EOFS,NUM_STNS);
-    PC_stn = nan(NUM_TRIALS,NUM_OF_EOFS,NUM_YRS);
-    expvar_stn = nan(NUM_TRIALS,NUM_OF_EOFS);
-    for n=1:NUM_TRIALS
-        [eof_stn(n,:,:),PC_stn(n,:,:),expvar_stn(n,:)] = caleof(squeeze(stn_ts(n,:,:))', NUM_OF_EOFS, 1);
-    end
-    % Flipping EOFs where necessary so PC is similar to PC_stn(1,1,:)
-    for n=2:NUM_TRIALS
-        if corr(squeeze(PC_stn(1,1,:)), squeeze(PC_stn(n,1,:))) < 0
-            PC_stn(n,1,:) = -PC_stn(n,1,:);
-            eof_stn(n,1,:) = -eof_stn(n,1,:);
-        end
-    end
-    % Normalising (it already has mean 0)
-    stn_EPC = nan(NUM_TRIALS, NUM_YRS);
-    stn_EPC_RV = nan(NUM_TRIALS, NUM_YRS);
-    for n=1:NUM_TRIALS
-        stn_EPC(n,:) = squeeze(PC_stn(n,1,:))./std(squeeze(PC_stn(n,1,:))');
-        stn_EPC_RV(n,:) = movingvar(stn_EPC(n,:)',VAR_WDW);
-    end
-    % Skill Evaluation
-    stn_corr_EPC = nan(NUM_TRIALS,1);
-    stn_rmse_EPC = nan(NUM_TRIALS,1);
-    stn_corr_EPC_RV = nan(NUM_TRIALS,1);
-    stn_rmse_EPC_RV = nan(NUM_TRIALS,1);
-    for n=1:NUM_TRIALS
-        stn_corr_EPC(n) = abs(corr(squeeze(stn_EPC(n,:))',n34_ind));
-        stn_rmse_EPC(n) = sqrt(mean((n34_ind-stn_EPC(n,:)').^2));
-        stn_corr_EPC_RV(n) = abs(corr(squeeze(stn_EPC_RV(n,RV_WDW))',n34_ind_RV(RV_WDW)));
-        stn_rmse_EPC_RV(n) = sqrt(mean((n34_ind_RV(RV_WDW)-stn_EPC_RV(n,RV_WDW)').^2));
-    end
-    all_stn_corr_EPC_RV(NUM_STNS,:) = stn_corr_EPC_RV;
-    all_stn_rmse_EPC_RV(NUM_STNS,:) = stn_rmse_EPC_RV;
-    all_stn_corr_EPC(NUM_STNS,:) = stn_corr_EPC;
-    all_stn_rmse_EPC(NUM_STNS,:) = stn_rmse_EPC;
-    
-    
-    % Esper et al 2005 CPS Method 
-    stn_CPS = nan(NUM_TRIALS, NUM_YRS);
-    stn_CPS_RV = nan(NUM_TRIALS, NUM_YRS);
-    for n=1:NUM_TRIALS
-        corr_matrix = corr(n34_ind*ones(1,10), squeeze(stn_ts(n,:,:))');
-        stn_CPS(n,:) = corr_matrix(1,:)*squeeze(stn_ts(n,:,:));
-    end
-    % Normalising (it already has mean ~0)
-    for n=1:NUM_TRIALS
-        stn_CPS(n,:) = squeeze(stn_CPS(n,:))./std(squeeze(stn_CPS(n,:))');
-        stn_CPS_RV(n,:) = movingvar(squeeze(stn_CPS(n,:))',VAR_WDW);
-    end
-    % Skill Evaluation
-    stn_corr_CPS = nan(NUM_TRIALS,1);
-    stn_rmse_CPS = nan(NUM_TRIALS,1);
-    stn_corr_CPS_RV = nan(NUM_TRIALS,1);
-    stn_rmse_CPS_RV = nan(NUM_TRIALS,1);
-    for n=1:NUM_TRIALS
-        stn_corr_CPS(n) = corr(squeeze(stn_CPS(n,:))',n34_ind);
-        stn_rmse_CPS(n) = sqrt(mean((n34_ind-stn_CPS(n,:)').^2));
-        stn_corr_CPS_RV(n) = corr(squeeze(stn_CPS_RV(n,RV_WDW))',n34_ind_RV(RV_WDW));
-        stn_rmse_CPS_RV(n) = sqrt(mean((n34_ind_RV(RV_WDW)-stn_CPS_RV(n,RV_WDW)').^2));
-    end
-    all_stn_corr_CPS_RV(NUM_STNS,:) = stn_corr_CPS_RV;
-    all_stn_rmse_CPS_RV(NUM_STNS,:) = stn_rmse_CPS_RV;
-    all_stn_corr_CPS(NUM_STNS,:) = stn_corr_CPS;
-    all_stn_rmse_CPS(NUM_STNS,:) = stn_rmse_CPS;
+%     
+%     % Braganza et al 2009 method of EOF construction
+%     NUM_OF_EOFS = 3;
+%     eof_stn = nan(NUM_TRIALS,NUM_OF_EOFS,NUM_STNS);
+%     PC_stn = nan(NUM_TRIALS,NUM_OF_EOFS,NUM_YRS);
+%     expvar_stn = nan(NUM_TRIALS,NUM_OF_EOFS);
+%     for n=1:NUM_TRIALS
+%         [eof_stn(n,:,:),PC_stn(n,:,:),expvar_stn(n,:)] = caleof(squeeze(stn_ts(n,:,:))', NUM_OF_EOFS, 1);
+%     end
+%     % Flipping EOFs where necessary so PC is similar to PC_stn(1,1,:)
+%     for n=2:NUM_TRIALS
+%         if corr(squeeze(PC_stn(1,1,:)), squeeze(PC_stn(n,1,:))) < 0
+%             PC_stn(n,1,:) = -PC_stn(n,1,:);
+%             eof_stn(n,1,:) = -eof_stn(n,1,:);
+%         end
+%     end
+%     % Normalising (it already has mean 0)
+%     stn_EPC = nan(NUM_TRIALS, NUM_YRS);
+%     stn_EPC_RV = nan(NUM_TRIALS, NUM_YRS);
+%     for n=1:NUM_TRIALS
+%         stn_EPC(n,:) = squeeze(PC_stn(n,1,:))./std(squeeze(PC_stn(n,1,:))');
+%         stn_EPC_RV(n,:) = movingvar(stn_EPC(n,:)',VAR_WDW);
+%     end
+%     % Skill Evaluation
+%     stn_corr_EPC = nan(NUM_TRIALS,1);
+%     stn_rmse_EPC = nan(NUM_TRIALS,1);
+%     stn_corr_EPC_RV = nan(NUM_TRIALS,1);
+%     stn_rmse_EPC_RV = nan(NUM_TRIALS,1);
+%     for n=1:NUM_TRIALS
+%         stn_corr_EPC(n) = abs(corr(squeeze(stn_EPC(n,:))',n34_ind));
+%         stn_rmse_EPC(n) = sqrt(mean((n34_ind-stn_EPC(n,:)').^2));
+%         stn_corr_EPC_RV(n) = abs(corr(squeeze(stn_EPC_RV(n,RV_WDW))',n34_ind_RV(RV_WDW)));
+%         stn_rmse_EPC_RV(n) = sqrt(mean((n34_ind_RV(RV_WDW)-stn_EPC_RV(n,RV_WDW)').^2));
+%     end
+%     all_stn_corr_EPC_RV(NUM_STNS,:) = stn_corr_EPC_RV;
+%     all_stn_rmse_EPC_RV(NUM_STNS,:) = stn_rmse_EPC_RV;
+%     all_stn_corr_EPC(NUM_STNS,:) = stn_corr_EPC;
+%     all_stn_rmse_EPC(NUM_STNS,:) = stn_rmse_EPC;
+%     
+%     
+%     % Esper et al 2005 CPS Method 
+%     stn_CPS = nan(NUM_TRIALS, NUM_YRS);
+%     stn_CPS_RV = nan(NUM_TRIALS, NUM_YRS);
+%     for n=1:NUM_TRIALS
+%         corr_matrix = corr(n34_ind*ones(1,10), squeeze(stn_ts(n,:,:))');
+%         stn_CPS(n,:) = corr_matrix(1,:)*squeeze(stn_ts(n,:,:));
+%     end
+%     % Normalising (it already has mean ~0)
+%     for n=1:NUM_TRIALS
+%         stn_CPS(n,:) = squeeze(stn_CPS(n,:))./std(squeeze(stn_CPS(n,:))');
+%         stn_CPS_RV(n,:) = movingvar(squeeze(stn_CPS(n,:))',VAR_WDW);
+%     end
+%     % Skill Evaluation
+%     stn_corr_CPS = nan(NUM_TRIALS,1);
+%     stn_rmse_CPS = nan(NUM_TRIALS,1);
+%     stn_corr_CPS_RV = nan(NUM_TRIALS,1);
+%     stn_rmse_CPS_RV = nan(NUM_TRIALS,1);
+%     for n=1:NUM_TRIALS
+%         stn_corr_CPS(n) = corr(squeeze(stn_CPS(n,:))',n34_ind);
+%         stn_rmse_CPS(n) = sqrt(mean((n34_ind-stn_CPS(n,:)').^2));
+%         stn_corr_CPS_RV(n) = corr(squeeze(stn_CPS_RV(n,RV_WDW))',n34_ind_RV(RV_WDW));
+%         stn_rmse_CPS_RV(n) = sqrt(mean((n34_ind_RV(RV_WDW)-stn_CPS_RV(n,RV_WDW)').^2));
+%     end
+%     all_stn_corr_CPS_RV(NUM_STNS,:) = stn_corr_CPS_RV;
+%     all_stn_rmse_CPS_RV(NUM_STNS,:) = stn_rmse_CPS_RV;
+%     all_stn_corr_CPS(NUM_STNS,:) = stn_corr_CPS;
+%     all_stn_rmse_CPS(NUM_STNS,:) = stn_rmse_CPS;
     toc;
 end % Took 60 min for 70 
 
-% save('DataFiles/500yrCalWdw_meth_stats.mat','all_stn_corr_MRV','all_stn_rmse_MRV', ...
-%      'all_stn_corr_RVM','all_stn_rmse_RVM', ...
-%      'all_stn_corr_EPC', 'all_stn_rmse_EPC', ...
-%      'all_stn_corr_EPC_RV', 'all_stn_rmse_EPC_RV', ...
-%      'all_stn_corr_CPS', 'all_stn_rmse_CPS', ...
-%      'all_stn_corr_CPS_RV', 'all_stn_rmse_CPS_RV'         );
+save('DataFiles/500yrCalWdw_meth_stats.mat','all_stn_corr_MRV','all_stn_rmse_MRV', ...
+     'all_stn_corr_RVM','all_stn_rmse_RVM', ...
+     'all_stn_corr_EPC', 'all_stn_rmse_EPC', ...
+     'all_stn_corr_EPC_RV', 'all_stn_rmse_EPC_RV', ...
+     'all_stn_corr_CPS', 'all_stn_rmse_CPS', ...
+     'all_stn_corr_CPS_RV', 'all_stn_rmse_CPS_RV'         );
 
 %% Making the plot
 

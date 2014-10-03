@@ -83,6 +83,9 @@ for c=1:size(CAL_WDW,1)
 all_stn_MRV=nan(max(numstnstocompare), NUM_TRIALS, NUM_YRS,'single');
 all_stn_corr_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
 all_stn_rmse_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_RVM=nan(max(numstnstocompare), NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_RVM = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_RVM = nan(max(numstnstocompare),NUM_TRIALS,'single');
 all_stn_EPC = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
 all_stn_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
 all_stn_corr_EPC = nan(max(numstnstocompare),NUM_TRIALS,'single');
@@ -234,6 +237,9 @@ end
 all_stn_MRV(NUM_STNS,:,:) = stn_MRV;
 all_stn_corr_MRV(NUM_STNS,:) = stn_corr_MRV;
 all_stn_rmse_MRV(NUM_STNS,:) = stn_rmse_MRV;
+all_stn_RVM(NUM_STNS,:,:) = stn_RVM;
+all_stn_corr_RVM(NUM_STNS,:) = stn_corr_RVM;
+all_stn_rmse_RVM(NUM_STNS,:) = stn_rmse_RVM;
 all_stn_EPC(NUM_STNS,:,:) = stn_EPC;
 all_stn_EPC_RV(NUM_STNS,:,:) = stn_EPC_RV;
 all_stn_corr_EPC(NUM_STNS,:) = stn_corr_EPC;
@@ -251,6 +257,7 @@ end
 % That took about an hour per calibration window
 save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'],...
      'all_stn_MRV','all_stn_corr_MRV','all_stn_rmse_MRV', ...
+     'all_stn_RVM','all_stn_corr_RVM','all_stn_rmse_RVM', ...
      'DIR_NAME','CAL_WDW','all_stn_EPC','all_stn_corr_EPC','all_stn_rmse_EPC','all_stn_EPC_RV', ...
      'all_stn_corr_EPC_RV','all_stn_rmse_EPC_RV','all_stn_CPS','all_stn_CPS_RV', ...
      'all_stn_corr_CPS','all_stn_rmse_CPS','all_stn_corr_CPS_RV','all_stn_rmse_CPS_RV','-v7.3','window');

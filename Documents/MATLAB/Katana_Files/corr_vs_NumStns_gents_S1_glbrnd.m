@@ -68,7 +68,7 @@ n34_ind = filtfilt(high_b,high_a,double(n34_ind));
 
 for i=1:90
     for j=1:144
-        ats(:,i,j) = filtfilt(high_b,high_a,double(squeeze(ats(:,i,j)));
+        ats(:,i,j) = filtfilt(high_b,high_a,double(squeeze(ats(:,i,j))));
     end
 end
 clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
