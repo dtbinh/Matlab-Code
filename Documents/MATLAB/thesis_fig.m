@@ -171,7 +171,7 @@ set(gca, ...
     'XLim'        , [0 360],  ...
     'FontSize'    , 14   ...
     );
-text(300,-50,['N=',num2str(num_nonstat)],'FontSize',14)
+text(310,-40,['N=',num2str(num_nonstat)],'FontSize',14)
 cbfreeze;
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map61yrwdw.mat
 NUM_CONTOURS = 10;
@@ -194,7 +194,7 @@ set(gca, ...
     'XLim'        , [0 360],  ...
     'FontSize'    , 14   ...
     );
-text(300,-50,['N=',num2str(num_nonstat)],'FontSize',14)
+text(310,-40,['N=',num2str(num_nonstat)],'FontSize',14)
 cbfreeze;
 load /srv/ccrc/data34/z3372730/Katana_Data/MATLAB/DataFiles/nonstat_map91yrwdw.mat
 NUM_CONTOURS = 10;
@@ -217,7 +217,7 @@ set(gca, ...
     'XLim'        , [0 360],  ...
     'FontSize'    , 14   ...
     );
-text(300,-50,['N=',num2str(num_nonstat)],'FontSize',14)
+text(310,-40,['N=',num2str(num_nonstat)],'FontSize',14)
 cbfreeze
 
 %% Figure 2-2
@@ -555,7 +555,7 @@ overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9
     CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
 end
-s_Hnd = tight_subplot(3,4,[0.01 0.02],[0.1 0.01],[0.1 0.01]);
+s_Hnd = tight_subplot(3,4,[0.01 0.02],[0.1 0.05],[0.1 0.01]);
 
 GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
@@ -970,13 +970,13 @@ axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
 for i=1:12
     axes(s_Hnd(i));
     set(gca,'YTickLabel',[],'XTickLabel',[])
-    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:1],'XTick', [0:20:70]); 
+    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.1:0.5],'XTick', [0:20:70]); 
 end
 
 axes(s_Hnd(9)); xlabel('Network Size');
 for window = [31, 61, 91]
     axes(s_Hnd(1+(floor(window/30)-1)*4));
-    set(gca,'YTickLabel',[0:0.2:1]);
+    set(gca,'YTickLabel',[0:0.1:0.5]);
     ylabel(['RMSE(',num2str(window),'yrs)'])
 end
 
@@ -1019,7 +1019,7 @@ figure;
 load('DataFiles/all_rcor_ts_eofs.mat')
 subplot(3,1,2)
 pcolor(lon,lat,squeeze(rc31_eof_ts_fm(1,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-title('EOF1 (31yr window)')
+title('EOF1 (31yr window)'); colorbar;
 % subplot(3,1,2)
 % pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
 % title('EOF 2 with window length 61 years')
@@ -1032,10 +1032,11 @@ cmap=hsv(3);
 plot(rc31_expvar,'','Color',cmap(1,:),'LineWidth',2); hold on;
 plot(rc61_expvar,'','Color',cmap(2,:),'LineWidth',2);
 plot(rc91_expvar,'','Color',cmap(3,:),'LineWidth',2); hold off;
-ylim([0 50]); xlim([1,10]); legend('31 Year','61 Year','91 Year');
+ylim([0 50]); xlim([1,10]); legend('31 year window','61 year window','91 year window');
 ylabel('Percentage %'); grid on;
 xlabel('Number of EOF')
 title('Explained Variance');
+
 
 
 % Correlation between PC timeseries
@@ -1054,9 +1055,9 @@ a=rc31_PC_ts(1,:)'; b=rc61_PC_ts(1,:)'; c=rc91_PC_ts(1,:)';
 plot(a,'','Color',cmap(1,:)); hold on;
 plot(b,'','Color',cmap(2,:)); grid on;
 plot(c,'','Color',cmap(3,:)); hold off
-legend('31yr rcor','61yr rcor','91yr rcor','location','southeast')
+legend('31 year window','61 year window','91 year window','location','southeast')
 xlabel('Year')
-title('PC1')
+title('Principal Component 1')
 
 %% Appendix Figure 5
 figure;

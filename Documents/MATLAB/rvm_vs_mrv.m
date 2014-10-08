@@ -278,5 +278,27 @@ for c=1:size(CAL_WDW,1)
 end
 
 % Plotting
-scatter(MRV_std_mov_corr_all_grps(:),MRV_all_grps(:))
-
+subplot(2,2,1)
+scatter(EPC_RV_std_mov_corr_all_grps(:),EPC_RV_all_grps(:),1,'.')
+ylabel('Reconstruction Skill - correlation')
+xlabel('Correlation to STD time series')
+ylim([-1,1]); xlim([-1,1]);
+title('EPC\_RV');
+subplot(2,2,2)
+scatter(CPS_RV_std_mov_corr_all_grps(:),CPS_RV_all_grps(:),1,'.')
+ylabel('Reconstruction Skill - correlation')
+xlabel('Correlation to STD time series')
+ylim([-1,1]); xlim([-1,1]);
+title('CPS\_RV');
+subplot(2,2,3)
+scatter(MRV_std_mov_corr_all_grps(:),MRV_all_grps(:),1,'.')
+ylabel('Reconstruction Skill - correlation')
+xlabel('Correlation to STD time series')
+ylim([-1,1]); xlim([-1,1]);
+title('MRV');
+subplot(2,2,4)
+scatter(RVM_std_mov_corr_all_grps(:),RVM_all_grps(:),1,'.')
+ylabel('Reconstruction Skill - correlation')
+xlabel('Correlation to STD time series')
+ylim([-1,1]); xlim([-1,1]);
+title('RVM');
