@@ -142,7 +142,7 @@ end
 poscorr_all_stn_ts = all_stn_ts;
 for n=1:NUM_TRIALS
     for m=1:NUM_STNS
-        if corr(n34_ind, squeeze(all_stn_ts(n,m,:))) < 0
+        if corr(n34_ind(CAL_WDW(c,:)), squeeze(all_stn_ts(n,m,CAL_WDW(c,:)))) < 0 % Looked at r in window
             poscorr_all_stn_ts(n,m,:) = -all_stn_ts(n,m,:);
         end
     end
