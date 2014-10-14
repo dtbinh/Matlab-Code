@@ -1,4 +1,4 @@
-%% This script will compare the RVM and MRV methods in the reconstructions
+% This script will compare the RVM and MRV methods in the reconstructions
 
 %% Setup
 ts_file = 'DataFiles/ts_A1.nc'; pr_file = 'DataFiles/pr_A1.nc';
@@ -192,11 +192,132 @@ numstnstocompare=3:70;
 % scatter(rvm,temp)
 % xlabel('rvm'); ylabel('std(r(ts))');
 
+% 
+% %% Scatterplot - Reconstruction skill vs correlation to std(corr(stn_ts,n34_ind))
+% tic;
+% window = 31; % The running window in years
+% GROUP_NAME = 'glb_ts';
+% 
+% NUM_CAL_WDW = 10; clear CAL_WDW;
+% overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+% for c=0:9
+%     CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+% end
+% 
+% EPC_RV_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% CPS_RV_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% MRV_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% RVM_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% EPC_RV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS);
+% CPS_RV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS);
+% MRV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS);
+% RVM_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS);
+% EPC_RV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% CPS_RV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% MRV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% RVM_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
+% 
+% for c=1%:size(CAL_WDW,1)
+%     DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
+%     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+%      'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM', ...
+%      'all_stn_CPS_RV', 'all_stn_EPC_RV', 'all_stn_MRV', 'all_stn_RVM')
+% 
+%     EPC_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%     CPS_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%     MRV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%     RVM_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%         
+%     for NUM_STNS = 10
+%         load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox'])
+%         
+%         % Normalising
+%         stn_ts_nm=nan(size(stn_ts)); % nm means normalised
+%         stn_ts_mn=mean(stn_ts,3); 
+%         stn_ts_std=squeeze(std(permute(stn_ts,[3,1,2])));
+%         for n=1:NUM_TRIALS
+%             for m=1:NUM_STNS
+%                stn_ts_nm(n,m,:)= single((stn_ts(n,m,:)-stn_ts_mn(n,m))./(stn_ts_std(n,m)));
+%                
+%             end
+%         end
+%          
+%         % Making sure it uses positive correlated proxies (flips)
+%         poscorr_stn_ts = stn_ts_nm;
+%         mov_corr = nan(NUM_TRIALS,NUM_STNS,NUM_YRS);
+%         
+%         for n=1:NUM_TRIALS
+%             for m=bad_recons_RVM
+%                 if corr(n34_ind, squeeze(stn_ts_nm(n,m,:))) < 0
+%                     poscorr_stn_ts(n,m,:) = -stn_ts_nm(n,m,:);
+%                 end
+%                 mov_corr(n,m,:) = movingCorrelation([n34_ind,squeeze(poscorr_stn_ts(n,m,:))],VAR_WDW,2);
+%             end
+%         end
+%         
+%         std_mov_corr = squeeze(std(mov_corr,0,2));
+%         EPC_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%         CPS_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%         MRV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+%         RVM_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
+% %         for n=bad_recons
+% %             EPC_RV_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_EPC_RV(NUM_STNS,n,VAR_WDW+1:end))));
+% %             CPS_RV_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_CPS_RV(NUM_STNS,n,VAR_WDW+1:end))));
+% %             MRV_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_MRV(NUM_STNS,n,VAR_WDW+1:end))));
+% %             RVM_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_RVM(NUM_STNS,n,VAR_WDW+1:end))));
+% %         end
+%         
+% 
+%     end
+% 
+%     EPC_RV_all_grps(c,:,:,:) = all_stn_EPC_RV;
+%     CPS_RV_all_grps(c,:,:,:) = all_stn_CPS_RV;
+%     MRV_all_grps(c,:,:,:) = all_stn_MRV;
+%     RVM_all_grps(c,:,:,:) = all_stn_RVM;
+%     
+%     EPC_RV_all_corr_grps(c,:,:) = all_stn_corr_EPC_RV;
+%     CPS_RV_all_corr_grps(c,:,:) = all_stn_corr_CPS_RV;
+%     MRV_all_corr_grps(c,:,:) = all_stn_corr_MRV;
+%     RVM_all_corr_grps(c,:,:) = all_stn_corr_RVM;
+%     
+%     EPC_RV_std_mov_corr_all_grps(c,:,:) = EPC_RV_corr_std_mov_corr_ts;
+%     CPS_RV_std_mov_corr_all_grps(c,:,:) = CPS_RV_corr_std_mov_corr_ts;
+%     MRV_std_mov_corr_all_grps(c,:,:) = MRV_corr_std_mov_corr_ts;
+%     RVM_std_mov_corr_all_grps(c,:,:) = RVM_corr_std_mov_corr_ts; 
+%     toc;
+% end
+% 
+% % Plotting
+% subplot(2,2,1)
+% scatter(EPC_RV_std_mov_corr_all_grps(:),EPC_RV_all_grps(:),1,'.')
+% ylabel('Reconstruction Skill - correlation')
+% xlabel('Correlation to STD time series')
+% ylim([-1,1]); xlim([-1,1]);
+% title('EPC\_RV');
+% subplot(2,2,2)
+% scatter(CPS_RV_std_mov_corr_all_grps(:),CPS_RV_all_grps(:),1,'.')
+% ylabel('Reconstruction Skill - correlation')
+% xlabel('Correlation to STD time series')
+% ylim([-1,1]); xlim([-1,1]);
+% title('CPS\_RV');
+% subplot(2,2,3)
+% scatter(MRV_std_mov_corr_all_grps(:),MRV_all_grps(:),1,'.')
+% ylabel('Reconstruction Skill - correlation')
+% xlabel('Correlation to STD time series')
+% ylim([-1,1]); xlim([-1,1]);
+% title('MRV');
+% subplot(2,2,4)
+% scatter(RVM_std_mov_corr_all_grps(:),RVM_all_grps(:),1,'.')
+% ylabel('Reconstruction Skill - correlation')
+% xlabel('Correlation to STD time series')
+% ylim([-1,1]); xlim([-1,1]);
+% title('RVM');
 
-%% Scatterplot - Reconstruction skill vs correlation to std(corr(stn_ts,n34_ind))
+%% Plotting Reconstruction against std of running correlation of proxies
+
 tic;
 window = 31; % The running window in years
-GROUP_NAME = 'glb_ts';
+GROUP_NAME = 'ntrop_ts';
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -204,101 +325,319 @@ for c=0:9
     CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
 end
 
-EPC_RV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-CPS_RV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-MRV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-RVM_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-EPC_RV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-CPS_RV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-MRV_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-RVM_std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS);
-
+EPC_RV_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,'single');
+CPS_RV_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,'single');
+MRV_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,'single');
+RVM_all_corr_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,'single');
+EPC_RV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS,'single');
+CPS_RV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS,'single');
+MRV_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS,'single');
+RVM_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS,'single');
+std_mov_corr_all_grps = nan(size(CAL_WDW,1),max(numstnstocompare),NUM_TRIALS,NUM_YRS,'single');
+bad_recons_RVM = cell(10,1); bad_recons_MRV = cell(10,1); 
+bad_recons_CPS_RV = cell(10,1); bad_recons_EPC_RV = cell(10,1); 
 for c=1:size(CAL_WDW,1)
+    
     DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
     load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
      'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM', ...
      'all_stn_CPS_RV', 'all_stn_EPC_RV', 'all_stn_MRV', 'all_stn_RVM')
 
-    EPC_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-    CPS_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-    MRV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-    RVM_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-        
-    for NUM_STNS = numstnstocompare(1)
+    EPC_RV_all_grps(c,:,:,:) = all_stn_EPC_RV;
+    CPS_RV_all_grps(c,:,:,:) = all_stn_CPS_RV;
+    MRV_all_grps(c,:,:,:) = all_stn_MRV;
+    RVM_all_grps(c,:,:,:) = all_stn_RVM;
+    EPC_RV_all_corr_grps(c,:,:) = all_stn_corr_EPC_RV;
+    CPS_RV_all_corr_grps(c,:,:) = all_stn_corr_CPS_RV;
+    MRV_all_corr_grps(c,:,:) = all_stn_corr_MRV;
+    RVM_all_corr_grps(c,:,:) = all_stn_corr_RVM;
+
+    for NUM_STNS = 10
         load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox'])
         
+        bad_recons_RVM{c} = find(all_stn_corr_RVM(NUM_STNS,:)<prctile(squeeze(all_stn_corr_MRV(NUM_STNS,:))',5));
+        bad_recons_CPS_RV{c} = find(all_stn_corr_CPS_RV(NUM_STNS,:)<prctile(squeeze(all_stn_corr_MRV(NUM_STNS,:))',5));
+        bad_recons_EPC_RV{c} = find(all_stn_corr_EPC_RV(NUM_STNS,:)<prctile(squeeze(all_stn_corr_MRV(NUM_STNS,:))',5));
+        bad_recons_MRV{c} = find(all_stn_corr_MRV(NUM_STNS,:)<0.5);
         % Normalising
-        stn_ts_nm=nan(size(stn_ts)); % nm means normalised
+        stn_ts_nm=nan(size(stn_ts)); poscorr_stn_ts=nan(size(stn_ts)); % nm means normalised
         stn_ts_mn=mean(stn_ts,3); 
         stn_ts_std=squeeze(std(permute(stn_ts,[3,1,2])));
+        mov_corr = nan(NUM_TRIALS,NUM_STNS,NUM_YRS);
         for n=1:NUM_TRIALS
             for m=1:NUM_STNS
                stn_ts_nm(n,m,:)= single((stn_ts(n,m,:)-stn_ts_mn(n,m))./(stn_ts_std(n,m)));
-               
-            end
-        end
-        
-        % Making sure it uses positive correlated proxies (flips)
-        poscorr_stn_ts = stn_ts_nm;
-        mov_corr = nan(NUM_TRIALS,NUM_STNS,NUM_YRS);
-        
-        for n=1:NUM_TRIALS
-            for m=1:NUM_STNS
-                if corr(n34_ind, squeeze(stn_ts_nm(n,m,:))) < 0
+               if corr(n34_ind, squeeze(stn_ts_nm(n,m,:))) < 0
                     poscorr_stn_ts(n,m,:) = -stn_ts_nm(n,m,:);
-                end
-                mov_corr(n,m,:) = movingCorrelation([n34_ind,squeeze(poscorr_stn_ts(n,m,:))],VAR_WDW,2);
+               else
+                   poscorr_stn_ts(n,m,:) = stn_ts_nm(n,m,:);
+               end
+               mov_corr(n,m,:) = movingCorrelation([n34_ind,squeeze(poscorr_stn_ts(n,m,:))],VAR_WDW,2);
             end
         end
-        std_mov_corr = squeeze(std(mov_corr,0,2));
-        EPC_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-        CPS_RV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-        MRV_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-        RVM_corr_std_mov_corr_ts = nan(max(numstnstocompare),NUM_TRIALS);
-        for n=1:NUM_TRIALS
-            EPC_RV_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_EPC_RV(NUM_STNS,n,VAR_WDW+1:end))));
-            CPS_RV_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_CPS_RV(NUM_STNS,n,VAR_WDW+1:end))));
-            MRV_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_MRV(NUM_STNS,n,VAR_WDW+1:end))));
-            RVM_corr_std_mov_corr_ts(NUM_STNS,n) = corr(squeeze(std_mov_corr(n,VAR_WDW+1:end))',squeeze(double(all_stn_RVM(NUM_STNS,n,VAR_WDW+1:end))));
-        end
         
-    toc;
+        std_mov_corr_all_grps(c,NUM_STNS,:,:) = squeeze(std(mov_corr,0,2));
+        toc;
     end
-
-    
-    EPC_RV_all_grps(c,:,:) = all_stn_corr_EPC_RV;
-    CPS_RV_all_grps(c,:,:) = all_stn_corr_CPS_RV;
-    MRV_all_grps(c,:,:) = all_stn_corr_MRV;
-    RVM_all_grps(c,:,:) = all_stn_corr_RVM;
-    EPC_RV_std_mov_corr_all_grps(c,:,:) = EPC_RV_corr_std_mov_corr_ts;
-    CPS_RV_std_mov_corr_all_grps(c,:,:) = CPS_RV_corr_std_mov_corr_ts;
-    MRV_std_mov_corr_all_grps(c,:,:) = MRV_corr_std_mov_corr_ts;
-    RVM_std_mov_corr_all_grps(c,:,:) = RVM_corr_std_mov_corr_ts; 
-    
 end
 
-% Plotting
-subplot(2,2,1)
-scatter(EPC_RV_std_mov_corr_all_grps(:),EPC_RV_all_grps(:),1,'.')
-ylabel('Reconstruction Skill - correlation')
-xlabel('Correlation to STD time series')
-ylim([-1,1]); xlim([-1,1]);
-title('EPC\_RV');
-subplot(2,2,2)
-scatter(CPS_RV_std_mov_corr_all_grps(:),CPS_RV_all_grps(:),1,'.')
-ylabel('Reconstruction Skill - correlation')
-xlabel('Correlation to STD time series')
-ylim([-1,1]); xlim([-1,1]);
-title('CPS\_RV');
-subplot(2,2,3)
-scatter(MRV_std_mov_corr_all_grps(:),MRV_all_grps(:),1,'.')
-ylabel('Reconstruction Skill - correlation')
-xlabel('Correlation to STD time series')
-ylim([-1,1]); xlim([-1,1]);
-title('MRV');
-subplot(2,2,4)
-scatter(RVM_std_mov_corr_all_grps(:),RVM_all_grps(:),1,'.')
-ylabel('Reconstruction Skill - correlation')
-xlabel('Correlation to STD time series')
-ylim([-1,1]); xlim([-1,1]);
-title('RVM');
+save('DataFiles/rvm_vs_mrv_ntrop.mat','std_mov_corr_all_grps','bad_recons_CPS_RV','bad_recons_EPC_RV','bad_recons_RVM','bad_recons_MRV',...
+       'EPC_RV_all_grps','CPS_RV_all_grps','MRV_all_grps','RVM_all_grps','EPC_RV_all_corr_grps','CPS_RV_all_corr_grps',...
+       'MRV_all_corr_grps','RVM_all_corr_grps','window','GROUP_NAME');
+%% Plotting
+c=10;
+
+% std_mov_corr = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_RVM(i),:));
+% recon = squeeze(RVM_all_grps(NUM_STNS,bad_recons_RVM(i),:));
+% plotyy(1:469,recon(16:end-15),1:469,std_mov_corr(31:end));
+% corr(std_mov_corr(31:end),recon(16:end-15))
+s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_RVM{c},(31:end)));
+rec_skill = squeeze(RVM_all_corr_grps(c,NUM_STNS,bad_recons_RVM{c}));
+r = squeeze(RVM_all_grps(c,NUM_STNS,bad_recons_RVM{c},(16:end-15)));
+% scatter(std_mov_corr(31:end),recon(16:end-15))
+subplot(3,1,1)
+scatter(s(:),r(:),'.');
+% values = hist3([s(:) r(:)],{0:0.01:1 , 0:0.01:3})';
+% pcolor(0:0.01:1,0:0.01:3,values); shading flat; colormap(flipud(gray)); colorbar;
+xlabel('std of running correlation of proxies to ENSO')
+ylabel('Reconstructed Nino3.4 SST RV')
+xlim([0 0.5]); ylim([0 2.5]); grid on;
+[b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+hold on; plot(linspace(0,0.5,100),b(2)+linspace(0,0.5,100)*b(1),'k'); hold off
+text(0.4,2,['R^2 = ',num2str(thestats(1))])
+text(0.4,2.3,['y=',num2str(b(2)),'+',num2str(b(1)),' x'])
+text(0.4,2.15,['r(RVM,n34) = ',num2str(RVM_all_corr_grps(c,NUM_STNS,bad_recons_RVM{c}))])
+title('RVM')
+
+s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_CPS_RV{c},(31:end)));
+rec_skill = squeeze(CPS_RV_all_corr_grps(c,NUM_STNS,bad_recons_CPS_RV{c}));
+r = squeeze(CPS_RV_all_grps(c,NUM_STNS,bad_recons_CPS_RV{c},(16:end-15)));
+% scatter(std_mov_corr(31:end),recon(16:end-15))
+subplot(3,1,2)
+scatter(s(:),r(:),'.');
+% values = hist3([s(:) r(:)],{0:0.01:1 , 0:0.01:3})';
+% pcolor(0:0.01:1,0:0.01:3,values); shading flat; colormap(flipud(gray)); colorbar;
+xlabel('std of running correlation of proxies to ENSO')
+ylabel('Reconstructed Nino3.4 SST RV')
+xlim([0 0.5]); ylim([0 2.5]); grid on;
+[b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+hold on; plot(linspace(0,0.5,100),b(2)+linspace(0,0.5,100)*b(1),'k'); hold off
+text(0.4,2,['R^2 = ',num2str(thestats(1))])
+text(0.4,2.3,['y=',num2str(b(2)),'+',num2str(b(1)),' x'])
+text(0.4,2.15,['r(CPS\_RV,n34) = ',num2str(RVM_all_corr_grps(c,NUM_STNS,bad_recons_CPS_RV{c}))])
+title('CPS\_RV')
+
+s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_EPC_RV{c},(31:end)));
+rec_skill = squeeze(EPC_RV_all_corr_grps(c,NUM_STNS,bad_recons_EPC_RV{c}));
+r = squeeze(EPC_RV_all_grps(c,NUM_STNS,bad_recons_EPC_RV{c},(16:end-15)));
+% scatter(std_mov_corr(31:end),recon(16:end-15))
+subplot(3,1,3)
+scatter(s(:),r(:),'.');
+% values = hist3([s(:) r(:)],{0:0.01:1 , 0:0.01:3})';
+% pcolor(0:0.01:1,0:0.01:3,values); shading flat; colormap(flipud(gray)); colorbar;
+xlabel('std of running correlation of proxies to ENSO')
+ylabel('Reconstructed Nino3.4 SST RV')
+xlim([0 0.5]); ylim([0 2.5]); grid on;
+[b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+hold on; plot(linspace(0,0.5,100),b(2)+linspace(0,0.5,100)*b(1),'k'); hold off
+text(0.4,2,['R^2 = ',num2str(thestats(1))])
+text(0.4,2.3,['y=',num2str(b(2)),'+',num2str(b(1)),' x'])
+text(0.4,2.15,['r(EPC\_RV,n34) = ',num2str(RVM_all_corr_grps(c,NUM_STNS,bad_recons_EPC_RV{c}))])
+title('EPC\_RV')
+
+%% Getting alot of R^2 and regression values
+
+
+as_RVM=[]; ar_RVM=[];  ab_RVM=[];  
+as_MRV=[]; ar_MRV=[];  ab_MRV=[]; 
+as_CPS_RV=[]; ar_CPS_RV=[];  ab_CPS_RV=[]; 
+as_EPC_RV=[]; ar_EPC_RV=[];  ab_EPC_RV=[]; 
+
+for c=1:10
+
+    all_skill_RVM=nan(length(bad_recons_RVM{c}(:)),1,'single');
+    allrsq_RVM=nan(length(bad_recons_RVM{c}(:)),1,'single');
+    allb_RVM=nan(length(bad_recons_RVM{c}(:)),2,'single');
+    all_skill_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
+    allrsq_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
+    allb_MRV=nan(length(bad_recons_MRV{c}(:)),2,'single');
+    all_skill_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),1,'single');
+    allrsq_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),1,'single');
+    allb_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),2,'single');
+    all_skill_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),1,'single');
+    allrsq_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),1,'single');
+    allb_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),2,'single');
+
+    for i=1:length(bad_recons_MRV{c}(:));
+    s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_MRV{c}(i),(31:end)));
+    r = squeeze(MRV_all_grps(c,NUM_STNS,bad_recons_MRV{c}(i),(16:end-15)));
+    all_skill_MRV(i) = squeeze(MRV_all_corr_grps(c,NUM_STNS,bad_recons_MRV{c}(i)));
+    [b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+    allrsq_MRV(i) = thestats(1);
+    allb_MRV(i,:) = b;
+    end
+
+    for i=1:length(bad_recons_RVM{c}(:));
+    s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_RVM{c}(i),(31:end)));
+    r = squeeze(RVM_all_grps(c,NUM_STNS,bad_recons_RVM{c}(i),(16:end-15)));
+    all_skill_RVM(i) = squeeze(RVM_all_corr_grps(c,NUM_STNS,bad_recons_RVM{c}(i)));
+    [b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+    allrsq_RVM(i) = thestats(1);
+    allb_RVM(i,:) = b;
+    end
+
+    for i=1:length(bad_recons_CPS_RV{c}(:));
+    s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_CPS_RV{c}(i),(31:end)));
+    r = squeeze(CPS_RV_all_grps(c,NUM_STNS,bad_recons_CPS_RV{c}(i),(16:end-15)));
+    all_skill_CPS_RV(i) = squeeze(CPS_RV_all_corr_grps(c,NUM_STNS,bad_recons_CPS_RV{c}(i)));
+    [b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+    allrsq_CPS_RV(i) = thestats(1);
+    allb_CPS_RV(i,:) = b;
+    end
+
+    for i=1:length(bad_recons_EPC_RV{c}(:));
+    s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_EPC_RV{c}(i),(31:end)));
+    r = squeeze(EPC_RV_all_grps(c,NUM_STNS,bad_recons_EPC_RV{c}(i),(16:end-15)));
+    all_skill_EPC_RV(i) = squeeze(EPC_RV_all_corr_grps(c,NUM_STNS,bad_recons_EPC_RV{c}(i)));
+    [b, b_int, residu, rint, thestats] = regress(r(:),[s(:), ones(size(s(:)))]);
+    allrsq_EPC_RV(i) = thestats(1);
+    allb_EPC_RV(i,:) = b;
+    end
+
+
+    as_MRV = cat(1,as_MRV,all_skill_MRV);
+    ar_MRV = cat(1,ar_MRV,allrsq_MRV);
+    ab_MRV = cat(1,ab_MRV,allb_MRV);
+    as_RVM = cat(1,as_RVM,all_skill_RVM);
+    ar_RVM = cat(1,ar_RVM,allrsq_RVM);
+    ab_RVM = cat(1,ab_RVM,allb_RVM);
+    as_CPS_RV = cat(1,as_CPS_RV,all_skill_CPS_RV);
+    ar_CPS_RV = cat(1,ar_CPS_RV,allrsq_CPS_RV);
+    ab_CPS_RV = cat(1,ab_CPS_RV,allb_CPS_RV);
+    as_EPC_RV = cat(1,as_EPC_RV,all_skill_EPC_RV);
+    ar_EPC_RV = cat(1,ar_EPC_RV,allrsq_EPC_RV);
+    ab_EPC_RV = cat(1,ab_EPC_RV,allb_EPC_RV);
+
+end
+
+% Finding when reg is significant
+
+SIGREG_CUTOFF = -1; % For regression coefficient
+SIGRSQ_CUTOFF = 0.3;
+sig_MRV = find(ab_MRV(:,1)<SIGREG_CUTOFF & ar_MRV>SIGRSQ_CUTOFF);
+sig_RVM = find(ab_RVM(:,1)<SIGREG_CUTOFF & ar_RVM>SIGRSQ_CUTOFF);
+sig_CPS_RV = find(ab_CPS_RV(:,1)<SIGREG_CUTOFF & ar_CPS_RV>SIGRSQ_CUTOFF);
+sig_EPC_RV = find(ab_EPC_RV(:,1)<SIGREG_CUTOFF & ar_EPC_RV>SIGRSQ_CUTOFF);
+
+% R^2 vs Reg coef
+
+subplot(4,1,1)
+plot(squeeze(ab_MRV(:,1)),ar_MRV(:),'.'); hold on;
+scatter(squeeze(ab_MRV(sig_MRV,1)),ar_MRV(sig_MRV),'.');
+xlabel('regression coef')
+ylabel('R^2 value')
+title('MRV')
+xlim([-7 4]); ylim([0 0.7]);
+
+subplot(4,1,2)
+plot(squeeze(ab_RVM(:,1)),ar_RVM(:),'.'); hold on;
+scatter(squeeze(ab_RVM(sig_RVM,1)),ar_RVM(sig_RVM),'.')
+xlabel('regression coef')
+ylabel('R^2 value')
+title('RVM')
+xlim([-7 4]); ylim([0 0.7]);
+
+subplot(4,1,3)
+plot(squeeze(ab_CPS_RV(:,1)),ar_CPS_RV(:),'.'); hold on;
+scatter(squeeze(ab_CPS_RV(sig_CPS_RV,1)),ar_CPS_RV(sig_CPS_RV),'.')
+xlabel('regression coef')
+ylabel('R^2 value')
+title('CPS\_RV')
+xlim([-7 4]); ylim([0 0.7]);
+
+subplot(4,1,4)
+plot(squeeze(ab_EPC_RV(:,1)),ar_EPC_RV(:),'.'); hold on;
+scatter(squeeze(ab_EPC_RV(sig_EPC_RV,1)),ar_EPC_RV(sig_EPC_RV),'.')
+xlabel('regression coef')
+ylabel('R^2 value')
+title('EPC\_RV')
+xlim([-7 4]); ylim([0 0.7]);
+legend('All poor reconstructions','Selected reconstructions');
+
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/rsq_vs_regcoef_badrecons.jpg'])
+
+% Reg coef vs recon skill
+clf;
+subplot(4,1,1)
+scatter(squeeze(ab_MRV(sig_MRV,1)),as_MRV(sig_MRV),'.')
+lsline
+xlabel('regression coef')
+ylabel('skill')
+title('MRV')
+xlim([-7 3]); ylim([-0.1 1]);
+
+subplot(4,1,2)
+scatter(squeeze(ab_RVM(sig_RVM,1)),as_RVM(sig_RVM),'.')
+lsline
+xlabel('regression coef')
+ylabel('skill')
+title('RVM')
+xlim([-7 3]); ylim([-0.1 1]);
+
+subplot(4,1,3)
+scatter(squeeze(ab_CPS_RV(sig_CPS_RV,1)),as_CPS_RV(sig_CPS_RV),'.')
+lsline
+xlabel('regression coef')
+ylabel('skill')
+title('CPS\_RV')
+xlim([-7 3]); ylim([-0.1 1]);
+
+subplot(4,1,4)
+scatter(squeeze(ab_EPC_RV(sig_EPC_RV,1)),as_EPC_RV(sig_EPC_RV),'.')
+lsline
+xlabel('regression coef')
+ylabel('skill')
+title('EPC\_RV')
+xlim([-7 3]); ylim([-0.1 1]);
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/regcoef_vs_skill_badrecons.jpg'])
+
+% recon skill vs R^2
+clf;
+subplot(4,1,1)
+scatter(ar_MRV(sig_MRV),as_MRV(sig_MRV),'.')
+lsline
+xlabel('R^2')
+ylabel('skill')
+title('MRV')
+xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+
+subplot(4,1,2)
+scatter(ar_RVM(sig_RVM),as_RVM(sig_RVM),'.')
+lsline
+xlabel('R^2')
+ylabel('skill')
+title('RVM')
+xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+
+subplot(4,1,3)
+scatter(ar_CPS_RV(sig_CPS_RV),as_CPS_RV(sig_CPS_RV),'.')
+lsline
+xlabel('R^2')
+ylabel('skill')
+title('CPS\_RV')
+xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+
+subplot(4,1,4)
+scatter(ar_EPC_RV(sig_EPC_RV),as_EPC_RV(sig_EPC_RV),'.')
+lsline
+xlabel('R^2')
+ylabel('skill')
+title('EPC\_RV')
+xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
+saveas(gcf,['Plots/rsq_vs_skill_badrecons.jpg'])

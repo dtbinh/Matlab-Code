@@ -310,7 +310,7 @@ axes(s_Hnd(9)); xlabel('Proxy Network Size');
 for window = [31, 61, 91]
     axes(s_Hnd(1+(floor(window/30)-1)*4));
     set(gca,'YTickLabel',[0:0.05:0.15]);
-    ylabel(['sigma^2(',num2str(window),'yrs)'])
+    ylabel(['sigma^2 (',num2str(window),'yrs)'])
 end
 
 for i=1:4

@@ -393,7 +393,7 @@ figure;
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
-GROUP_NAME = 'ntrop_ts'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
