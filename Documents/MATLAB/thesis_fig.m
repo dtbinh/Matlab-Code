@@ -719,7 +719,317 @@ end
 set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on','YTick',[0:0.1:0.7]); 
 legend([glb_Hnd, ntrop_Hnd],'glb','ntrop','Location','northwest')
 
+%% Figure 10
+figure;
+% window=31;
+% NUM_OF_EOFS = 10;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc31_PC_ts = PC_ts;
+% rc31_expvar = expvar_ts;
+% window=61;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc61_expvar = expvar_ts;
+% rc61_PC_ts = PC_ts;
+% window=91;
+% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
+% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
+% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
+% rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
+% rc91_expvar = expvar_ts;
+% rc91_PC_ts = PC_ts;
+% save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar', ...
+%        'rc31_PC_ts','rc61_PC_ts','rc91_PC_ts');
 
+load('DataFiles/all_rcor_ts_eofs.mat')
+subplot(2,1,1)
+pcolor(lon,lat,squeeze(rc31_eof_ts_fm(1,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+title('EOF1 (31yr window)'); colorbar;
+% subplot(3,1,2)
+% pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 2 with window length 61 years')
+% subplot(3,1,3)
+% pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
+% title('EOF 2 with window length 91 years')
+% subplot(2,2,4)
+subplot(2,2,4)
+cmap=hsv(3);
+plot(rc31_expvar,'','Color',cmap(1,:),'LineWidth',2); hold on;
+plot(rc61_expvar,'','Color',cmap(2,:),'LineWidth',2);
+plot(rc91_expvar,'','Color',cmap(3,:),'LineWidth',2); hold off;
+ylim([0 50]); xlim([1,10]); legend('31 year window','61 year window','91 year window');
+ylabel('Percentage %'); grid on;
+xlabel('Number of EOF')
+title('Explained Variance');
+
+
+
+% Correlation between PC timeseries
+% a=rc61_PC_ts(2,:)'; b=rc91_PC_ts(2,:)';
+% a=rc61_eof_ts_fm(2,:)'; b=rc91_eof_ts_fm(2,:)';
+% corr(a,b)
+% cor = 0;
+% for i=0:30
+%     cor(i+1) = corr(a((i+1):400+i),b(1:400))
+% end
+% plot(cor); grid minor
+
+% Plotting PC Time series
+subplot(2,2,3)
+a=rc31_PC_ts(1,:)'; b=rc61_PC_ts(1,:)'; c=rc91_PC_ts(1,:)';
+plot(15:498-16,a,'','Color',cmap(1,:)); hold on;
+plot(30:498-31,b,'','Color',cmap(2,:)); grid on;
+plot(45:498-46,c,'','Color',cmap(3,:)); hold off
+legend('31 year window','61 year window','91 year window','location','southeast')
+xlabel('Year')
+title('Principal Component 1')
+
+%% Figure 11
+figure;
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+for window = [31, 61, 91]
+
+GROUP_NAME = 'pneof_ts'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_corr_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
+    temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
+    temp_corr_RVM(:,c,:) = all_stn_corr_RVM;
+end
+
+% Plotting EPC
+
+% subplot(3,4,1+(floor(window/30)-1)*4)
+axes(s_Hnd(1+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_corr_EPC_RV,[.05 .5 .95], 3);
+% Range Plotting
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,1]); grid on
+
+% Plotting CPS
+% subplot(3,4,2+(floor(window/30)-1)*4)
+axes(s_Hnd(2+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_corr_CPS_RV,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,1]); grid on
+
+% Plotting MRV
+% subplot(3,4,3+(floor(window/30)-1)*4)
+axes(s_Hnd(3+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_corr_MRV,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,1]); grid on
+
+
+% Plotting RVM
+% subplot(3,4,4+(floor(window/30)-1)*4)
+axes(s_Hnd(4+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_corr_RVM,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+xlim([0,70]); ylim([0,1]); grid on
+
+
+end
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',14);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',14);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',14);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
+end
+
+axes(s_Hnd(9)); xlabel('Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:0.2:1]);
+    ylabel(['r(',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+suptitle([strrep(GROUP_NAME,'_','\_')])
+set(gcf, 'PaperPosition', [0 0 19 23]);
+legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
+set(legendH, 'FontSize',10);
+
+%% Figure 12 - Reconstruction and STD of corr(proxy TS)
+
+% load DataFiles/rvm_vs_mrv.mat;
+first_sig=68; NUM_STNS=10;
+
+% j=1; jj=1; jjj=1; jjjj=1; sig_MRV=[]; sig_RVM=[]; sig_CPS_RV=[]; sig_EPC_RV=[]; 
+% for c=1:10
+%     for NUM_STNS=10
+%         for i=1:NUM_TRIALS
+%             recon_MRV = squeeze(MRV_all_grps(c,NUM_STNS,i,16:end-15));
+%             recon_RVM = squeeze(RVM_all_grps(c,NUM_STNS,i,16:end-15));
+%             recon_CPS_RV = squeeze(CPS_RV_all_grps(c,NUM_STNS,i,16:end-15));
+%             recon_EPC_RV = squeeze(EPC_RV_all_grps(c,NUM_STNS,i,16:end-15));
+%             std_series = squeeze(std_mov_corr_all_grps(c,NUM_STNS,i,31:end));
+%             recon_RVM = (recon_RVM-mean(recon_RVM))./std(recon_RVM);
+%             recon_MRV = (recon_MRV-mean(recon_MRV))./std(recon_MRV);
+%             recon_CPS_RV = (recon_CPS_RV-mean(recon_CPS_RV))./std(recon_CPS_RV);
+%             recon_EPC_RV = (recon_EPC_RV-mean(recon_EPC_RV))./std(recon_EPC_RV);
+%             std_series = (std_series-mean(std_series))./std(std_series);
+%             [r sig df] = calc_statsig(recon_MRV, std_series,1);
+%             [r sig_1 df] = calc_statsig(recon_RVM, std_series,1);
+%             [r sig_2 df] = calc_statsig(recon_CPS_RV, std_series,1);
+%             [r sig_3 df] = calc_statsig(recon_EPC_RV, std_series,1);
+%             
+%             if sig>=95
+%                 sig_MRV(j,:) = [c, i];
+%                 j=j+1;
+%             end
+%             
+%             if sig_1>=95
+%                 sig_RVM(jj,:) = [c, i];
+%                 jj=jj+1;
+%             end
+%                 
+%             if sig_2>=95 
+%                 sig_CPS_RV(jjj,:) = [c, i];
+%                 jjj=jjj+1;
+%             end
+%                 
+%             if sig_3>=95
+%                 sig_EPC_RV(jjjj,:) = [c, i];
+%                 jjjj=jjjj+1;
+%             end
+%         end
+%     end
+% end
+
+subplot(3,2,1)
+r_meth=squeeze(RVM_all_grps(sig_RVM(first_sig,1),10,sig_RVM(first_sig,2),16:end-15));
+temp=squeeze(std_mov_corr_all_grps(sig_RVM(first_sig,1),10,sig_RVM(first_sig,2),31:end));
+[axH std_H rvm_H] = plotyy(1:469,temp,1:469,r_meth);
+title(['RVM'],'FontSize',14)
+text(400,0.05,['r=',num2str(corr(temp,r_meth),'%1.2f')],'FontSize',14)
+xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+ylim(axH(1),[0 0.6]); ylim(axH(2),[0 2]);
+ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+set(axH(1),'YTick',[0.1:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+
+subplot(3,2,3)
+r_meth=squeeze(CPS_RV_all_grps(sig_CPS_RV(first_sig,1),10,sig_CPS_RV(first_sig,2),16:end-15));
+temp=squeeze(std_mov_corr_all_grps(sig_CPS_RV(first_sig,1),10,sig_CPS_RV(first_sig,2),31:end));
+[axH std_H rvm_H] = plotyy(1:469,temp,1:469,r_meth);
+title(['CPS\_RV'],'FontSize',14)
+text(400,0.05,['r=',num2str(corr(temp,r_meth),'%1.2f')],'FontSize',14)
+xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+ylim(axH(1),[0,0.6]); ylim(axH(2),[0 2]);
+ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+set(axH(1),'YTick',[0.1:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+
+subplot(3,2,5)
+r_meth=squeeze(EPC_RV_all_grps(sig_EPC_RV(first_sig,1),10,sig_EPC_RV(first_sig,2),16:end-15));
+temp=squeeze(std_mov_corr_all_grps(sig_EPC_RV(first_sig,1),10,sig_EPC_RV(first_sig,2),31:end));
+[axH std_H rvm_H] = plotyy(1:469,temp,1:469,r_meth);
+title(['EPC\_RV'],'FontSize',14)
+text(400,0.05,['r=',num2str(corr(temp,r_meth),'%1.2f')],'FontSize',14)
+xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+ylim(axH(1),[0,0.6]); ylim(axH(2),[0 2]);
+ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+set(axH(1),'YTick',[0.1:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+legend([std_H, rvm_H],'STD of corr(proxy TS)','Reconstruction')
+
+% subplot(4,1,4)
+% r_meth=squeeze(MRV_all_grps(sig_MRV(first_sig,1),10,sig_MRV(first_sig,2),16:end-15));
+% temp=squeeze(std_mov_corr_all_grps(sig_MRV(first_sig,1),10,sig_MRV(first_sig,2),31:end));
+% [axH std_H rvm_H] = plotyy(1:469,temp,1:469,r_meth);
+% title(['std of corr(proxy temp) vs MRV method, r=',num2str(corr(temp,r_meth))])
+% xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+% ylim(axH(1),[0,0.6]); ylim(axH(2),[0 2]);
+% ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+% set(axH(1),'YTick',[0:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+% legend([std_H, rvm_H],'STD of corr(proxy TS)','Reconstruction')
+
+
+% load DataFiles/rvm_vs_mrv.mat
+% i=2; c=1;
+
+subplot(3,2,2)
+r_meth=squeeze(RVM_all_grps(sig_RVM(first_sig,1),10,sig_RVM(first_sig,2),16:end-15));
+temp=squeeze(std_mov_corr_all_grps(sig_RVM(first_sig,1),10,sig_RVM(first_sig,2),31:end));
+plot(temp,r_meth,'.'); lsline;
+title(['RVM, r=',num2str(corr(temp,r_meth))])
+xlabel('Std of corr(proxy TS)'); ylabel('Reconstruction');
+xlim([0.1 0.45]); ylim([0.25 1.75]);
+% xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+% ylim(axH(1),[0 0.6]); ylim(axH(2),[0 2]);
+% ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+% set(axH(1),'YTick',[0.1:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+
+subplot(3,2,4)
+r_meth=squeeze(CPS_RV_all_grps(sig_CPS_RV(first_sig,1),10,sig_CPS_RV(first_sig,2),16:end-15));
+temp=squeeze(std_mov_corr_all_grps(sig_CPS_RV(first_sig,1),10,sig_CPS_RV(first_sig,2),31:end));
+plot(temp,r_meth,'.'); lsline;
+title(['CPS\_RV, r=',num2str(corr(temp,r_meth))])
+xlabel('Std of corr(proxy TS)'); ylabel('Reconstruction');
+xlim([0.1 0.45]); ylim([0.25 1.75]);
+% xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+% ylim(axH(1),[0,0.6]); ylim(axH(2),[0 2]);
+% ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+% set(axH(1),'YTick',[0.1:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+
+subplot(3,2,6)
+r_meth=squeeze(EPC_RV_all_grps(sig_EPC_RV(first_sig,1),10,sig_EPC_RV(first_sig,2),16:end-15));
+temp=squeeze(std_mov_corr_all_grps(sig_EPC_RV(first_sig,1),10,sig_EPC_RV(first_sig,2),31:end));
+plot(temp,r_meth,'.'); lsline;
+title(['EPC\_RV, r=',num2str(corr(temp,r_meth))])
+xlabel('Std of corr(proxy TS)'); ylabel('Reconstruction');
+xlim([0.1 0.45]); ylim([0.25 1.75]);
+% xlim(axH(1),[0 469]); xlim(axH(2),[0 469]); grid on;
+% ylim(axH(1),[0,0.6]); ylim(axH(2),[0 2]);
+% ylabel(axH(1),'Std'); ylabel(axH(2),'Running Variance');
+% set(axH(1),'YTick',[0.1:0.1:0.6]); set(axH(2),'YTick',[0,1,2]);
+% legend([std_H, rvm_H],'STD of corr(proxy TS)','Reconstruction')
 
 %% Appendix Figure 1
 
@@ -989,181 +1299,4 @@ suptitle([strrep(GROUP_NAME,'_','\_')])
 set(gcf, 'PaperPosition', [0 0 19 23]);
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
-%% Appendix Figure 4
-figure;
-% window=31;
-% NUM_OF_EOFS = 10;
-% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']); % This section will take 4600 seconds
-% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-% rc31_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-% rc31_PC_ts = PC_ts;
-% rc31_expvar = expvar_ts;
-% window=61;
-% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-% rc61_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-% rc61_expvar = expvar_ts;
-% rc61_PC_ts = PC_ts;
-% window=91;
-% load(['DataFiles/runcorr',num2str(window),'yrwdw.mat']);
-% ts_runcorr_fm = reshape(ts_runcorr((window+1):end,:,:),size(ts_runcorr((window+1):end,:,:),1),size(ts_runcorr,2)*size(ts_runcorr,3));
-% [eof_ts,PC_ts,expvar_ts] = caleof(ts_runcorr_fm, NUM_OF_EOFS, 1);
-% rc91_eof_ts_fm = reshape(eof_ts,NUM_OF_EOFS,size(ts_runcorr,2),size(ts_runcorr,3));
-% rc91_expvar = expvar_ts;
-% rc91_PC_ts = PC_ts;
-% save('DataFiles/all_rcor_ts_eofs.mat','rc91_eof_ts_fm','rc61_eof_ts_fm','rc31_eof_ts_fm','rc31_expvar','rc61_expvar','rc91_expvar', ...
-%        'rc31_PC_ts','rc61_PC_ts','rc91_PC_ts');
 
-load('DataFiles/all_rcor_ts_eofs.mat')
-subplot(3,1,2)
-pcolor(lon,lat,squeeze(rc31_eof_ts_fm(1,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-title('EOF1 (31yr window)'); colorbar;
-% subplot(3,1,2)
-% pcolor(lon,lat,squeeze(rc61_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-% title('EOF 2 with window length 61 years')
-% subplot(3,1,3)
-% pcolor(lon,lat,squeeze(rc91_eof_ts_fm(2,:,:))); plotworld; colormap(b2r(-0.03,0.03))
-% title('EOF 2 with window length 91 years')
-% subplot(2,2,4)
-subplot(3,1,1)
-cmap=hsv(3);
-plot(rc31_expvar,'','Color',cmap(1,:),'LineWidth',2); hold on;
-plot(rc61_expvar,'','Color',cmap(2,:),'LineWidth',2);
-plot(rc91_expvar,'','Color',cmap(3,:),'LineWidth',2); hold off;
-ylim([0 50]); xlim([1,10]); legend('31 year window','61 year window','91 year window');
-ylabel('Percentage %'); grid on;
-xlabel('Number of EOF')
-title('Explained Variance');
-
-
-
-% Correlation between PC timeseries
-% a=rc61_PC_ts(2,:)'; b=rc91_PC_ts(2,:)';
-% a=rc61_eof_ts_fm(2,:)'; b=rc91_eof_ts_fm(2,:)';
-% corr(a,b)
-% cor = 0;
-% for i=0:30
-%     cor(i+1) = corr(a((i+1):400+i),b(1:400))
-% end
-% plot(cor); grid minor
-
-% Plotting PC Time series
-subplot(3,1,3)
-a=rc31_PC_ts(1,:)'; b=rc61_PC_ts(1,:)'; c=rc91_PC_ts(1,:)';
-plot(a,'','Color',cmap(1,:)); hold on;
-plot(b,'','Color',cmap(2,:)); grid on;
-plot(c,'','Color',cmap(3,:)); hold off
-legend('31 year window','61 year window','91 year window','location','southeast')
-xlabel('Year')
-title('Principal Component 1')
-
-%% Appendix Figure 5
-figure;
-s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
-for window = [31, 61, 91]
-
-GROUP_NAME = 'pneof_ts'; % Change group name to get other figs
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
-
-NUM_CAL_WDW = 10; clear CAL_WDW;
-overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
-for c=0:9
-    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
-end
-temp_corr_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-temp_corr_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-temp_corr_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-temp_corr_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
-
-for c=1:size(CAL_WDW,1)
-    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
-     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
-    temp_corr_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
-    temp_corr_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
-    temp_corr_MRV(:,c,:) = all_stn_corr_MRV;
-    temp_corr_RVM(:,c,:) = all_stn_corr_RVM;
-end
-
-% Plotting EPC
-
-% subplot(3,4,1+(floor(window/30)-1)*4)
-axes(s_Hnd(1+(floor(window/30)-1)*4))
-corr_RV_qn = quantile(temp_corr_EPC_RV,[.05 .5 .95], 3);
-% Range Plotting
-corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
-xlim([0,70]); ylim([0,1]); grid on
-
-% Plotting CPS
-% subplot(3,4,2+(floor(window/30)-1)*4)
-axes(s_Hnd(2+(floor(window/30)-1)*4))
-corr_RV_qn = quantile(temp_corr_CPS_RV,[.05 .5 .95], 3);
-corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
-xlim([0,70]); ylim([0,1]); grid on
-
-% Plotting MRV
-% subplot(3,4,3+(floor(window/30)-1)*4)
-axes(s_Hnd(3+(floor(window/30)-1)*4))
-corr_RV_qn = quantile(temp_corr_MRV,[.05 .5 .95], 3);
-corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
-xlim([0,70]); ylim([0,1]); grid on
-
-
-% Plotting RVM
-% subplot(3,4,4+(floor(window/30)-1)*4)
-axes(s_Hnd(4+(floor(window/30)-1)*4))
-corr_RV_qn = quantile(temp_corr_RVM,[.05 .5 .95], 3);
-corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
-corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
-corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
-jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
-xlim([0,70]); ylim([0,1]); grid on
-
-
-end
-
-axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',14);
-axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',14);
-axes(s_Hnd(3)); title(['MRV'],'FontSize',14);
-axes(s_Hnd(4)); title(['RVM'],'FontSize',14);
-
-for i=1:12
-    axes(s_Hnd(i));
-    set(gca,'YTickLabel',[],'XTickLabel',[])
-    set(gca, 'FontSize',14, 'LineWidth', 1.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
-end
-
-axes(s_Hnd(9)); xlabel('Network Size');
-for window = [31, 61, 91]
-    axes(s_Hnd(1+(floor(window/30)-1)*4));
-    set(gca,'YTickLabel',[0:0.2:1]);
-    ylabel(['r(',num2str(window),'yrs)'])
-end
-
-for i=1:4
-    axes(s_Hnd(i+8));
-    set(gca,'XTickLabel',[0:20:70]);
-end
-
-suptitle([strrep(GROUP_NAME,'_','\_')])
-set(gcf, 'PaperPosition', [0 0 19 23]);
-legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
-set(legendH, 'FontSize',10);

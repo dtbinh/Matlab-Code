@@ -470,29 +470,36 @@ title('EPC\_RV')
 %% Getting alot of R^2 and regression values
 
 
-as_RVM=[]; ar_RVM=[];  ab_RVM=[];  ap_RVM=[];  
-as_MRV=[]; ar_MRV=[];  ab_MRV=[];  ap_MRV=[];
-as_CPS_RV=[]; ar_CPS_RV=[];  ab_CPS_RV=[];  ap_CPS_RV=[]; 
-as_EPC_RV=[]; ar_EPC_RV=[];  ab_EPC_RV=[];  ap_EPC_RV=[];
+as_RVM=[]; ar_RVM=[];  ab_RVM=[];  ap_RVM=[]; ac_RVM=[];
+as_MRV=[]; ar_MRV=[];  ab_MRV=[];  ap_MRV=[]; ac_MRV=[];
+as_CPS_RV=[]; ar_CPS_RV=[];  ab_CPS_RV=[];  ap_CPS_RV=[]; ac_CPS_RV=[];
+as_EPC_RV=[]; ar_EPC_RV=[];  ab_EPC_RV=[];  ap_EPC_RV=[]; ac_EPC_RV=[];
 
 for c=1:10
 
     all_skill_RVM=nan(length(bad_recons_RVM{c}(:)),1,'single');
     allrsq_RVM=nan(length(bad_recons_RVM{c}(:)),1,'single');
     allb_RVM=nan(length(bad_recons_RVM{c}(:)),2,'single');
-    all_skill_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
     allp_RVM=nan(length(bad_recons_RVM{c}(:)),1,'single');
+    allc_RVM=nan(length(bad_recons_RVM{c}(:)),1,'single'); % Correlation to std
+    
+    all_skill_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
     allrsq_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
     allb_MRV=nan(length(bad_recons_MRV{c}(:)),2,'single');
     allp_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
+    allc_MRV=nan(length(bad_recons_MRV{c}(:)),1,'single');
+    
     all_skill_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),1,'single');
     allrsq_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),1,'single');
     allb_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),2,'single');
     allp_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),1,'single');
+    allc_CPS_RV=nan(length(bad_recons_CPS_RV{c}(:)),1,'single');
+    
     all_skill_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),1,'single');
     allrsq_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),1,'single');
     allb_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),2,'single');
     allp_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),1,'single');
+    allc_EPC_RV=nan(length(bad_recons_EPC_RV{c}(:)),1,'single');
 
     for i=1:length(bad_recons_MRV{c}(:));
     s = squeeze(std_mov_corr_all_grps(c,NUM_STNS,bad_recons_MRV{c}(i),(31:end)));
@@ -502,6 +509,7 @@ for c=1:10
     allrsq_MRV(i) = thestats(1);
     allp_MRV(i) = thestats(4);
     allb_MRV(i,:) = b;
+    allc_MRV(i) = corr(r(:),s(:));
     end
 
     for i=1:length(bad_recons_RVM{c}(:));
@@ -512,6 +520,7 @@ for c=1:10
     allrsq_RVM(i) = thestats(1);
     allp_RVM(i) = thestats(4);
     allb_RVM(i,:) = b;
+    allc_RVM(i) = corr(r(:),s(:));
     end
 
     for i=1:length(bad_recons_CPS_RV{c}(:));
@@ -522,6 +531,7 @@ for c=1:10
     allrsq_CPS_RV(i) = thestats(1);
     allb_CPS_RV(i,:) = b;
     allp_CPS_RV(i) = thestats(4);
+    allc_CPS_RV(i) = corr(r(:),s(:));
     end
 
     for i=1:length(bad_recons_EPC_RV{c}(:));
@@ -532,6 +542,7 @@ for c=1:10
     allrsq_EPC_RV(i) = thestats(1);
     allb_EPC_RV(i,:) = b;
     allp_EPC_RV(i) = thestats(4);
+    allc_EPC_RV(i) = corr(r(:),s(:));
     end
 
 
@@ -539,77 +550,85 @@ for c=1:10
     ar_MRV = cat(1,ar_MRV,allrsq_MRV);
     ab_MRV = cat(1,ab_MRV,allb_MRV);
     ap_MRV = cat(1,ap_MRV,allp_MRV);
+    ac_MRV = cat(1,ac_MRV,allc_MRV);
+    
     as_RVM = cat(1,as_RVM,all_skill_RVM);
     ar_RVM = cat(1,ar_RVM,allrsq_RVM);
     ab_RVM = cat(1,ab_RVM,allb_RVM);
     ap_RVM = cat(1,ap_RVM,allp_RVM);
+    ac_RVM = cat(1,ac_RVM,allc_RVM);
+    
     as_CPS_RV = cat(1,as_CPS_RV,all_skill_CPS_RV);
     ar_CPS_RV = cat(1,ar_CPS_RV,allrsq_CPS_RV);
     ab_CPS_RV = cat(1,ab_CPS_RV,allb_CPS_RV);
     ap_CPS_RV = cat(1,ap_CPS_RV,allp_CPS_RV);
+    ac_CPS_RV = cat(1,ac_CPS_RV,allc_CPS_RV);
+    
     as_EPC_RV = cat(1,as_EPC_RV,all_skill_EPC_RV);
     ar_EPC_RV = cat(1,ar_EPC_RV,allrsq_EPC_RV);
     ab_EPC_RV = cat(1,ab_EPC_RV,allb_EPC_RV);
     ap_EPC_RV = cat(1,ap_EPC_RV,allp_EPC_RV);
+    ac_EPC_RV = cat(1,ac_EPC_RV,allc_EPC_RV);
 
 end
 
 % Finding when reg is significant
 
 SIGREG_CUTOFF = -1; % For regression coefficient
-SIGRSQ_CUTOFF = 0.3;
-SIGP_CUTOFF = 0.03;
+SIGRSQ_CUTOFF = 0.2;
+SIGP_CUTOFF = 0.05;
+
 sig_MRV = find(ap_MRV<SIGP_CUTOFF);
 sig_RVM = find(ap_RVM<SIGP_CUTOFF);
 sig_CPS_RV = find(ap_CPS_RV<SIGP_CUTOFF);
 sig_EPC_RV = find(ap_EPC_RV<SIGP_CUTOFF);
 
-% R^2 vs Reg coef
+% Corr to std vs Reg coef
 clf
 subplot(2,2,1)
-plot(squeeze(ab_MRV(:,1)),ar_MRV(:),'b.'); hold on;
-plot(squeeze(ab_MRV(sig_MRV,1)),ar_MRV(sig_MRV),'g.');
+plot(squeeze(ab_MRV(:,1)),ac_MRV(:),'b.'); hold on;
+plot(squeeze(ab_MRV(sig_MRV,1)),ac_MRV(sig_MRV),'g.');
 xlabel('regression coef')
-ylabel('R^2 value')
+ylabel('Corr value')
 title('MRV','FontSize',14)
-xlim([-7 4]); ylim([0 0.7]); grid on
+xlim([-7 5]); ylim([-0.8 0.8]); grid on
 legend('All poor reconstructions','Significant reconstructions');
 h=text(-1,0.4,[num2str(length(sig_MRV)/length(ap_MRV)*100,'%3.1f'),'% sig']);
 set(h,'FontSize',14)
 
 subplot(2,2,2)
-plot(squeeze(ab_RVM(:,1)),ar_RVM(:),'b.'); hold on;
-plot(squeeze(ab_RVM(sig_RVM,1)),ar_RVM(sig_RVM),'g.')
+plot(squeeze(ab_RVM(:,1)),ac_RVM(:),'b.'); hold on;
+plot(squeeze(ab_RVM(sig_RVM,1)),ac_RVM(sig_RVM),'g.')
 xlabel('regression coef')
-ylabel('R^2 value')
+ylabel('Corr value')
 title('RVM','FontSize',14)
-xlim([-7 4]); ylim([0 0.7]); grid on
+xlim([-7 5]); ylim([-0.8 0.8]); grid on
 h=text(-1,0.4,[num2str(length(sig_RVM)/length(ap_RVM)*100,'%3.1f'),'% sig']);
 set(h,'FontSize',14)
 
 subplot(2,2,3)
-plot(squeeze(ab_CPS_RV(:,1)),ar_CPS_RV(:),'b.'); hold on;
-plot(squeeze(ab_CPS_RV(sig_CPS_RV,1)),ar_CPS_RV(sig_CPS_RV),'g.')
+plot(squeeze(ab_CPS_RV(:,1)),ac_CPS_RV(:),'b.'); hold on;
+plot(squeeze(ab_CPS_RV(sig_CPS_RV,1)),ac_CPS_RV(sig_CPS_RV),'g.')
 xlabel('regression coef')
-ylabel('R^2 value')
+ylabel('Corr value')
 title('CPS\_RV','FontSize',14)
-xlim([-7 4]); ylim([0 0.7]); grid on
+xlim([-7 5]); ylim([-0.8 0.8]); grid on
 h=text(-1,0.4,[num2str(length(sig_CPS_RV)/length(ap_CPS_RV)*100,'%3.1f'),'% sig']);
 set(h,'FontSize',14)
 
 subplot(2,2,4)
-plot(squeeze(ab_EPC_RV(:,1)),ar_EPC_RV(:),'b.'); hold on;
-plot(squeeze(ab_EPC_RV(sig_EPC_RV,1)),ar_EPC_RV(sig_EPC_RV),'g.')
+plot(squeeze(ab_EPC_RV(:,1)),ac_EPC_RV(:),'b.'); hold on;
+plot(squeeze(ab_EPC_RV(sig_EPC_RV,1)),ac_EPC_RV(sig_EPC_RV),'g.')
 xlabel('regression coef')
-ylabel('R^2 value')
+ylabel('Corr value')
 title('EPC\_RV','FontSize',14)
-xlim([-7 4]); ylim([0 0.7]); grid on
+xlim([-7 5]); ylim([-0.8 0.8]); grid on
 h=text(-1,0.4,[num2str(length(sig_EPC_RV)/length(ap_EPC_RV)*100,'%3.1f'),'% sig']);
 set(h,'FontSize',14)
 
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,['Plots/rsq_vs_regcoef_badrecons.jpg'])
+saveas(gcf,['Plots/corr(rec,std(prox))_vs_regcoef_badrecons.jpg'])
 
 % Reg coef vs recon skill
 clf;
@@ -648,39 +667,39 @@ set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
 saveas(gcf,['Plots/regcoef_vs_skill_badrecons.jpg'])
 
-% recon skill vs R^2
+% recon skill vs Corr to std
 clf;
 subplot(4,1,1)
-plot(ar_MRV(sig_MRV),as_MRV(sig_MRV),'g.')
+plot(ac_MRV(sig_MRV),as_MRV(sig_MRV),'g.')
 lsline
-xlabel('R^2')
+xlabel('Corr')
 ylabel('skill')
 title('MRV')
-xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+xlim([-0.8 0.8]); ylim([-0.1 0.6]);
 
 subplot(4,1,2)
-plot(ar_RVM(sig_RVM),as_RVM(sig_RVM),'g.')
+plot(ac_RVM(sig_RVM),as_RVM(sig_RVM),'g.')
 lsline
-xlabel('R^2')
+xlabel('Corr')
 ylabel('skill')
 title('RVM')
-xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+xlim([-0.8 0.8]); ylim([-0.1 0.6]);
 
 subplot(4,1,3)
-plot(ar_CPS_RV(sig_CPS_RV),as_CPS_RV(sig_CPS_RV),'g.')
+plot(ac_CPS_RV(sig_CPS_RV),as_CPS_RV(sig_CPS_RV),'g.')
 lsline
-xlabel('R^2')
+xlabel('Corr')
 ylabel('skill')
 title('CPS\_RV')
-xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+xlim([-0.8 0.8]); ylim([-0.1 0.6]);
 
 subplot(4,1,4)
-plot(ar_EPC_RV(sig_EPC_RV),as_EPC_RV(sig_EPC_RV),'g.')
+plot(ac_EPC_RV(sig_EPC_RV),as_EPC_RV(sig_EPC_RV),'g.')
 lsline
-xlabel('R^2')
+xlabel('Corr')
 ylabel('skill')
 title('EPC\_RV')
-xlim([-0.01 0.8]); ylim([-0.1 0.6]);
+xlim([-0.8 0.8]); ylim([-0.1 0.6]);
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 19 28]); %x_width=19cm y_width=28cm
-saveas(gcf,['Plots/rsq_vs_skill_badrecons.jpg'])
+saveas(gcf,['Plots/corr(rec,std(prox))_vs_skill_badrecons.jpg'])
