@@ -1,8 +1,8 @@
 % This script will edit the bibTeX file to remove the useless and
 % troublesome fields
 
-fid_in = fopen('../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/ams_refs.bib','r+');
-fid_out = fopen('../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/ams_refs_edited.bib','w');
+fid_in = fopen('../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/refs.bib','r+');
+fid_out = fopen('../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/refs_edited.bib','w');
 
 while (~feof(fid_in))
     s = fgets(fid_in);
