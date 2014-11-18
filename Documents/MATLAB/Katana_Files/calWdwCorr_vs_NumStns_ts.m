@@ -61,9 +61,9 @@ all_stn_lat=stn_lat;
 all_stn_lon=stn_lon;
 
 stn_ts = nan(NUM_TRIALS,NUM_STNS, NUM_YRS,'single');
-for n=1:NUM_TRIALS
-    for m=1:NUM_STNS
-        stn_ts = single(ats(:,stn_lat(m,n),stn_lon(m,n)));
+for m=1:NUM_TRIALS
+    for n=1:NUM_STNS
+        stn_ts(m,n,:) = single(ats(:,stn_lat(m,n),stn_lon(m,n)));
     end
 end
 

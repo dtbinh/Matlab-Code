@@ -95,17 +95,16 @@ for NUM_STNS = 3:STN_MAX
 
         [stn_lat(m,:),stn_lon(m,:)] = ind2sub(size(corr_pr),indice_pool(randperm(length(indice_pool),NUM_STNS)));
 
-        for n=1:NUM_STNS
+%         for n=1:NUM_STNS
 
 %             stn_ts(m,n,:) = single(ats(:,stn_lat(m,n),stn_lon(m,n)));
-            stn_pr(m,n,:) = single(apr(:,stn_lat(m,n),stn_lon(m,n)));
+%             stn_pr(m,n,:) = single(apr(:,stn_lat(m,n),stn_lon(m,n)));
 
-        end
+%         end
     end
     
     save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat'], ...
-             'stn_lat','stn_lon','stn_pr','indice_pool','corr_pr','window');
-
+             'stn_lat','stn_lon','indice_pool','corr_pr','window');
 end
 
 % Writing README file
@@ -125,6 +124,7 @@ fprintf(fid,['CAL_WDW = ',num2str(CAL_WDW(c,1)),':',num2str(CAL_WDW(c,end)),'\n\
 % fprintf(fid,'Data is also using temperature only\n');
 fprintf(fid,'Data is also using precipitation only\n');
 fprintf(fid,'This file was produced using the UNSW Katana Computational Cluster.\n\n');
+fprintf(fid,'These files are generated from after the efficiency improvements to the code.\n');
 fprintf(fid,'Station selection conditions:\n');
 fprintf(fid,'abs(corr_pr)>MIN_COR\n');
 % fprintf(fid,'squeeze(abs(mean(pr_pc(1,(window+2):end,:,:)-pr_pc(2,(window+2):end,:,:),2))) < 0.3\n');
