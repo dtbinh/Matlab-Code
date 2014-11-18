@@ -4,56 +4,7 @@
 
 %% Setup
 
-ts_file = 'DataFiles/ts_A1.nc'; pr_file = 'DataFiles/pr_A1.nc';
-
-lat = nc_varget(ts_file,'lat');
-lon = nc_varget(ts_file,'lon');
-time = nc_varget(ts_file,'time'); % Assumes both files use the same time
-ts = nc_varget(ts_file,'ts')-273.15; % To Celsius
-pr = nc_varget(pr_file,'pr');
-[~,nN] = min(abs(lat-5));
-[~,nS] = min(abs(lat+5));
-[~,nE] = min(abs(lon-240));
-[~,nW] = min(abs(lon-190));
-
-% Annual (Jul-Jun) Means and Anomalies
-jul_jun_fmt = 7:5994;
-ts=ts(jul_jun_fmt,:,:);
-pr=pr(jul_jun_fmt,:,:);
-time=time(jul_jun_fmt);
-
-ats=zeros(size(ts,1)/12,size(ts,2),size(ts,3));
-apr=zeros(size(pr,1)/12,size(pr,2),size(pr,3));
-for y=1:length(time)/12
-    ats(y,:,:)=mean(ts((12*(y-1)+1):(y*12),:,:),1);
-    apr(y,:,:)=mean(pr((12*(y-1)+1):(y*12),:,:),1);
-end
-
-trend = zeros(2,size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        trend(:,i,j) = regress(ats(:,i,j), [ones(499,1) [1:length(time)/12]']);
-        ats(:,i,j) = ats(:,i,j) - [1:length(time)/12]'*trend(2,i,j);
-    end
-end
-for i=1:size(apr,2)
-    for j=1:size(apr,3)
-        trend(:,i,j) = regress(apr(:,i,j), [ones(499,1) [1:length(time)/12]']);
-        apr(:,i,j) = apr(:,i,j) - [1:length(time)/12]'*trend(2,i,j);
-    end
-end
-
-ats_anmn = mean(ats,1);
-apr_anmn = mean(apr,1);
-for y=1:length(time)/12
-    ats(y,:,:)=ats(y,:,:)-ats_anmn;
-    apr(y,:,:)=apr(y,:,:)-apr_anmn;
-end
-ats_anmn=squeeze(ats_anmn);
-apr_anmn=squeeze(apr_anmn);
-n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
-
-clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
+load DataFiles/model_output.mat
 
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
 window = 31; % The running window in years
@@ -120,8 +71,8 @@ for c=1:size(CAL_WDW,1)
 
 for NUM_STNS = 3:STN_MAX
     
-    stn_ts = nan(NUM_TRIALS,NUM_STNS, NUM_YRS,'single');
-    stn_pr = nan(NUM_TRIALS,NUM_STNS, NUM_YRS,'single');
+%     stn_ts_id = nan(NUM_TRIALS,NUM_STNS, NUM_YRS,'single');
+%     stn_pr_id = nan(NUM_TRIALS,NUM_STNS, NUM_YRS,'single');
     stn_lat = nan(NUM_TRIALS,NUM_STNS);
     stn_lon = nan(NUM_TRIALS,NUM_STNS);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -143,16 +94,16 @@ for NUM_STNS = 3:STN_MAX
 
         [stn_lat(m,:),stn_lon(m,:)] = ind2sub(size(corr_ts),indice_pool(randperm(length(indice_pool),NUM_STNS)));
 
-        for n=1:NUM_STNS
+%         for n=1:NUM_STNS
 
-            stn_ts(m,n,:) = single(ats(:,stn_lat(m,n),stn_lon(m,n)));
-            stn_pr(m,n,:) = single(apr(:,stn_lat(m,n),stn_lon(m,n)));
+%             stn_ts_id(m,n,:) = single(ats(:,stn_lat(m,n),stn_lon(m,n)));
+%             stn_pr_id(m,n,:) = single(apr(:,stn_lat(m,n),stn_lon(m,n)));
 
-        end
+%         end
     end
     
     save([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat'], ...
-             'stn_lat','stn_lon','stn_ts','indice_pool','corr_ts','window');
+             'stn_lat','stn_lon','indice_pool','corr_ts','window');
 end
 
 % Writing README file
@@ -172,6 +123,7 @@ fprintf(fid,['CAL_WDW = ',num2str(CAL_WDW(c,1)),':',num2str(CAL_WDW(c,end)),'\n\
 fprintf(fid,'Data is also using temperature only\n');
 % fprintf(fid,'Data is also using precipitation only\n');
 fprintf(fid,'This file was produced using the UNSW Katana Computational Cluster.\n\n');
+fprintf(fid,'These files are generated from after the efficiency improvements to the code.\n');
 fprintf(fid,'Station selection conditions:\n');
 fprintf(fid,'abs(corr_ts)>MIN_COR\n');
 % fprintf(fid,'squeeze(abs(mean(ts_pc(1,(window+2):end,:,:)-ts_pc(2,(window+2):end,:,:),2))) > 0.3\n');

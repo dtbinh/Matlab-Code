@@ -1,4 +1,4 @@
-GlenfieldGGGGWWWOasdas% This script will calculate the range of the error in the calibration windows 
+% This script will calculate the range of the error in the calibration windows 
 % for varying station numbers, using staggered windows. It also outputs a
 % mat file containing alot of statistics produced for each method,
 % num_stns, and calibration window.
@@ -10,54 +10,7 @@ GlenfieldGGGGWWWOasdas% This script will calculate the range of the error in the
 
 %% Setup
 tic;
-ts_file = 'DataFiles/ts_A1.nc'; pr_file = 'DataFiles/pr_A1.nc';
-lat = nc_varget(ts_file,'lat'); lon = nc_varget(ts_file,'lon');
-time = nc_varget(ts_file,'time'); % Assumes both files use the same time
-ts = nc_varget(ts_file,'ts')-273.15; % To Celsius
-pr = nc_varget(pr_file,'pr');
-[~,nN] = min(abs(lat-5));
-[~,nS] = min(abs(lat+5));
-[~,nE] = min(abs(lon-240));
-[~,nW] = min(abs(lon-190));
-
-% Annual (Jul-Jun) Means and Anomalies
-jul_jun_fmt = 7:5994;
-ts=ts(jul_jun_fmt,:,:);
-pr=pr(jul_jun_fmt,:,:);
-time=time(jul_jun_fmt);
-
-ats=zeros(size(ts,1)/12,size(ts,2),size(ts,3));
-apr=zeros(size(pr,1)/12,size(pr,2),size(pr,3));
-for y=1:length(time)/12
-    ats(y,:,:)=mean(ts((12*(y-1)+1):(y*12),:,:),1);
-    apr(y,:,:)=mean(pr((12*(y-1)+1):(y*12),:,:),1);
-end
-
-trend = zeros(2,size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        trend(:,i,j) = regress(ats(:,i,j), [ones(499,1) [1:length(time)/12]']);
-        ats(:,i,j) = ats(:,i,j) - [1:length(time)/12]'*trend(2,i,j);
-    end
-end
-for i=1:size(apr,2)
-    for j=1:size(apr,3)
-        trend(:,i,j) = regress(apr(:,i,j), [ones(499,1) [1:length(time)/12]']);
-        apr(:,i,j) = apr(:,i,j) - [1:length(time)/12]'*trend(2,i,j);
-    end
-end
-
-ats_anmn = mean(ats,1);
-apr_anmn = mean(apr,1);
-for y=1:length(time)/12
-    ats(y,:,:)=ats(y,:,:)-ats_anmn;
-    apr(y,:,:)=apr(y,:,:)-apr_anmn;
-end
-ats_anmn=squeeze(ats_anmn);
-apr_anmn=squeeze(apr_anmn);
-n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
-
-clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
+load DataFiles/model_output.mat
 
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
 window = 31; % The running window in years
@@ -65,7 +18,7 @@ n34_ind_RV = movingvar(n34_ind,VAR_WDW);
 RV_WDW = [15:(499-14)];
 
 %% Loading proxies
-GROUP_NAME = 'glb_ts';
+% GROUP_NAME = 'glb_ts';
 % DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
 DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];                              %%%%%%%
 numstnstocompare = [3:70];                                     %%%%%%%%
@@ -83,6 +36,9 @@ for c=1:size(CAL_WDW,1)
 all_stn_MRV=nan(max(numstnstocompare), NUM_TRIALS, NUM_YRS,'single');
 all_stn_corr_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
 all_stn_rmse_MRV = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_RVM=nan(max(numstnstocompare), NUM_TRIALS, NUM_YRS,'single');
+all_stn_corr_RVM = nan(max(numstnstocompare),NUM_TRIALS,'single');
+all_stn_rmse_RVM = nan(max(numstnstocompare),NUM_TRIALS,'single');
 all_stn_EPC = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
 all_stn_EPC_RV = nan(max(numstnstocompare),NUM_TRIALS, NUM_YRS,'single');
 all_stn_corr_EPC = nan(max(numstnstocompare),NUM_TRIALS,'single');
@@ -103,6 +59,13 @@ all_stn_ts=zeros(NUM_TRIALS,NUM_STNS,NUM_YRS);
 load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/',num2str(NUM_STNS),'stns_1000prox.mat']);
 all_stn_lat=stn_lat;
 all_stn_lon=stn_lon;
+
+stn_ts = nan(NUM_TRIALS,NUM_STNS, NUM_YRS,'single');
+for m=1:NUM_TRIALS
+    for n=1:NUM_STNS
+        stn_ts(m,n,:) = single(ats(:,stn_lat(m,n),stn_lon(m,n)));
+    end
+end
 
 stn_ts_mn=mean(stn_ts,3); 
 stn_ts_std=squeeze(std(permute(stn_ts,[3,1,2])));
@@ -139,7 +102,7 @@ end
 poscorr_all_stn_ts = all_stn_ts;
 for n=1:NUM_TRIALS
     for m=1:NUM_STNS
-        if corr(n34_ind, squeeze(all_stn_ts(n,m,:))) < 0
+        if corr(n34_ind(CAL_WDW(c,:)), squeeze(all_stn_ts(n,m,CAL_WDW(c,:)))) < 0 % Looked at r in window
             poscorr_all_stn_ts(n,m,:) = -all_stn_ts(n,m,:);
         end
     end
@@ -234,6 +197,9 @@ end
 all_stn_MRV(NUM_STNS,:,:) = stn_MRV;
 all_stn_corr_MRV(NUM_STNS,:) = stn_corr_MRV;
 all_stn_rmse_MRV(NUM_STNS,:) = stn_rmse_MRV;
+all_stn_RVM(NUM_STNS,:,:) = stn_RVM;
+all_stn_corr_RVM(NUM_STNS,:) = stn_corr_RVM;
+all_stn_rmse_RVM(NUM_STNS,:) = stn_rmse_RVM;
 all_stn_EPC(NUM_STNS,:,:) = stn_EPC;
 all_stn_EPC_RV(NUM_STNS,:,:) = stn_EPC_RV;
 all_stn_corr_EPC(NUM_STNS,:) = stn_corr_EPC;
