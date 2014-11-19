@@ -401,8 +401,9 @@ letters = 'abcdefghijkl';
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
-GROUP_NAME = 'pneof_ts'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+% DIR_NAME = ['/home/nfs/z3372730/Documents/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -500,7 +501,7 @@ for i=1:4
 end
 
 % suptitle([strrep(GROUP_NAME,'_','\_')])
-suptitle('NSTAT_{ntrop}')
+suptitle('RND_{glb}')
 set(gcf, 'PaperPosition', [0 0 19 23]);
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
