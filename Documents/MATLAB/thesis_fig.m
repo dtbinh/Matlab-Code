@@ -1,52 +1,13 @@
 % This script will have all the figures to plot to the thesis
 
 %% Setup
-ts_file = 'DataFiles/ts_A1.nc'; pr_file = 'DataFiles/pr_A1.nc';
-lat = nc_varget(ts_file,'lat'); lon = nc_varget(ts_file,'lon');
-time = nc_varget(ts_file,'time'); % Assumes both files use the same time
-ts = nc_varget(ts_file,'ts')-273.15; % To Celsius
-pr = nc_varget(pr_file,'pr');
-[~,nN] = min(abs(lat-5));
-[~,nS] = min(abs(lat+5));
-[~,nE] = min(abs(lon-240));
-[~,nW] = min(abs(lon-190));
+tic;
+load DataFiles/model_output.mat
 
-% Annual (Jul-Jun) Means and Anomalies
-jul_jun_fmt = 7:5994;
-ts=ts(jul_jun_fmt,:,:);
-pr=pr(jul_jun_fmt,:,:);
-time=time(jul_jun_fmt);
-
-ats=zeros(size(ts,1)/12,size(ts,2),size(ts,3));
-apr=zeros(size(pr,1)/12,size(pr,2),size(pr,3));
-for y=1:length(time)/12
-    ats(y,:,:)=mean(ts((12*(y-1)+1):(y*12),:,:),1);
-    apr(y,:,:)=mean(pr((12*(y-1)+1):(y*12),:,:),1);
-end
-
-trend = zeros(2,size(ats,2),size(ats,3));
-for i=1:size(ats,2)
-    for j=1:size(ats,3)
-        trend(:,i,j) = regress(ats(:,i,j), [ones(499,1) [1:length(time)/12]']);
-        ats(:,i,j) = ats(:,i,j) - [1:length(time)/12]'*trend(2,i,j);
-    end
-end
-for i=1:size(apr,2)
-    for j=1:size(apr,3)
-        trend(:,i,j) = regress(apr(:,i,j), [ones(499,1) [1:length(time)/12]']);
-        apr(:,i,j) = apr(:,i,j) - [1:length(time)/12]'*trend(2,i,j);
-    end
-end
-
-ats_anmn = mean(ats,1);
-apr_anmn = mean(apr,1);
-for y=1:length(time)/12
-    ats(y,:,:)=ats(y,:,:)-ats_anmn;
-    apr(y,:,:)=apr(y,:,:)-apr_anmn;
-end
-ats_anmn=squeeze(ats_anmn);
-apr_anmn=squeeze(apr_anmn);
-n34_ind = mean(mean(ats(:,nS:nN,nW:nE),3),2);
+VAR_WDW = 30; % Moving window for moving variance is 30 Years
+window = 31; % The running window in years
+n34_ind_RV = movingvar(n34_ind,VAR_WDW);
+RV_WDW = [15:(499-14)];
 
 corr_ts = zeros(size(ats,2),size(ats,3));
 for i=1:size(ats,2)
@@ -56,7 +17,7 @@ for i=1:size(ats,2)
 end
 
 NUM_YRS=499; NUM_TRIALS=1000; numstnstocompare=3:70;
-clear ats_anmn apr_anmn trend ts pr time jul_jun_fmt nN nE nS nW ts_file pr_file i j y
+
 
 %% Figure 1-1
 close
@@ -396,7 +357,7 @@ set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
 
 
 %% Figure 4-7
-figure;
+clf
 letters = 'abcdefghijkl';
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
@@ -501,11 +462,11 @@ for i=1:4
 end
 
 % suptitle([strrep(GROUP_NAME,'_','\_')])
-suptitle('RND_{glb}')
+suptitle(GROUP_NAME)
 set(gcf, 'PaperPosition', [0 0 19 23]);
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
-% saveas('gcf','../../Dropbox/Literature/Writing/THESIS/AMS LaTeX Package v4.3.1/Figs/Fig4.pdf','output','pdf');
+saveas(gcf,['../../Dropbox/calWdwCorr_vs_NumStns_',GROUP_NAME,'.jpg']);
 
 %% Figure 8 - Probabilities of Non-stationary Stations
 figure;
