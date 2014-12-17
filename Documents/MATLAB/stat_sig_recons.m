@@ -5,7 +5,7 @@ tic;
 load DataFiles/model_output.mat
 
 VAR_WDW = 30; % Moving window for moving variance is 30 Years
-window = 31; % The running window in years
+window = 61; % The running window in years
 n34_ind_RV = movingvar(n34_ind,VAR_WDW);
 RV_WDW = [15:(499-14)]; numstnstocompare = 3:70; NUM_TRIALS=1000; NUM_YRS=499;
 
@@ -49,7 +49,7 @@ for n=numstnstocompare
     end
 end
 
-save('../../Dropbox/sig_corrs_glb_ts_MRV.mat','all_corr','all_corr_sig_level','all_corr_df');
+save('../../Dropbox/sig_corrs_61yr_glb_ts_MRV.mat','all_corr','all_corr_sig_level','all_corr_df');
 
 
 all_corr = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
@@ -68,7 +68,7 @@ for n=numstnstocompare
     end
 end
 
-save('../../Dropbox/sig_corrs_glb_ts_RVM.mat','all_corr','all_corr_sig_level','all_corr_df');
+save('../../Dropbox/sig_corrs_61yr_glb_ts_RVM.mat','all_corr','all_corr_sig_level','all_corr_df');
 
 
 all_corr = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
@@ -87,7 +87,7 @@ for n=numstnstocompare
     end
 end
 
-save('../../Dropbox/sig_corrs_glb_ts_CPS_RV.mat','all_corr','all_corr_sig_level','all_corr_df');
+save('../../Dropbox/sig_corrs_61yr_glb_ts_CPS_RV.mat','all_corr','all_corr_sig_level','all_corr_df');
 
 
 all_corr = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
@@ -106,8 +106,7 @@ for n=numstnstocompare
     end
 end
 
-save('../../Dropbox/sig_corrs_glb_ts_EPC_RV.mat','all_corr','all_corr_sig_level','all_corr_df');
-
+save('../../Dropbox/sig_corrs_61yr_glb_ts_EPC_RV.mat','all_corr','all_corr_sig_level','all_corr_df');
 
 toc;
 %% Autocorrelation of GFDL CM2.1 Data
