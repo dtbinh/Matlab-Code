@@ -375,7 +375,7 @@ in_range_499yr_pc_RVM = nan(max(numstnstocompare),length([31 61 91]));
 
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_ts_nstat'; % Change group name to get other figs
+GROUP_NAME = 'ntrop_ts_nstat'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 % DIR_NAME = ['/home/nfs/z3372730/Documents/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
@@ -490,7 +490,7 @@ for i=1:4
 end
 
 % suptitle([strrep(GROUP_NAME,'_','\_')])
-suptitle('NSTAT_{glb\_ts}');
+suptitle('NSTAT_{ntrop\_ts}');
 set(gcf, 'PaperPosition', [0 0 20 23]);
 legendH = legend('5^t^h Percentile','95^t^h Percentile','Median','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',16,'Position',[0.372689213508714 0.0116864099741356 0.54468339307049 0.0419381107491857]);
