@@ -368,9 +368,14 @@ set(gcf, 'PaperSize', [12 12]);
 clf
 letters = 'abcdefghijkl';
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+in_range_499yr_pc_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+in_range_499yr_pc_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+in_range_499yr_pc_MRV = nan(max(numstnstocompare),length([31 61 91]));
+in_range_499yr_pc_RVM = nan(max(numstnstocompare),length([31 61 91]));
+
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_pr_nstat'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts_nstat'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 % DIR_NAME = ['/home/nfs/z3372730/Documents/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
@@ -393,6 +398,16 @@ for c=1:size(CAL_WDW,1)
     temp_corr_RVM(:,c,:) = all_stn_corr_RVM;
 end
 
+for n=numstnstocompare
+    in_range_499yr_pc_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_corr_EPC_RV(n,:,:))>qEPC(n,1) & squeeze(temp_corr_EPC_RV(n,:,:))<qEPC(n,3) )))/(NUM_CAL_WDW*NUM_TRIALS);
+    in_range_499yr_pc_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_corr_CPS_RV(n,:,:))>qCPS(n,1) & squeeze(temp_corr_CPS_RV(n,:,:))<qCPS(n,3) )))/(NUM_CAL_WDW*NUM_TRIALS);
+    in_range_499yr_pc_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_corr_MRV(n,:,:))>qMRV(n,1) & squeeze(temp_corr_MRV(n,:,:))<qMRV(n,3) )))/(NUM_CAL_WDW*NUM_TRIALS);
+    in_range_499yr_pc_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_corr_RVM(n,:,:))>qRVM(n,1) & squeeze(temp_corr_RVM(n,:,:))<qRVM(n,3) )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
 % Plotting EPC
 
 % subplot(3,4,1+(floor(window/30)-1)*4)
@@ -405,6 +420,7 @@ corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(qEPC,'k'); plot(squeeze(in_range_499yr_pc_EPC_RV(:,floor(window/30))),'k','LineWidth',2); hold off;
 xlim([0,70]); ylim([0,1]); grid on
 
 % Plotting CPS
@@ -417,6 +433,7 @@ corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(qCPS,'k'); plot(squeeze(in_range_499yr_pc_CPS_RV(:,floor(window/30))),'k','LineWidth',2); hold off;
 xlim([0,70]); ylim([0,1]); grid on
 
 % Plotting MRV
@@ -429,6 +446,7 @@ corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(qMRV,'k'); plot(squeeze(in_range_499yr_pc_MRV(:,floor(window/30))),'k','LineWidth',2); hold off;
 xlim([0,70]); ylim([0,1]); grid on
 
 % Plotting RVM
@@ -441,6 +459,7 @@ corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
 jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(qRVM,'k'); plot(squeeze(in_range_499yr_pc_RVM(:,floor(window/30))),'k','LineWidth',2); hold off;
 xlim([0,70]); ylim([0,1]); grid on
 
 end
@@ -455,7 +474,7 @@ for i=1:12
     set(gca,'YTickLabel',[],'XTickLabel',[])
     set(gca, 'FontSize',16, 'LineWidth', 2.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
     text(0+1,1-0.06,[letters(i),')'],'FontSize',22,'FontWeight','bold');
-    hold on; plot([0,70],[0.37 0.37],'k','LineWidth',2); hold off;
+    hold on; plot([0,70],[0.37 0.37],'Color',[0.5 0.5 0.5],'LineWidth',1.5); hold off;
 end
 
 axes(s_Hnd(9)); xlabel('Network Size');
@@ -471,7 +490,7 @@ for i=1:4
 end
 
 % suptitle([strrep(GROUP_NAME,'_','\_')])
-suptitle('NSTAT_{glb\_pr}');
+suptitle('NSTAT_{glb\_ts}');
 set(gcf, 'PaperPosition', [0 0 20 23]);
 legendH = legend('5^t^h Percentile','95^t^h Percentile','Median','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',16,'Position',[0.372689213508714 0.0116864099741356 0.54468339307049 0.0419381107491857]);
@@ -834,7 +853,7 @@ s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
 GROUP_NAME = 'pneof_ts'; % Change group name to get other figs
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data-honours/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -1370,13 +1389,14 @@ legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Rang
 set(legendH, 'FontSize',10);
 
 %% Appendix Figure 3
-figure;
+clf; figure;
+letters = 'abcdefghijkl';
 numstnstocompare=3:70;
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 for window = [31, 61, 91]
 
-GROUP_NAME = 'glb_ts'; % Change group name to get other figs
-DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+GROUP_NAME = 'pneof_ts'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data-honours/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -1479,6 +1499,8 @@ suptitle([strrep(GROUP_NAME,'_','\_')])
 set(gcf, 'PaperPosition', [0 0 19 23]);
 legendH = legend('5^t^h Percentile Range','95^t^h Percentile Range','Median Range','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',10);
+saveas(gcf,['../../Dropbox/calWdwRMSE_vs_NumStns_',GROUP_NAME,'.jpg']);
+
 
 %% Appendix Figure 4
 
