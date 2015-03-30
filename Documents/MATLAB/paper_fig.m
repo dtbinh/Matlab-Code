@@ -22,7 +22,7 @@ NUM_YRS=499; NUM_TRIALS=1000; numstnstocompare=3:70;
 %% Figure 1-1
 close
 figure;
-subplot(1,2,1)
+subplot(2,2,1)
 window = 31; NUM_YRS = 499;
 load(['DataFiles/runcorr',num2str(window),'yrwdw.mat'])
 load(['DataFiles/nonstat_map',num2str(window),'yrwdw.mat'])
@@ -84,7 +84,7 @@ set(gcf, 'PaperPosition', [0 0 19 19]); %x_width=19cm y_width=28cm
 text(-1+0.08,1-0.18,'a)','FontSize',22,'FontWeight','bold');
 
 % Figure 1-2
-subplot(1,2,2);
+subplot(2,2,2);
 
 contourf(lon,lat,corr_ts); axis equal;
 shading flat
@@ -115,6 +115,9 @@ text(0+1,90-1,'b)','FontSize',22,'FontWeight','bold');
 
 % print -painters -dpdf -r600 test.pdf
 set(gcf, 'PaperSize', [35 13]);
+
+% Figure 1-3
+
 
 %% Figure 2-1
 figure;
@@ -364,7 +367,7 @@ set(gcf, 'PaperSize', [12 12]);
 % hold on; plot(0:0.1:1,0:0.1:1,'k'); hold off;
 
 
-%% Figure 4-7
+%% Figure 4-7 - Correlation as Skill Metric
 clf
 letters = 'abcdefghijkl';
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
@@ -375,7 +378,7 @@ in_range_499yr_pc_RVM = nan(max(numstnstocompare),length([31 61 91]));
 
 for window = [31, 61, 91]
 
-GROUP_NAME = 'ntrop_ts_nstat'; % Change group name to get other figs
+GROUP_NAME = 'glb_ts_nstat'; % Change group name to get other figs
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 % DIR_NAME = ['/home/nfs/z3372730/Documents/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 
@@ -490,11 +493,276 @@ for i=1:4
 end
 
 % suptitle([strrep(GROUP_NAME,'_','\_')])
-suptitle('NSTAT_{ntrop\_ts}');
+suptitle('NSTAT_{glb\_ts}');
 set(gcf, 'PaperPosition', [0 0 20 23]);
 legendH = legend('5^t^h Percentile','95^t^h Percentile','Median','location','best','Orientation','horizontal');
 set(legendH, 'FontSize',16,'Position',[0.372689213508714 0.0116864099741356 0.54468339307049 0.0419381107491857]);
 saveas(gcf,['../../Dropbox/calWdwCorr_vs_NumStns_',GROUP_NAME,'.jpg']);
+
+%% Figure 4-7 - Explained Variance as Skill Metric -Home
+clf
+letters = 'abcdefghijkl';
+
+% Skilful Threshold
+skilful_threshold = sqrt(0.3); % In correlation
+
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
+
+for window = [31, 61, 91]
+
+GROUP_NAME = 'ntrop_ts_nstat'; % Change group name to get other figs
+% DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+% DIR_NAME = ['/home/nfs/z3372730/Documents/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+temp_xvar_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
+    temp_xvar_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    temp_xvar_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    temp_xvar_MRV(:,c,:) = all_stn_corr_MRV;
+    temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
+end
+
+for n=numstnstocompare
+    skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
+% Plotting EPC
+
+% subplot(3,4,1+(floor(window/30)-1)*4)
+axes(s_Hnd(1+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_xvar_EPC_RV,[.05 .5 .95], 3);
+% Range Plotting
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(squeeze(skilful_EPC_RV(:,floor(window/30))),'k','LineWidth',2); hold off;
+xlim([0,70]); ylim([0,1]); grid on
+
+% Plotting CPS
+% subplot(3,4,2+(floor(window/30)-1)*4)
+axes(s_Hnd(2+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_xvar_CPS_RV,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(squeeze(skilful_CPS_RV(:,floor(window/30))),'k','LineWidth',2); hold off;
+xlim([0,70]); ylim([0,1]); grid on
+
+% Plotting MRV
+% subplot(3,4,3+(floor(window/30)-1)*4)
+axes(s_Hnd(3+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_xvar_MRV,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(squeeze(skilful_MRV(:,floor(window/30))),'k','LineWidth',2); hold off;
+xlim([0,70]); ylim([0,1]); grid on
+
+% Plotting RVM
+% subplot(3,4,4+(floor(window/30)-1)*4)
+axes(s_Hnd(4+(floor(window/30)-1)*4))
+corr_RV_qn = quantile(temp_xvar_RVM,[.05 .5 .95], 3);
+corr_RV_qn_rng = nan(size(corr_RV_qn,1),2,size(corr_RV_qn,3));
+corr_RV_qn_rng(:,1,:) = min(corr_RV_qn,[],2);
+corr_RV_qn_rng(:,2,:) = max(corr_RV_qn,[],2);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,1))',squeeze(corr_RV_qn_rng(3:70,1,1))','b','k',[],0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,3))',squeeze(corr_RV_qn_rng(3:70,1,3))','r','k','add',0.5);
+jbfill([3:70],squeeze(corr_RV_qn_rng(3:70,2,2))',squeeze(corr_RV_qn_rng(3:70,1,2))','y','k','add',0.5);
+hold on; plot(squeeze(skilful_RVM(:,floor(window/30))),'k','LineWidth',2); hold off;
+xlim([0,70]); ylim([0,1]); grid on
+
+end
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',16);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',16);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',16);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',16);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',16, 'LineWidth', 2.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
+    text(0+1,1-0.06,[letters(i),')'],'FontSize',22,'FontWeight','bold');
+    hold on; plot([0,70],[skilful_threshold skilful_threshold],'Color',[0.5 0.5 0.5],'LineWidth',1.5); hold off;
+end
+
+axes(s_Hnd(9)); xlabel('Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:0.2:1]);
+    ylabel(['r (',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+% Setting the title
+title_str =[];
+if strfind(GROUP_NAME,'_nstat') title_str=[title_str, 'NSTAT'];
+elseif strfind(GROUP_NAME,'_stat') title_str=[title_str, 'STAT'];
+else title_str=[title_str, 'RND'];
+end
+
+if strfind(GROUP_NAME,'glb') title_str=[title_str, '_{glb\_']; 
+elseif strfind(GROUP_NAME,'ntrop') title_str=[title_str, '_{ntrop\_']; 
+else title_str=[title_str, '\_INVALID\_TITLE']; 
+end
+
+if strfind(GROUP_NAME,'ts') title_str=[title_str, 'ts}']; 
+elseif strfind(GROUP_NAME,'pr') title_str=[title_str, 'pr}']; 
+else error('TS/PR if function has failed');
+end
+
+suptitle(title_str);
+
+
+set(gcf, 'PaperPosition', [0 0 20 23]);
+legendH = legend('5^t^h Percentile','95^t^h Percentile','Median','location','best','Orientation','horizontal');
+set(legendH, 'FontSize',16,'Position',[0.372689213508714 0.0116864099741356 0.54468339307049 0.0419381107491857]);
+saveas(gcf,['Plots/calWdwExpVar_vs_NumStns_xvar0.3_',GROUP_NAME,'.jpg']);
+
+% Additional Analysis of rate of skil improvement
+
+% skilful_EPC_RV_30_stat=skilful_EPC_RV;
+% skilful_CPS_RV_30_stat=skilful_CPS_RV;
+% skilful_MRV_30_stat=skilful_MRV;
+% skilful_RVM_30_stat=skilful_RVM;
+% 
+% skilful_EPC_RV_50_stat=skilful_EPC_RV;
+% skilful_CPS_RV_50_stat=skilful_CPS_RV;
+% skilful_MRV_50_stat=skilful_MRV;
+% skilful_RVM_50_stat=skilful_RVM;
+% 
+% skilful_EPC_RV_30_nstat=skilful_EPC_RV;
+% skilful_CPS_RV_30_nstat=skilful_CPS_RV;
+% skilful_MRV_30_nstat=skilful_MRV;
+% skilful_RVM_30_nstat=skilful_RVM;
+% 
+% skilful_EPC_RV_50_nstat=skilful_EPC_RV;
+% skilful_CPS_RV_50_nstat=skilful_CPS_RV;
+% skilful_MRV_50_nstat=skilful_MRV;
+% skilful_RVM_50_nstat=skilful_RVM;
+
+% 0.5 Explained Variance Threshold
+clf
+letters = 'abcdefghijkl';
+
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+
+for window=[31 61 91]
+
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    plot(skilful_EPC_RV_50_stat(:,floor(window/30)) ./ skilful_EPC_RV_50_nstat(:,floor(window/30)),'k','LineWidth',2);
+    axes(s_Hnd(2+(floor(window/30)-1)*4));
+    plot(skilful_CPS_RV_50_stat(:,floor(window/30)) ./ skilful_CPS_RV_50_nstat(:,floor(window/30)),'k','LineWidth',2);
+    axes(s_Hnd(3+(floor(window/30)-1)*4));
+    plot(skilful_MRV_50_stat(:,floor(window/30)) ./ skilful_MRV_50_nstat(:,floor(window/30)),'k','LineWidth',2);
+    axes(s_Hnd(4+(floor(window/30)-1)*4));
+    plot(skilful_RVM_50_stat(:,floor(window/30)) ./ skilful_RVM_50_nstat(:,floor(window/30)),'k','LineWidth',2);
+end
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',16);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',16);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',16);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',16);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',16, 'LineWidth', 2.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
+    xlim([0,70]); ylim([0,1]); grid on
+    text(0+1,1-0.06,[letters(i),')'],'FontSize',22,'FontWeight','bold');
+end
+
+axes(s_Hnd(9)); xlabel('Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:0.2:1]);
+    ylabel(['r (',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+suptitle('Proportion of skilful reconstructions (0.5ExpVar Threshold): STAT_{ntrop\_ts} / NSTAT_{ntrop\_ts}')
+
+% 0.3 Explained Variance Threshold - Divides
+clf
+letters = 'abcdefghijkl';
+
+s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
+
+for window=[31 61 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    plot(skilful_EPC_RV_30_stat(:,floor(window/30)) ./ skilful_EPC_RV_30_nstat(:,floor(window/30)),'k','LineWidth',2);
+    axes(s_Hnd(2+(floor(window/30)-1)*4));
+    plot(skilful_CPS_RV_30_stat(:,floor(window/30)) ./ skilful_CPS_RV_30_nstat(:,floor(window/30)),'k','LineWidth',2);
+    axes(s_Hnd(3+(floor(window/30)-1)*4));
+    plot(skilful_MRV_30_stat(:,floor(window/30)) ./ skilful_MRV_30_nstat(:,floor(window/30)),'k','LineWidth',2);
+    axes(s_Hnd(4+(floor(window/30)-1)*4));
+    plot(skilful_RVM_30_stat(:,floor(window/30)) ./ skilful_RVM_30_nstat(:,floor(window/30)),'k','LineWidth',2);
+end
+
+axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',16);
+axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',16);
+axes(s_Hnd(3)); title(['MRV'],'FontSize',16);
+axes(s_Hnd(4)); title(['RVM'],'FontSize',16);
+
+for i=1:12
+    axes(s_Hnd(i));
+    set(gca,'YTickLabel',[],'XTickLabel',[])
+    set(gca, 'FontSize',16, 'LineWidth', 2.0, 'Box', 'on','XTick', [0:20:70]); 
+    xlim([0,70]); ylim([0,5]); grid on
+%     text(0+1,1-0.06,[letters(i),')'],'FontSize',22,'FontWeight','bold');
+end
+
+axes(s_Hnd(9)); xlabel('Network Size');
+for window = [31, 61, 91]
+    axes(s_Hnd(1+(floor(window/30)-1)*4));
+    set(gca,'YTickLabel',[0:1:5]);
+%     ylabel(['r (',num2str(window),'yrs)'])
+end
+
+for i=1:4
+    axes(s_Hnd(i+8));
+    set(gca,'XTickLabel',[0:20:70]);
+end
+
+suptitle('Proportion of skilful reconstructions (0.3ExpVar Threshold): STAT_{ntrop\_ts} / NSTAT_{ntrop\_ts}')
 
 %% Figure 8 - Probabilities of Non-stationary Stations
 figure;
