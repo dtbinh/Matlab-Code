@@ -504,7 +504,7 @@ clf
 letters = 'abcdefghijkl';
 
 % Skilful Threshold
-skilful_threshold = sqrt(0.3); % In correlation
+skilful_threshold = sqrt(0.5); % In correlation
 
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
