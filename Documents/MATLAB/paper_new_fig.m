@@ -125,30 +125,30 @@ end
 % Plotting EPC
 axes(s_Hnd(1)); hold on;
 corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
-w61_Hnd(1,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(1,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(1,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+w61_Hnd(1,1) = plot(squeeze(corr_RV_qn(:,1)),'--g','LineWidth',1);
+w61_Hnd(1,3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','LineWidth',1);
+w61_Hnd(1,2) = plot(squeeze(corr_RV_qn(:,2)),'g','LineWidth',2);
 
 % Plotting CPS
 axes(s_Hnd(2)); hold on;
 corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
-w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--g','LineWidth',1);
+w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','LineWidth',1);
+w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'g','LineWidth',2);
 
 % Plotting MRV
 axes(s_Hnd(3)); hold on;
 corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
-w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--g','LineWidth',1);
+w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','LineWidth',1);
+w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'g','LineWidth',2);
 
 % Plotting RVM
 axes(s_Hnd(4)); hold on;
 corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
-w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--g','LineWidth',1);
+w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','LineWidth',1);
+w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'g','LineWidth',2);
     
 
 window = 91; clear CAL_WDW;
@@ -198,17 +198,19 @@ w91_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
 
 % Formatting
 axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',16);
-legend(s_Hnd(1),[Hnd(1,2) Hnd(1,1) Hnd(1,3)],'Median (499yr)', ...
-       '5^t^h %ile (499yr) ','95^t^h %ile (499yr)','location','southeast'                );
+pc_LH=legend(s_Hnd(1),[Hnd(1,2) Hnd(1,1) Hnd(1,3)],'Median', ...
+       '5^t^h %ile','95^t^h %ile','location','southeast','orientation','horizontal');
 axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',16);
-legend(s_Hnd(2),[w91_Hnd(1,2) w91_Hnd(1,1) w91_Hnd(1,3)],'Median (91yr)', ...
-       '5^t^h %ile (91yr) ','95^t^h %ile (91yr)','location','southeast'                );
+% legend(s_Hnd(2),[w91_Hnd(1,2) w91_Hnd(1,1) w91_Hnd(1,3)],'Median', ...
+%        '5^t^h %ile','95^t^h %ile','location','southeast','orientation','horizontal');
 axes(s_Hnd(3)); title(['MRV'],'FontSize',16);
-legend(s_Hnd(3),[w61_Hnd(1,2) w61_Hnd(1,1) w61_Hnd(1,3)],'Median (61yr)', ...
-       '5^t^h %ile (61yr) ','95^t^h %ile (61yr)','location','southeast'                );
+% legend(s_Hnd(3),[w61_Hnd(1,2) w61_Hnd(1,1) w61_Hnd(1,3)],'Median', ...
+%        '5^t^h %ile','95^t^h %ile','location','southeast','orientation','horizontal');
 axes(s_Hnd(4)); title(['RVM'],'FontSize',16);
-legend(s_Hnd(4),[w31_Hnd(1,2) w31_Hnd(1,1) w31_Hnd(1,3)],'Median (31yr)', ...
-       '5^t^h %ile (31yr) ','95^t^h %ile (31yr)','location','southeast'                );
+% legend(s_Hnd(4),[w31_Hnd(1,2) w31_Hnd(1,1) w31_Hnd(1,3)],'Median', ...
+%        '5^t^h %ile','95^t^h %ile','location','southeast','orientation','horizontal');
+wdw_LH=legend(s_Hnd(4),[Hnd(1,2) w31_Hnd(1,2) w61_Hnd(1,2) w91_Hnd(1,2)],'499yr','31yr','61yr','91yr','orientation','horizontal');
+
 
 for i=1:4
     axes(s_Hnd(i));
@@ -254,6 +256,20 @@ suptitle(title_str);
 %% Figure Bravo
 clf
 letters = 'abcdefghijkl';
+shading_opacity = 0;
+c1_hatch_spacing = 4;
+c2_hatch_spacing = 4;
+c3_hatch_spacing = 4;
+c1_hatch_angle = 45;
+c2_hatch_angle = 90;
+c3_hatch_angle = 145;
+c1_shading_type = 'single';
+c2_shading_type = 'single';
+c3_shading_type = 'single';
+color1 = [0.2 0.2 1];
+color2 = [0.2 1 0.2];
+color3 = [1 0.2 0.2];
+
 
 % Skilful Threshold
 skilful_threshold = sqrt(0.5); % In correlation
@@ -307,19 +323,25 @@ for window = [31, 61, 91]
     axes(s_Hnd(1+(group_name_counter-1)*4)); hold on;
     corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
     if window == 31
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','b','k',[],0.3);
+        sh_H(1) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k',[],shading_opacity);
+        hp = findobj(sh_H(1),'type','patch'); hf_Hnd(1) = hatchfill(hp,c1_shading_type,c1_hatch_angle,c1_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(1),'Color',color1);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[0.6 0.6 1]);
     elseif window == 61
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','y','k',[],0.3);
+        sh_H(2) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(2),'type','patch'); hf_Hnd(2) = hatchfill(hp,c2_shading_type,c2_hatch_angle,c2_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(2),'Color',color2);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
 % %         set(w_Hnd(floor(window/30),:),'Color',[1 0.6 1]);
     elseif window == 91
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+        sh_H(3) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(3),'type','patch'); hf_Hnd(3) = hatchfill(hp,c3_shading_type,c3_hatch_angle,c3_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(3),'Color',color3);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
@@ -333,19 +355,25 @@ for window = [31, 61, 91]
     axes(s_Hnd(2+(group_name_counter-1)*4)); hold on;
     corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
     if window == 31
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','b','k',[],0.3);
+        sh_H(1) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k',[],shading_opacity);
+        hp = findobj(sh_H(1),'type','patch'); hf_Hnd(1) = hatchfill(hp,c1_shading_type,c1_hatch_angle,c1_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(1),'Color',color1);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[0.6 0.6 1]);
     elseif window == 61
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','y','k',[],0.3);
+        sh_H(2) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(2),'type','patch'); hf_Hnd(2) = hatchfill(hp,c2_shading_type,c2_hatch_angle,c2_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(2),'Color',color2);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[1 0.6 1]);
     elseif window == 91
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+        sh_H(3) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(3),'type','patch'); hf_Hnd(3) = hatchfill(hp,c3_shading_type,c3_hatch_angle,c3_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(3),'Color',color3);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
@@ -359,19 +387,25 @@ for window = [31, 61, 91]
     axes(s_Hnd(3+(group_name_counter-1)*4)); hold on;
     corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
     if window == 31
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','b','k',[],0.3);
+        sh_H(1) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k',[],shading_opacity);
+        hp = findobj(sh_H(1),'type','patch'); hf_Hnd(1) = hatchfill(hp,c1_shading_type,c1_hatch_angle,c1_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(1),'Color',color1);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[0.6 0.6 1]);
     elseif window == 61
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','y','k',[],0.3);
+        sh_H(2) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(2),'type','patch'); hf_Hnd(2) = hatchfill(hp,c2_shading_type,c2_hatch_angle,c2_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(2),'Color',color2);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[1 0.6 1]);
     elseif window == 91
-        jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+        sh_H(3) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(3),'type','patch'); hf_Hnd(3) = hatchfill(hp,c3_shading_type,c3_hatch_angle,c3_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(3),'Color',color3);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
@@ -385,19 +419,25 @@ for window = [31, 61, 91]
     axes(s_Hnd(4+(group_name_counter-1)*4)); hold on;
     corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
     if window == 31
-        f_Hnd(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','b','k',[],0.3);
+        sh_H(1) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k',[],shading_opacity);
+        hp = findobj(sh_H(1),'type','patch'); hf_Hnd(1) = hatchfill(hp,c1_shading_type,c1_hatch_angle,c1_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(1),'Color',color1);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[0.6 0.6 1]);
     elseif window == 61
-        f_Hnd(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','y','k',[],0.3);
+        sh_H(2) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(2),'type','patch'); hf_Hnd(2) = hatchfill(hp,c2_shading_type,c2_hatch_angle,c2_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(2),'Color',color2);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
 %         set(w_Hnd(floor(window/30),:),'Color',[1 0.6 1]);
     elseif window == 91
-        f_Hnd(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+        sh_H(3) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',[1 1 1],'k','add',shading_opacity);
+        hp = findobj(sh_H(3),'type','patch'); hf_Hnd(3) = hatchfill(hp,c3_shading_type,c3_hatch_angle,c3_hatch_spacing,[1 1 1]);
+        set(hf_Hnd(3),'Color',color3);
 %         w_Hnd(floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
 %         w_Hnd(floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
 %         w_Hnd(floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
@@ -405,33 +445,33 @@ for window = [31, 61, 91]
     end
     
     if window == 31
-        axes(s_Hnd(1+(group_name_counter-1)*4));
-        h31(1)=plot(skilful_EPC_RV(:,floor(window/30)),'b','LineWidth',2);
-        axes(s_Hnd(2+(group_name_counter-1)*4));
-        h31(2)=plot(skilful_CPS_RV(:,floor(window/30)),'b','LineWidth',2);
-        axes(s_Hnd(3+(group_name_counter-1)*4));
-        h31(3)=plot(skilful_MRV(:,floor(window/30)),'b','LineWidth',2);
-        axes(s_Hnd(4+(group_name_counter-1)*4));
-        h31(4)=plot(skilful_RVM(:,floor(window/30)),'b','LineWidth',2);
+        axes(s_Hnd(1+(group_name_counter-1)*4)); hold on;
+        h31(1)=plot(skilful_EPC_RV(:,floor(window/30)),'Color',color1,'LineWidth',2);
+        axes(s_Hnd(2+(group_name_counter-1)*4)); hold on;
+        h31(2)=plot(skilful_CPS_RV(:,floor(window/30)),'Color',color1,'LineWidth',2);
+        axes(s_Hnd(3+(group_name_counter-1)*4)); hold on;
+        h31(3)=plot(skilful_MRV(:,floor(window/30)),'Color',color1,'LineWidth',2);
+        axes(s_Hnd(4+(group_name_counter-1)*4)); hold on;
+        h31(4)=plot(skilful_RVM(:,floor(window/30)),'Color',color1,'LineWidth',2);
 
     elseif window == 61
-        axes(s_Hnd(1+(group_name_counter-1)*4));
-        h61(1)=plot(skilful_EPC_RV(:,floor(window/30)),'y','LineWidth',2);
-        axes(s_Hnd(2+(group_name_counter-1)*4));
-        h61(2)=plot(skilful_CPS_RV(:,floor(window/30)),'y','LineWidth',2);
-        axes(s_Hnd(3+(group_name_counter-1)*4));
-        h61(3)=plot(skilful_MRV(:,floor(window/30)),'y','LineWidth',2);
-        axes(s_Hnd(4+(group_name_counter-1)*4));
-        h61(4)=plot(skilful_RVM(:,floor(window/30)),'y','LineWidth',2);
+        axes(s_Hnd(1+(group_name_counter-1)*4)); hold on;
+        h61(1)=plot(skilful_EPC_RV(:,floor(window/30)),'Color',color2,'LineWidth',2);
+        axes(s_Hnd(2+(group_name_counter-1)*4)); hold on;
+        h61(2)=plot(skilful_CPS_RV(:,floor(window/30)),'Color',color2,'LineWidth',2);
+        axes(s_Hnd(3+(group_name_counter-1)*4)); hold on;
+        h61(3)=plot(skilful_MRV(:,floor(window/30)),'Color',color2,'LineWidth',2);
+        axes(s_Hnd(4+(group_name_counter-1)*4)); hold on;
+        h61(4)=plot(skilful_RVM(:,floor(window/30)),'Color',color2,'LineWidth',2);
     elseif window == 91
-        axes(s_Hnd(1+(group_name_counter-1)*4));
-        h91(1)=plot(skilful_EPC_RV(:,floor(window/30)),'r','LineWidth',2);
-        axes(s_Hnd(2+(group_name_counter-1)*4));
-        h91(2)=plot(skilful_CPS_RV(:,floor(window/30)),'r','LineWidth',2);
-        axes(s_Hnd(3+(group_name_counter-1)*4));
-        h91(3)=plot(skilful_MRV(:,floor(window/30)),'r','LineWidth',2);
-        axes(s_Hnd(4+(group_name_counter-1)*4));
-        h91(4)=plot(skilful_RVM(:,floor(window/30)),'r','LineWidth',2);
+        axes(s_Hnd(1+(group_name_counter-1)*4)); hold on;
+        h91(1)=plot(skilful_EPC_RV(:,floor(window/30)),'Color',color3,'LineWidth',2);
+        axes(s_Hnd(2+(group_name_counter-1)*4)); hold on;
+        h91(2)=plot(skilful_CPS_RV(:,floor(window/30)),'Color',color3,'LineWidth',2);
+        axes(s_Hnd(3+(group_name_counter-1)*4)); hold on;
+        h91(3)=plot(skilful_MRV(:,floor(window/30)),'Color',color3,'LineWidth',2);
+        axes(s_Hnd(4+(group_name_counter-1)*4)); hold on;
+        h91(4)=plot(skilful_RVM(:,floor(window/30)),'Color',color3,'LineWidth',2);
 
     end
        
@@ -448,10 +488,10 @@ end
 end
 
 Leg_H = legend(s_Hnd(7),[h31(1) h61(1) h91(1)],'Proportion (31yr)', ...
-        'Proportion (61yr) ','Proportion (91yr)','location','southeast');
+        'Proportion (61yr) ','Proportion (91yr)','location','southeast','orientation','horizontal');
 set(Leg_H, 'FontSize',14);
-f_leg_H = legend(s_Hnd(8),[f_Hnd(1) f_Hnd(2) f_Hnd(3)],'%ile range (31yr)', ... 
-                 '%ile range (61yr)','%ile range (91yr)','location','southeast');
+f_leg_H = legend(s_Hnd(8),[hf_Hnd(1) hf_Hnd(2) hf_Hnd(3)],'%ile range (31yr)', ... 
+                 '%ile range (61yr)','%ile range (91yr)','location','southeast','orientation','horizontal');
 set(f_leg_H, 'FontSize',14);
 
 axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',16);
@@ -463,7 +503,7 @@ for i=1:12
     axes(s_Hnd(i));
     set(gca,'YTickLabel',[],'XTickLabel',[])
     set(gca, 'FontSize',16, 'LineWidth', 2.0, 'Box', 'on', 'YTick', [0:0.2:1],'XTick', [0:20:70]); 
-    xlim([0 70]); ylim([0 1]); grid on;
+    xlim([0 70]); ylim([0 1]); grid off
     text(0+1,1-0.06,[letters(i),')'],'FontSize',22,'FontWeight','bold');
     hold on; st_H = plot([0,70],[skilful_threshold skilful_threshold],'Color',[0.5 0.5 0.5],'LineWidth',1.5); hold off;
     uistack(st_H,'down');
@@ -515,6 +555,9 @@ s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
 
 % Skilful Threshold
 skilful_threshold = sqrt(0.5); % In correlation
+stat_color = [0.3 1 0.3];
+nstat_color = [1 0.3 0.3];
+shading_opacity = 0.5;
 
 skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
 skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
@@ -561,7 +604,7 @@ end
 % Plotting EPC
 axes(s_Hnd(1+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
-f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','g','k',[],0.3);
+f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',stat_color,'k',[],shading_opacity);
 % w_Hnd_stat(1,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(1,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(1,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'g','Color',[0.5 1 0.5],'LineWidth',2);
@@ -569,7 +612,7 @@ f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeez
 % Plotting CPS
 axes(s_Hnd(2+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
-f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','g','k',[],0.3);
+f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',stat_color,'k',[],shading_opacity);
 % w_Hnd_stat(2,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(2,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(2,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'g','Color',[0.5 1 0.5],'LineWidth',2);
@@ -577,7 +620,7 @@ f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeez
 % Plotting MRV
 axes(s_Hnd(3+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
-f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','g','k',[],0.3);
+f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',stat_color,'k',[],shading_opacity);
 % w_Hnd_stat(3,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(3,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(3,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'g','Color',[0.5 1 0.5],'LineWidth',2);
@@ -585,7 +628,7 @@ f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeez
 % Plotting RVM
 axes(s_Hnd(4+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
-f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','g','k',[],0.3);
+f_Hnd_stat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',stat_color,'k',[],shading_opacity);
 % w_Hnd_stat(4,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(4,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.g','Color',[0.5 1 0.5],'LineWidth',1);
 % w_Hnd_stat(4,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'g','Color',[0.5 1 0.5],'LineWidth',2);
@@ -644,7 +687,7 @@ end
 % Plotting EPC
 axes(s_Hnd(1+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
-f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',nstat_color,'k',[],shading_opacity);
 % w_Hnd_nstat(1,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(1,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(1,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','Color',[1 0.5 0.5],'LineWidth',2);
@@ -652,7 +695,7 @@ f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squee
 % Plotting CPS
 axes(s_Hnd(2+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
-f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',nstat_color,'k',[],shading_opacity);
 % w_Hnd_nstat(2,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(2,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(2,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','Color',[1 0.5 0.5],'LineWidth',2);
@@ -660,7 +703,7 @@ f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squee
 % Plotting MRV
 axes(s_Hnd(3+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
-f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',nstat_color,'k',[],shading_opacity);
 % w_Hnd_nstat(3,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(3,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(3,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','Color',[1 0.5 0.5],'LineWidth',2);
@@ -668,7 +711,7 @@ f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squee
 % Plotting RVM
 axes(s_Hnd(4+(floor(window/30)-1)*4)); hold on;
 corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
-f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))','r','k',[],0.3);
+f_Hnd_nstat(floor(window/30)) = jbfill([3:70],squeeze(corr_RV_qn(3:70,1))',squeeze(corr_RV_qn(3:70,3))',nstat_color,'k',[],shading_opacity);
 % w_Hnd_nstat(4,floor(window/30),1) = plot(squeeze(corr_RV_qn(:,1)),'--r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(4,floor(window/30),3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','Color',[1 0.5 0.5],'LineWidth',1);
 % w_Hnd_nstat(4,floor(window/30),2) = plot(squeeze(corr_RV_qn(:,2)),'r','Color',[1 0.5 0.5],'LineWidth',2);
@@ -743,16 +786,39 @@ suptitle('STAT_{ntrop\_ts} - NSTAT_{ntrop\_ts}')
 
 %% Figure Delta
 
-figure;
+clf
 
 letters = 'abcdefghijkl';
 s_Hnd = tight_subplot(3,4,[0.05 0.01],[0.10 0.01],[0.1 0.01]);
 
 window = 31;
+pneof31skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+pneof31skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+pneof31skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+pneof31skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
+pneof61skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+pneof61skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+pneof61skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+pneof61skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
+pneof91skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+pneof91skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+pneof91skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+pneof91skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
+
+stat31_skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+stat31_skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+stat31_skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+stat31_skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
+stat61_skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+stat61_skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+stat61_skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+stat61_skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
+stat91_skilful_EPC_RV = nan(max(numstnstocompare),length([31 61 91])); % Percentage of reconstructions that get the same as the 499yr recons
+stat91_skilful_CPS_RV = nan(max(numstnstocompare),length([31 61 91]));
+stat91_skilful_MRV = nan(max(numstnstocompare),length([31 61 91]));
+stat91_skilful_RVM = nan(max(numstnstocompare),length([31 61 91]));
 
 GROUP_NAME = 'pneof_ts'; % Change group name to get other figs
-% DIR_NAME = ['../Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
-% DIR_NAME = ['/home/nfs/z3372730/Documents/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data-honours/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 NUM_CAL_WDW = 10; clear CAL_WDW;
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -773,36 +839,75 @@ for c=1:size(CAL_WDW,1)
     temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
 end
 
+for n=numstnstocompare
+    pneof31skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof31skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof31skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof31skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
+
+GROUP_NAME = 'ntrop_ts_stat'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+temp_xvar_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
+    temp_xvar_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    temp_xvar_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    temp_xvar_MRV(:,c,:) = all_stn_corr_MRV;
+    temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
+end
+
+for n=numstnstocompare
+    stat31_skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat31_skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat31_skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat31_skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
+
 % Plotting EPC
 axes(s_Hnd(1)); hold on;
-corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
-w31_Hnd(1,1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
-w31_Hnd(1,3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
-w31_Hnd(1,2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
+prop_31_Hnd(1,1) = plot(pneof31skilful_EPC_RV(:,floor(window/30)),'Color',[0 0 0.8],'LineWidth',3);
+prop_31_Hnd(1,2) = plot(stat31_skilful_EPC_RV(:,floor(window/30)),'Color',[0.5 0.5 1],'LineWidth',3);
 
 % Plotting CPS
+
 axes(s_Hnd(2)); hold on;
-corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
-w31_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
-w31_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
-w31_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
-
+prop_31_Hnd(2,1) = plot(pneof31skilful_CPS_RV(:,floor(window/30)),'Color',[0 0 0.8],'LineWidth',3); 
+prop_31_Hnd(2,2) = plot(stat31_skilful_CPS_RV(:,floor(window/30)),'Color',[0.5 0.5 1],'LineWidth',3);
+ 
 % Plotting MRV
-axes(s_Hnd(3)); hold on;
-corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
-w31_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
-w31_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
-w31_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
 
+axes(s_Hnd(3)); hold on;
+prop_31_Hnd(3,1) = plot(pneof31skilful_MRV(:,floor(window/30)),'Color',[0 0 0.8],'LineWidth',3); 
+prop_31_Hnd(3,2) = plot(stat31_skilful_MRV(:,floor(window/30)),'Color',[0.5 0.5 1],'LineWidth',3);
+ 
 % Plotting RVM
+
 axes(s_Hnd(4)); hold on;
-corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
-w31_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--b','LineWidth',1);
-w31_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.b','LineWidth',1);
-w31_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'b','LineWidth',2);
+prop_31_Hnd(4,1) = plot(pneof31skilful_RVM(:,floor(window/30)),'Color',[0 0 0.8],'LineWidth',3); 
+prop_31_Hnd(4,2) = plot(stat31_skilful_RVM(:,floor(window/30)),'Color',[0.5 0.5 1],'LineWidth',3);
 
 
 window = 61; clear CAL_WDW;
+GROUP_NAME = 'pneof_ts';
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data-honours/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
 for c=0:9
@@ -818,35 +923,70 @@ for c=1:size(CAL_WDW,1)
     temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
 end
     
+for n=numstnstocompare
+    pneof61skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof61skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof61skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof61skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
+
+GROUP_NAME = 'ntrop_ts_stat'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+temp_xvar_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
+    temp_xvar_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    temp_xvar_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    temp_xvar_MRV(:,c,:) = all_stn_corr_MRV;
+    temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
+end
+
+for n=numstnstocompare
+    stat61_skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat61_skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat61_skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat61_skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
+
 % Plotting EPC
 axes(s_Hnd(1)); hold on;
-corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
-w61_Hnd(1,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(1,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(1,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+prop_61_Hnd(1,1) = plot(pneof61skilful_EPC_RV(:,floor(window/30)),'Color',[0 0.8 0],'LineWidth',3); 
+prop_61_Hnd(1,2) = plot(stat61_skilful_EPC_RV(:,floor(window/30)),'Color',[0.5 1 0.5],'LineWidth',3);
 
 % Plotting CPS
 axes(s_Hnd(2)); hold on;
-corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
-w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+prop_61_Hnd(2,1) = plot(pneof61skilful_CPS_RV(:,floor(window/30)),'Color',[0 0.8 0],'LineWidth',3); 
+prop_61_Hnd(2,2) = plot(stat61_skilful_CPS_RV(:,floor(window/30)),'Color',[0.5 1 0.5],'LineWidth',3);
 
 % Plotting MRV
 axes(s_Hnd(3)); hold on;
-corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
-w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+prop_61_Hnd(3,1) = plot(pneof61skilful_MRV(:,floor(window/30)),'Color',[0 0.8 0],'LineWidth',3); 
+prop_61_Hnd(3,2) = plot(stat61_skilful_MRV(:,floor(window/30)),'Color',[0.5 1 0.5],'LineWidth',3);
 
 % Plotting RVM
 axes(s_Hnd(4)); hold on;
-corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
-w61_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--m','LineWidth',1);
-w61_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.m','LineWidth',1);
-w61_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'m','LineWidth',2);
+prop_61_Hnd(4,1) = plot(pneof61skilful_RVM(:,floor(window/30)),'Color',[0 0.8 0],'LineWidth',3); 
+prop_61_Hnd(4,2) = plot(stat61_skilful_RVM(:,floor(window/30)),'Color',[0.5 1 0.5],'LineWidth',3);
     
-
+GROUP_NAME = 'pneof_ts';
 window = 91; clear CAL_WDW;
 DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data-honours/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
 overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
@@ -862,50 +1002,83 @@ for c=1:size(CAL_WDW,1)
     temp_xvar_MRV(:,c,:) = all_stn_corr_MRV;
     temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
 end
+
+for n=numstnstocompare
+    pneof91skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof91skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof91skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    pneof91skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
+
+GROUP_NAME = 'ntrop_ts_stat'; % Change group name to get other figs
+DIR_NAME = ['/srv/ccrc/data34/z3372730/Katana_Data/Data/Pseudoproxies/',num2str(window),'yrWindow/',num2str(GROUP_NAME)];
+NUM_CAL_WDW = 10; clear CAL_WDW;
+overlap = ceil(-(NUM_YRS-NUM_CAL_WDW*window)/9.0);
+for c=0:9
+    CAL_WDW(c+1,:) = (1+c*(window-overlap)):((c*(window-overlap))+window); %#ok<SAGROW>
+end
+temp_xvar_EPC_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_CPS_RV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_MRV = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+temp_xvar_RVM = nan(max(numstnstocompare),size(CAL_WDW,1),NUM_TRIALS,'single');
+
+for c=1:size(CAL_WDW,1)
+    load([DIR_NAME,'/CalWdw:',num2str(CAL_WDW(c,1)),'-',num2str(CAL_WDW(c,end)),'/tonsofstats.mat'], ...
+     'all_stn_corr_EPC_RV','all_stn_corr_CPS_RV','all_stn_corr_MRV','all_stn_corr_RVM')
+    temp_xvar_EPC_RV(:,c,:) = all_stn_corr_EPC_RV;
+    temp_xvar_CPS_RV(:,c,:) = all_stn_corr_CPS_RV;
+    temp_xvar_MRV(:,c,:) = all_stn_corr_MRV;
+    temp_xvar_RVM(:,c,:) = all_stn_corr_RVM;
+end
+
+for n=numstnstocompare
+    stat91_skilful_EPC_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_EPC_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat91_skilful_CPS_RV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_CPS_RV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat91_skilful_MRV(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_MRV(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+    stat91_skilful_RVM(n,floor(window/30)) = sum(sum(sum(...
+        squeeze(temp_xvar_RVM(n,:,:))>skilful_threshold )))/(NUM_CAL_WDW*NUM_TRIALS);
+end
     
 % Plotting EPC
 axes(s_Hnd(1)); hold on;
-corr_RV_qn = quantile(temp_xvar_EPC_RV(:,:),[.05 .5 .95], 2);
-w91_Hnd(1,1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
-w91_Hnd(1,3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
-w91_Hnd(1,2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
+prop_91_Hnd(1,1) = plot(pneof91skilful_EPC_RV(:,floor(window/30)),'Color',[0.8 0 0],'LineWidth',3); 
+prop_91_Hnd(1,2) = plot(stat91_skilful_EPC_RV(:,floor(window/30)),'Color',[1 0.5 0.5],'LineWidth',3);
 
 % Plotting CPS
 axes(s_Hnd(2)); hold on;
-corr_RV_qn = quantile(temp_xvar_CPS_RV(:,:),[.05 .5 .95], 2);
-w91_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
-w91_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
-w91_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
+prop_91_Hnd(2,1) = plot(pneof91skilful_CPS_RV(:,floor(window/30)),'Color',[0.8 0 0],'LineWidth',3); 
+prop_91_Hnd(2,2) = plot(stat91_skilful_CPS_RV(:,floor(window/30)),'Color',[1 0.5 0.5],'LineWidth',3);
 
 % Plotting MRV
 axes(s_Hnd(3)); hold on;
-corr_RV_qn = quantile(temp_xvar_MRV(:,:),[.05 .5 .95], 2);
-w91_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
-w91_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
-w91_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
+prop_91_Hnd(3,1) = plot(pneof91skilful_MRV(:,floor(window/30)),'Color',[0.8 0 0],'LineWidth',3); 
+prop_91_Hnd(3,2) = plot(stat91_skilful_MRV(:,floor(window/30)),'Color',[1 0.5 0.5],'LineWidth',3);
 
 % Plotting RVM
 axes(s_Hnd(4)); hold on;
-corr_RV_qn = quantile(temp_xvar_RVM(:,:),[.05 .5 .95], 2);
-w91_Hnd(2,1) = plot(squeeze(corr_RV_qn(:,1)),'--r','LineWidth',1);
-w91_Hnd(2,3) = plot(squeeze(corr_RV_qn(:,3)),'-.r','LineWidth',1);
-w91_Hnd(2,2) = plot(squeeze(corr_RV_qn(:,2)),'r','LineWidth',2);
+prop_91_Hnd(4,1) = plot(pneof91skilful_RVM(:,floor(window/30)),'Color',[0.8 0 0],'LineWidth',3); 
+prop_91_Hnd(4,2) = plot(stat91_skilful_RVM(:,floor(window/30)),'Color',[1 0.5 0.5],'LineWidth',3);
 
 
 % Formatting
 axes(s_Hnd(1)); title(['EPC\_RV'],'FontSize',16);
 axes(s_Hnd(2)); title(['CPS\_RV'],'FontSize',16);
-leg_h = legend(s_Hnd(2),[w91_Hnd(1,2) w91_Hnd(1,3) w91_Hnd(1,1)],'Median (91yr)', ...
-       '5^t^h %ile (91yr) ','95^t^h %ile (91yr)','location','southeast'                );
-set(leg_h,'FontSize',14,'orientation','horizontal');
 axes(s_Hnd(3)); title(['MRV'],'FontSize',16);
-leg_h = legend(s_Hnd(3),[w61_Hnd(1,2) w61_Hnd(1,3) w61_Hnd(1,1)],'Median (61yr)', ...
-       '5^t^h %ile (61yr) ','95^t^h %ile (61yr)','location','southeast'                );
-set(leg_h,'FontSize',14,'orientation','horizontal');
 axes(s_Hnd(4)); title(['RVM'],'FontSize',16);
-leg_h = legend(s_Hnd(4),[w31_Hnd(1,2) w31_Hnd(1,3) w31_Hnd(1,1)],'Median (31yr)', ...
-       '5^t^h %ile (31yr) ','95^t^h %ile (31yr)','location','southeast'                );
+leg_h = legend(s_Hnd(3),[prop_31_Hnd(1,1) prop_61_Hnd(1,1) prop_91_Hnd(1,1)], ...
+               'PNEOF 31yr','PNEOF 61yr','PNEOF 91yr','orientation','horizontal');
 set(leg_h,'FontSize',14,'orientation','horizontal');
+leg_h = legend(s_Hnd(4),[prop_31_Hnd(1,2) prop_61_Hnd(1,2) prop_91_Hnd(1,2)], ...
+               'STAT 31yr','STAT 61yr','STAT 91yr','orientation','horizontal');
+set(leg_h,'FontSize',14,'orientation','horizontal');
+
 
 for i=1:4
     axes(s_Hnd(i));
@@ -919,7 +1092,7 @@ axes(s_Hnd(1)); xlabel('Network Size');
 for i=1:1
     axes(s_Hnd(i*2-1));
     set(gca,'YTickLabel',[0:0.2:1]);
-    ylabel(['r'])
+    ylabel(['Proportion'])
 end
 
 for i=1:4
@@ -1088,9 +1261,9 @@ set(gcf, 'PaperSize', [18 14]);
 clf
 letters = 'abcdefghijkl';
 s_Hnd = tight_subplot(3,4,[0.01 0.01],[0.10 0.01],[0.1 0.01]);
-glb_colour = [0.5 0.5 1];
-ntrop_colour = [1 0.5 0.5];
-shading_opacity = 0.5;
+glb_colour = [0.6 0.6 1];
+ntrop_colour = [1 0.6 0.6];
+shading_opacity = 0.7;
 
 % Skilful Threshold
 skilful_threshold = sqrt(0.5); % In correlation
